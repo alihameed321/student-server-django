@@ -24,6 +24,12 @@ class ServiceRequest(models.Model):
         ('more_info_needed', 'More Information Needed'),
     )
     
+    PRIORITY_CHOICES = (
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+    )
+    
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='service_requests')
     request_type = models.CharField(max_length=30, choices=REQUEST_TYPES)
     title = models.CharField(max_length=200)
@@ -34,7 +40,7 @@ class ServiceRequest(models.Model):
     processed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='processed_requests')
     rejection_reason = models.TextField(blank=True)
     additional_info_request = models.TextField(blank=True)
-    priority = models.IntegerField(default=1)  # 1=Low, 2=Medium, 3=High
+    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
     
     class Meta:
         ordering = ['-created_at']

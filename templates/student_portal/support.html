@@ -1,0 +1,331 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Support Center - My University Services{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                            <i class="fas fa-headset mr-3" style="color: #102A71;"></i>
+                            Support Center
+                        </h1>
+                        <p class="text-gray-600">Get help with your university services and submit support tickets</p>
+                    </div>
+                    <button onclick="openNewTicketModal()" class="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
+                        <i class="fas fa-plus mr-2"></i>
+                        New Ticket
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Help Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center mb-4">
+                    <div class="p-3 rounded-lg" style="background-color: rgba(16, 42, 113, 0.1);">
+                        <i class="fas fa-question-circle text-2xl" style="color: #102A71;"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-semibold text-gray-900">FAQ</h3>
+                        <p class="text-sm text-gray-600">Common questions</p>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-4">Find answers to frequently asked questions about university services.</p>
+                <a href="#" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                    Browse FAQ <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center mb-4">
+                    <div class="p-3 rounded-lg" style="background-color: rgba(16, 42, 113, 0.1);">
+                        <i class="fas fa-phone text-2xl" style="color: #102A71;"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Contact Us</h3>
+                        <p class="text-sm text-gray-600">Direct contact</p>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-4">Reach out to our support team directly for immediate assistance.</p>
+                <div class="space-y-2">
+                    <p class="text-sm"><i class="fas fa-phone mr-2" style="color: #102A71;"></i> +1 (555) 123-4567</p>
+                    <p class="text-sm"><i class="fas fa-envelope mr-2" style="color: #102A71;"></i> support@university.edu</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center mb-4">
+                    <div class="p-3 rounded-lg" style="background-color: rgba(16, 42, 113, 0.1);">
+                        <i class="fas fa-clock text-2xl" style="color: #102A71;"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Office Hours</h3>
+                        <p class="text-sm text-gray-600">When we're available</p>
+                    </div>
+                </div>
+                <div class="space-y-2 text-sm text-gray-600">
+                    <p><strong>Monday - Friday:</strong> 8:00 AM - 6:00 PM</p>
+                    <p><strong>Saturday:</strong> 9:00 AM - 2:00 PM</p>
+                    <p><strong>Sunday:</strong> Closed</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Support Tickets -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-900">My Support Tickets</h2>
+                        <p class="text-gray-600 mt-1">Track your submitted support requests</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <select onchange="filterTickets(this.value)" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="all">All Tickets</option>
+                            <option value="open">Open</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="resolved">Resolved</option>
+                            <option value="closed">Closed</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            {% if tickets %}
+                <div class="divide-y divide-gray-200">
+                    {% for ticket in tickets %}
+                        <div class="p-6 ticket-item" data-status="{{ ticket.status }}">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="p-3 rounded-lg" style="background-color: rgba(16, 42, 113, 0.1);">
+                                        {% if ticket.category == 'technical' %}
+                                            <i class="fas fa-cog text-xl" style="color: #102A71;"></i>
+                                        {% elif ticket.category == 'academic' %}
+                                            <i class="fas fa-graduation-cap text-xl" style="color: #102A71;"></i>
+                                        {% elif ticket.category == 'financial' %}
+                                            <i class="fas fa-dollar-sign text-xl" style="color: #102A71;"></i>
+                                        {% elif ticket.category == 'general' %}
+                                            <i class="fas fa-question text-xl" style="color: #102A71;"></i>
+                                        {% else %}
+                                            <i class="fas fa-ticket-alt text-xl" style="color: #102A71;"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900">{{ ticket.subject }}</h3>
+                                        <p class="text-sm text-gray-600 mb-1">
+                                            Ticket #{{ ticket.id }} • {{ ticket.get_category_display }}
+                                            {% if ticket.priority %}
+                                                • Priority: 
+                                                {% if ticket.priority == 'high' %}
+                                                    <span class="text-red-600 font-medium">High</span>
+                                                {% elif ticket.priority == 'medium' %}
+                                                    <span class="text-yellow-600 font-medium">Medium</span>
+                                                {% else %}
+                                                    <span class="text-green-600 font-medium">Low</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </p>
+                                        <p class="text-sm text-gray-500">
+                                            Created: {{ ticket.created_at|date:"M d, Y \a\t H:i" }}
+                                            {% if ticket.assigned_to %}
+                                                • Assigned to: {{ ticket.assigned_to.get_full_name }}
+                                            {% endif %}
+                                        </p>
+                                        <p class="text-sm text-gray-600 mt-2">{{ ticket.description|truncatewords:20 }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <div class="text-right">
+                                        <span class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full
+                                            {% if ticket.status == 'open' %}
+                                                bg-blue-100 text-blue-800
+                                            {% elif ticket.status == 'in_progress' %}
+                                                bg-yellow-100 text-yellow-800
+                                            {% elif ticket.status == 'resolved' %}
+                                                bg-green-100 text-green-800
+                                            {% elif ticket.status == 'closed' %}
+                                                bg-gray-100 text-gray-800
+                                            {% endif %}
+                                        ">
+                                            <i class="fas fa-circle text-xs mr-2"></i>
+                                            {{ ticket.get_status_display }}
+                                        </span>
+                                        {% if ticket.responses.count %}
+                                            <div class="text-xs text-gray-500 mt-1">
+                                                {{ ticket.responses.count }} response{{ ticket.responses.count|pluralize }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex flex-col space-y-2">
+                                        <button onclick="viewTicket({{ ticket.id }})" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
+                                            <i class="fas fa-eye mr-2"></i>
+                                            View
+                                        </button>
+                                        {% if ticket.status == 'open' %}
+                                            <button onclick="closeTicket({{ ticket.id }})" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                                <i class="fas fa-times mr-2"></i>
+                                                Close
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-16">
+                    <i class="fas fa-headset text-6xl text-gray-300 mb-6"></i>
+                    <h3 class="text-xl font-medium text-gray-900 mb-2">No support tickets</h3>
+                    <p class="text-gray-600 mb-8">You haven't submitted any support tickets yet.</p>
+                    <button onclick="openNewTicketModal()" class="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
+                        <i class="fas fa-plus mr-2"></i>
+                        Create Your First Ticket
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- New Ticket Modal -->
+<div id="newTicketModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Create Support Ticket</h3>
+                    <button onclick="closeNewTicketModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="newTicketForm" onsubmit="submitTicket(event)">
+                    {% csrf_token %}
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                            <input type="text" name="subject" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Brief description of your issue">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                            <select name="category" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="">Select a category</option>
+                                <option value="technical">Technical Support</option>
+                                <option value="academic">Academic Services</option>
+                                <option value="financial">Financial Services</option>
+                                <option value="general">General Inquiry</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+                            <select name="priority" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                            <textarea name="description" required rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Please provide detailed information about your issue"></textarea>
+                        </div>
+                    </div>
+                    <div class="flex space-x-3 mt-6">
+                        <button type="button" onclick="closeNewTicketModal()" class="flex-1 px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" class="flex-1 px-4 py-2 text-white rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
+                            Submit Ticket
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function filterTickets(status) {
+        const items = document.querySelectorAll('.ticket-item');
+        
+        items.forEach(item => {
+            if (status === 'all' || item.dataset.status === status) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+    
+    function openNewTicketModal() {
+        document.getElementById('newTicketModal').classList.remove('hidden');
+    }
+    
+    function closeNewTicketModal() {
+        document.getElementById('newTicketModal').classList.add('hidden');
+        document.getElementById('newTicketForm').reset();
+    }
+    
+    function submitTicket(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        
+        fetch('/student/support/create/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeNewTicketModal();
+                location.reload();
+            } else {
+                alert('Error: ' + (data.error || 'Unable to create ticket'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while creating the ticket.');
+        });
+    }
+    
+    function viewTicket(ticketId) {
+        window.location.href = `/student/support/${ticketId}/`;
+    }
+    
+    function closeTicket(ticketId) {
+        if (confirm('Are you sure you want to close this ticket?')) {
+            fetch(`/student/support/${ticketId}/close/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.error || 'Unable to close ticket'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while closing the ticket.');
+            });
+        }
+    }
+</script>
+{% endblock %}

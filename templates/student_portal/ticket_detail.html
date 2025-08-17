@@ -1,0 +1,347 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Support Ticket #{{ ticket.id }} - My University Services{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">
+                            <i class="fas fa-ticket-alt mr-3" style="color: #102A71;"></i>
+                            Support Ticket #{{ ticket.id }}
+                        </h1>
+                        <p class="text-gray-600 mt-2">{{ ticket.subject }}</p>
+                    </div>
+                    <a href="{% url 'student_portal:support_center' %}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back to Support
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ticket Information -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Ticket Details -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900">
+                                <i class="fas fa-info-circle mr-2" style="color: #102A71;"></i>
+                                Ticket Details
+                            </h3>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                   {% if ticket.status == 'open' %}bg-green-100 text-green-800
+                                   {% elif ticket.status == 'in_progress' %}bg-blue-100 text-blue-800
+                                   {% elif ticket.status == 'resolved' %}bg-gray-100 text-gray-800
+                                   {% elif ticket.status == 'closed' %}bg-red-100 text-red-800
+                                   {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                <i class="fas fa-circle mr-1 text-xs"></i>
+                                {{ ticket.get_status_display|default:ticket.status|title }}
+                            </span>
+                        </div>
+                        
+                        <div class="prose max-w-none">
+                            <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                <h4 class="text-sm font-medium text-gray-700 mb-2">Original Message:</h4>
+                                <p class="text-gray-900">{{ ticket.description|linebreaks }}</p>
+                            </div>
+                            
+                            {% if ticket.attachment %}
+                            <div class="mt-4">
+                                <h4 class="text-sm font-medium text-gray-700 mb-2">Attachment:</h4>
+                                <a href="{{ ticket.attachment.url }}" class="inline-flex items-center px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
+                                    <i class="fas fa-paperclip mr-2"></i>
+                                    {{ ticket.attachment.name|default:"Download Attachment" }}
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conversation Thread -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-6">
+                            <i class="fas fa-comments mr-2" style="color: #F5C400;"></i>
+                            Conversation
+                        </h3>
+                        
+                        <div class="space-y-6">
+                            {% if ticket.responses.all %}
+                                {% for response in ticket.responses.all %}
+                                <div class="flex space-x-4">
+                                    <div class="flex-shrink-0">
+                                        {% if response.is_staff %}
+                                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                                <i class="fas fa-user-tie text-blue-600"></i>
+                                            </div>
+                                        {% else %}
+                                            <div class="w-10 h-10 rounded-full" style="background: linear-gradient(135deg, #102A71 0%, #1a3a8a 100%);">
+                                                <i class="fas fa-user text-white text-sm flex items-center justify-center h-full"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="bg-gray-50 rounded-lg p-4">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <div class="flex items-center space-x-2">
+                                                    <span class="text-sm font-medium text-gray-900">
+                                                        {% if response.is_staff %}
+                                                            {{ response.author.get_full_name|default:"Support Staff" }}
+                                                        {% else %}
+                                                            You
+                                                        {% endif %}
+                                                    </span>
+                                                    {% if response.is_staff %}
+                                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                            <i class="fas fa-shield-alt mr-1"></i>
+                                                            Staff
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+                                                <span class="text-xs text-gray-500">
+                                                    {{ response.created_at|date:"M d, Y \a\t H:i" }}
+                                                </span>
+                                            </div>
+                                            <p class="text-gray-700">{{ response.message|linebreaks }}</p>
+                                            
+                                            {% if response.attachment %}
+                                            <div class="mt-3">
+                                                <a href="{{ response.attachment.url }}" class="inline-flex items-center px-2 py-1 bg-gray-200 text-gray-700 rounded text-xs hover:bg-gray-300 transition-colors">
+                                                    <i class="fas fa-paperclip mr-1"></i>
+                                                    {{ response.attachment.name|default:"Attachment" }}
+                                                </a>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-center py-8">
+                                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                                        <i class="fas fa-comments text-gray-400 text-xl"></i>
+                                    </div>
+                                    <p class="text-gray-500">No responses yet. Our support team will respond soon.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Add Response Form -->
+                {% if ticket.status != 'closed' %}
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-6">
+                            <i class="fas fa-reply mr-2" style="color: #102A71;"></i>
+                            Add Response
+                        </h3>
+                        
+                        <form method="post" enctype="multipart/form-data" action="{% url 'student_portal:respond_to_ticket' ticket.id %}">
+                            {% csrf_token %}
+                            
+                            <div class="mb-4">
+                                <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Your Message *
+                                </label>
+                                <textarea name="message" id="message" rows="4" required
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                          placeholder="Type your response here..."></textarea>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label for="attachment" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Attachment (Optional)
+                                </label>
+                                <input type="file" name="attachment" id="attachment"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <p class="text-xs text-gray-500 mt-1">Max file size: 10MB</p>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div class="text-sm text-gray-500">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    You will be notified when staff responds
+                                </div>
+                                <button type="submit" class="inline-flex items-center px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                    <i class="fas fa-paper-plane mr-2"></i>
+                                    Send Response
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <div class="bg-gray-50 rounded-xl border border-gray-200 p-6 text-center">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-200 flex items-center justify-center">
+                        <i class="fas fa-lock text-gray-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Ticket Closed</h3>
+                    <p class="text-gray-600">This ticket has been closed and no longer accepts responses.</p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- Ticket Info -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                            <i class="fas fa-info mr-2" style="color: #102A71;"></i>
+                            Ticket Information
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Ticket ID</label>
+                                <p class="text-sm text-gray-900">#{{ ticket.id }}</p>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Category</label>
+                                <p class="text-sm text-gray-900">{{ ticket.get_category_display|default:ticket.category }}</p>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Priority</label>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                                       {% if ticket.priority == 'high' %}bg-red-100 text-red-800
+                                       {% elif ticket.priority == 'medium' %}bg-yellow-100 text-yellow-800
+                                       {% else %}bg-green-100 text-green-800{% endif %}">
+                                    {% if ticket.priority == 'high' %}
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                                    {% elif ticket.priority == 'medium' %}
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                    {% else %}
+                                        <i class="fas fa-info-circle mr-1"></i>
+                                    {% endif %}
+                                    {{ ticket.get_priority_display|default:ticket.priority|title }}
+                                </span>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Created</label>
+                                <p class="text-sm text-gray-900">{{ ticket.created_at|date:"M d, Y \a\t H:i" }}</p>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Last Updated</label>
+                                <p class="text-sm text-gray-900">{{ ticket.updated_at|date:"M d, Y \a\t H:i" }}</p>
+                            </div>
+                            
+                            {% if ticket.assigned_to %}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Assigned To</label>
+                                <p class="text-sm text-gray-900">{{ ticket.assigned_to.get_full_name }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                            <i class="fas fa-bolt mr-2" style="color: #F5C400;"></i>
+                            Quick Actions
+                        </h3>
+                        
+                        <div class="space-y-3">
+                            {% if ticket.status != 'closed' %}
+                                <button onclick="markAsResolved()" class="w-full flex items-center justify-center px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors">
+                                    <i class="fas fa-check mr-2"></i>
+                                    Mark as Resolved
+                                </button>
+                            {% endif %}
+                            
+                            <a href="{% url 'student_portal:create_ticket' %}" class="w-full flex items-center justify-center px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
+                                <i class="fas fa-plus mr-2"></i>
+                                Create New Ticket
+                            </a>
+                            
+                            <button onclick="printTicket()" class="w-full flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                                <i class="fas fa-print mr-2"></i>
+                                Print Ticket
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Related Articles -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                            <i class="fas fa-lightbulb mr-2" style="color: #F5C400;"></i>
+                            Related Help
+                        </h3>
+                        
+                        <div class="space-y-3">
+                            <a href="#" class="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                <h4 class="text-sm font-medium text-gray-900">How to reset your password</h4>
+                                <p class="text-xs text-gray-600 mt-1">Step-by-step guide for password recovery</p>
+                            </a>
+                            
+                            <a href="#" class="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                <h4 class="text-sm font-medium text-gray-900">Account access issues</h4>
+                                <p class="text-xs text-gray-600 mt-1">Common solutions for login problems</p>
+                            </a>
+                            
+                            <a href="#" class="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                <h4 class="text-sm font-medium text-gray-900">Contact support directly</h4>
+                                <p class="text-xs text-gray-600 mt-1">Phone and email support options</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function markAsResolved() {
+    if (confirm('Are you sure you want to mark this ticket as resolved?')) {
+        // Add AJAX call to mark ticket as resolved
+        alert('This feature will be implemented with backend integration.');
+    }
+}
+
+function printTicket() {
+    window.print();
+}
+
+// Auto-refresh for new responses (optional)
+setInterval(function() {
+    // Check for new responses every 30 seconds
+    // This would be implemented with AJAX
+}, 30000);
+</script>
+
+<style>
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    body {
+        background: white !important;
+    }
+    
+    .bg-gray-50 {
+        background: white !important;
+    }
+}
+</style>
+{% endblock %}

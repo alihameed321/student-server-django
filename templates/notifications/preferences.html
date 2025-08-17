@@ -1,0 +1,151 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Notification Preferences - University Services{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">
+                            <i class="fas fa-cog mr-3" style="color: #102A71;"></i>
+                            Notification Preferences
+                        </h1>
+                        <p class="text-gray-600">Manage how you receive notifications from the university</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Settings -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">Email Notifications</h2>
+                <p class="text-sm text-gray-600">Choose which notifications you'd like to receive via email</p>
+            </div>
+            
+            <div class="p-6">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="space-y-6">
+                        <!-- Service Requests -->
+                        <div class="flex items-center justify-between py-4 border-b border-gray-100">
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-900">Service Request Updates</h3>
+                                <p class="text-sm text-gray-500">Get notified when your service requests are updated</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer" name="service_requests" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+
+                        <!-- Financial Updates -->
+                        <div class="flex items-center justify-between py-4 border-b border-gray-100">
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-900">Financial Updates</h3>
+                                <p class="text-sm text-gray-500">Receive notifications about fees, payments, and financial deadlines</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer" name="financial_updates" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+
+                        <!-- Academic Announcements -->
+                        <div class="flex items-center justify-between py-4 border-b border-gray-100">
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-900">Academic Announcements</h3>
+                                <p class="text-sm text-gray-500">Stay updated with important academic announcements</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer" name="academic_announcements" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+
+                        <!-- Support Tickets -->
+                        <div class="flex items-center justify-between py-4 border-b border-gray-100">
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-900">Support Ticket Updates</h3>
+                                <p class="text-sm text-gray-500">Get notified when support staff respond to your tickets</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer" name="support_tickets" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+
+                        <!-- Document Ready -->
+                        <div class="flex items-center justify-between py-4">
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-900">Document Ready</h3>
+                                <p class="text-sm text-gray-500">Be notified when your requested documents are ready for download</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer" name="document_ready" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Save Button -->
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <div class="flex justify-end">
+                            <button type="submit" class="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
+                                <i class="fas fa-save mr-2"></i>
+                                Save Preferences
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Notification Frequency -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 mt-6">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">Notification Frequency</h2>
+                <p class="text-sm text-gray-600">Control how often you receive notifications</p>
+            </div>
+            
+            <div class="p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="flex items-center">
+                            <input type="radio" name="frequency" value="immediate" class="mr-3" checked>
+                            <div>
+                                <span class="text-sm font-medium text-gray-900">Immediate</span>
+                                <p class="text-sm text-gray-500">Receive notifications as soon as they happen</p>
+                            </div>
+                        </label>
+                    </div>
+                    <div>
+                        <label class="flex items-center">
+                            <input type="radio" name="frequency" value="daily" class="mr-3">
+                            <div>
+                                <span class="text-sm font-medium text-gray-900">Daily Digest</span>
+                                <p class="text-sm text-gray-500">Receive a summary of notifications once per day</p>
+                            </div>
+                        </label>
+                    </div>
+                    <div>
+                        <label class="flex items-center">
+                            <input type="radio" name="frequency" value="weekly" class="mr-3">
+                            <div>
+                                <span class="text-sm font-medium text-gray-900">Weekly Summary</span>
+                                <p class="text-sm text-gray-500">Receive a weekly summary of all notifications</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

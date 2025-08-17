@@ -1,0 +1,240 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Student ID Card{% endblock %}
+
+{% block extra_css %}
+<style>
+    .id-card {
+        width: 340px;
+        height: 214px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        position: relative;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        overflow: hidden;
+        margin: 20px auto;
+        font-family: 'Arial', sans-serif;
+    }
+    
+    .id-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px);
+    }
+    
+    .card-header {
+        position: relative;
+        z-index: 2;
+        padding: 8px 15px;
+        color: white;
+        text-align: center;
+    }
+    
+    .university-name {
+        font-size: 12px;
+        font-weight: bold;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .card-title {
+        font-size: 10px;
+        margin: 2px 0 0 0;
+        opacity: 0.9;
+    }
+    
+    .card-body {
+        padding: 15px;
+        color: white;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .student-photo {
+        width: 80px;
+        height: 80px;
+        border-radius: 8px;
+        background: rgba(255,255,255,0.2);
+        float: left;
+        margin-right: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        text-align: center;
+        border: 2px solid rgba(255,255,255,0.3);
+    }
+    
+    .student-info {
+        overflow: hidden;
+    }
+    
+    .student-name {
+        font-size: 16px;
+        font-weight: bold;
+        margin: 0 0 5px 0;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+    
+    .student-details {
+        font-size: 11px;
+        line-height: 1.4;
+        opacity: 0.95;
+    }
+    
+    .student-details div {
+        margin-bottom: 2px;
+    }
+    
+    .card-footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 25px;
+        background: rgba(0,0,0,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 15px;
+        font-size: 9px;
+        color: rgba(255,255,255,0.8);
+    }
+    
+    .qr-code {
+        position: absolute;
+        bottom: 30px;
+        right: 15px;
+        width: 40px;
+        height: 40px;
+        background: white;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 8px;
+        color: #333;
+    }
+    
+    .card-actions {
+        text-align: center;
+        margin-top: 30px;
+    }
+    
+    .btn-download {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        margin: 0 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-download:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .card-container {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .page-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .page-header h1 {
+        color: #102A71;
+        margin-bottom: 10px;
+    }
+    
+    .page-header p {
+        color: #666;
+        margin: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="page-header">
+        <h1><i class="fas fa-id-card"></i> Student ID Card</h1>
+        <p>Your official university identification card</p>
+    </div>
+    
+    <div class="card-container">
+        <!-- Student ID Card -->
+        <div class="id-card">
+            <div class="card-header">
+                <h3 class="university-name">University Services</h3>
+                <p class="card-title">Student Identification Card</p>
+            </div>
+            
+            <div class="card-body">
+                <div class="student-photo">
+                    {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" alt="Student Photo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
+                    {% else %}
+                        <div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 10px; color: rgba(255,255,255,0.8);">
+                            <i class="fas fa-user" style="font-size: 20px;"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="student-info">
+                    <h4 class="student-name">{{ user.get_full_name|default:user.username }}</h4>
+                    <div class="student-details">
+                        <div><strong>ID:</strong> {{ user.university_id }}</div>
+                        <div><strong>Program:</strong> {{ user.studentprofile.program|default:"Not Set" }}</div>
+                        <div><strong>Level:</strong> {{ user.academic_level|default:"Not Set" }}</div>
+                        <div><strong>Year:</strong> {{ user.enrollment_year|default:"Not Set" }}</div>
+                    </div>
+                </div>
+                
+                <div class="qr-code">
+                    <div>QR</div>
+                </div>
+            </div>
+            
+            <div class="card-footer">
+                <span>Valid Until: Dec 2025</span>
+                <span>{{ user.user_type|title }}</span>
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="card-actions">
+            <a href="{% url 'accounts:download_digital_id' %}" class="btn-download">
+                <i class="fas fa-download"></i> Download PDF Report
+            </a>
+            <a href="{% url 'accounts:download_id_card' %}" class="btn-download">
+                <i class="fas fa-credit-card"></i> Download ID Card
+            </a>
+        </div>
+        
+        <!-- Back to Profile -->
+        <div class="text-center mt-4">
+            <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Profile
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

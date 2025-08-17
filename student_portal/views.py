@@ -323,3 +323,85 @@ def get_dashboard_stats(request):
     }
     
     return JsonResponse(stats)
+
+
+@login_required
+def my_requests(request):
+    """View all user requests"""
+    if not request.user.is_student:
+        messages.error(request, 'Access denied. Students only.')
+        return redirect('accounts:login')
+    
+    requests_list = ServiceRequest.objects.filter(
+        student=request.user
+    ).order_by('-created_at')
+    
+    # Pagination
+    paginator = Paginator(requests_list, 10)
+    page_number = request.GET.get('page')
+    requests = paginator.get_page(page_number)
+    
+    context = {
+        'requests': requests,
+    }
+    
+    return render(request, 'student_portal/my_requests.html', context)
+
+
+@login_required
+@require_http_methods(["GET"])
+def get_recent_requests(request):
+    """AJAX endpoint to get recent requests"""
+    if not request.user.is_student:
+        return JsonResponse({'error': 'Access denied'}, status=403)
+    
+    recent_requests = ServiceRequest.objects.filter(
+        student=request.user
+    ).order_by('-created_at')[:5]
+    
+    requests_data = []
+    for req in recent_requests:
+        requests_data.append({
+            'id': req.id,
+            'title': req.title,
+            'type': req.get_request_type_display(),
+            'status': req.get_status_display(),
+            'created_at': req.created_at.strftime('%b %d, %Y'),
+            'url': f'/student/requests/{req.id}/'
+        })
+    
+    return JsonResponse({'requests': requests_data})
+
+
+@login_required
+def documents(request):
+    """View for student documents page"""
+    if not request.user.is_student:
+        messages.error(request, 'Access denied. Students only.')
+        return redirect('accounts:login')
+    
+    documents = StudentDocument.objects.filter(
+        student=request.user
+    ).order_by('-issued_date')
+    
+    context = {
+        'documents': documents,
+    }
+    return render(request, 'student_portal/documents.html', context)
+
+
+@login_required
+def support(request):
+    """View for support center page"""
+    if not request.user.is_student:
+        messages.error(request, 'Access denied. Students only.')
+        return redirect('accounts:login')
+    
+    tickets = SupportTicket.objects.filter(
+        student=request.user
+    ).order_by('-created_at')
+    
+    context = {
+        'tickets': tickets,
+    }
+    return render(request, 'student_portal/support.html', context)

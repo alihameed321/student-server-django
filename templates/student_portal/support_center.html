@@ -1,0 +1,288 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Support Center - University Services{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">
+                            <i class="fas fa-headset mr-3" style="color: #102A71;"></i>
+                            Support Center
+                        </h1>
+                        <p class="text-gray-600">Get help with your academic services and technical issues</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                            <i class="fas fa-ticket-alt mr-2"></i>
+                            {{ tickets|length }} Ticket{{ tickets|length|pluralize }}
+                        </span>
+                        <a href="{% url 'student_portal:create_ticket' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
+                            <i class="fas fa-plus mr-2"></i>
+                            New Ticket
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="h-12 w-12 rounded-lg flex items-center justify-center" style="background-color: #102A71;">
+                            <i class="fas fa-question-circle text-white text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-medium text-gray-900">FAQ</h3>
+                        <p class="text-sm text-gray-500">Find answers to common questions</p>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <a href="#faq" class="text-sm font-medium text-blue-600 hover:text-blue-800">Browse FAQ →</a>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center">
+                            <i class="fas fa-phone text-green-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-medium text-gray-900">Call Support</h3>
+                        <p class="text-sm text-gray-500">Speak with our support team</p>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <p class="text-sm font-medium text-gray-900">+1 (555) 123-4567</p>
+                    <p class="text-xs text-gray-500">Mon-Fri 8AM-6PM</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="h-12 w-12 rounded-lg bg-yellow-100 flex items-center justify-center">
+                            <i class="fas fa-envelope text-yellow-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-medium text-gray-900">Email Support</h3>
+                        <p class="text-sm text-gray-500">Send us an email</p>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <p class="text-sm font-medium text-gray-900">support@university.edu</p>
+                    <p class="text-xs text-gray-500">Response within 24 hours</p>
+                </div>
+            </div>
+        </div>
+
+        {% if tickets %}
+        <!-- Support Tickets -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">Your Support Tickets</h2>
+                <p class="text-sm text-gray-600">Track the status of your support requests</p>
+            </div>
+            
+            <div class="overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Ticket
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Category
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Priority
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Created
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for ticket in tickets %}
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <div class="h-10 w-10 rounded-lg flex items-center justify-center" style="background-color: #102A71;">
+                                                <i class="fas fa-ticket-alt text-white"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">#{{ ticket.id }} - {{ ticket.subject }}</div>
+                                            <div class="text-sm text-gray-500">{{ ticket.description|truncatechars:50 }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        {{ ticket.get_category_display }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                        {% if ticket.priority == 'high' %}bg-red-100 text-red-800
+                                        {% elif ticket.priority == 'medium' %}bg-yellow-100 text-yellow-800
+                                        {% else %}bg-green-100 text-green-800{% endif %}">
+                                        {{ ticket.get_priority_display }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                        {% if ticket.status == 'open' %}bg-green-100 text-green-800
+                                        {% elif ticket.status == 'in_progress' %}bg-yellow-100 text-yellow-800
+                                        {% elif ticket.status == 'resolved' %}bg-blue-100 text-blue-800
+                                        {% elif ticket.status == 'closed' %}bg-gray-100 text-gray-800
+                                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                        <i class="fas fa-circle mr-1 text-xs"></i>
+                                        {{ ticket.get_status_display }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ ticket.created_at|date:"M d, Y" }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <a href="{% url 'student_portal:ticket_detail' ticket.id %}" class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
+                                        <i class="fas fa-eye mr-2"></i>
+                                        View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        {% if tickets.has_other_pages %}
+        <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-6 rounded-lg shadow-sm border border-gray-200">
+            <div class="flex-1 flex justify-between sm:hidden">
+                {% if tickets.has_previous %}
+                <a href="?page={{ tickets.previous_page_number }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Previous
+                </a>
+                {% endif %}
+                {% if tickets.has_next %}
+                <a href="?page={{ tickets.next_page_number }}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Next
+                </a>
+                {% endif %}
+            </div>
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700">
+                        Showing
+                        <span class="font-medium">{{ tickets.start_index }}</span>
+                        to
+                        <span class="font-medium">{{ tickets.end_index }}</span>
+                        of
+                        <span class="font-medium">{{ tickets.paginator.count }}</span>
+                        results
+                    </p>
+                </div>
+                <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        {% if tickets.has_previous %}
+                        <a href="?page={{ tickets.previous_page_number }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                        {% endif %}
+                        
+                        {% for num in tickets.paginator.page_range %}
+                            {% if tickets.number == num %}
+                            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium" style="background-color: #102A71; color: white;">
+                                {{ num }}
+                            </span>
+                            {% else %}
+                            <a href="?page={{ num }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                {{ num }}
+                            </a>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if tickets.has_next %}
+                        <a href="?page={{ tickets.next_page_number }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                        {% endif %}
+                    </nav>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <!-- Empty State -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="text-center py-12">
+                <div class="mx-auto h-24 w-24 text-gray-400 mb-4">
+                    <i class="fas fa-headset text-6xl"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">No Support Tickets</h3>
+                <p class="text-gray-500 mb-6">You haven't created any support tickets yet.</p>
+                <a href="{% url 'student_portal:create_ticket' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
+                    <i class="fas fa-plus mr-2"></i>
+                    Create Your First Ticket
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- FAQ Section -->
+        <div id="faq" class="bg-white rounded-lg shadow-sm border border-gray-200 mt-6">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">Frequently Asked Questions</h2>
+                <p class="text-sm text-gray-600">Find quick answers to common questions</p>
+            </div>
+            
+            <div class="p-6">
+                <div class="space-y-6">
+                    <div class="border-b border-gray-200 pb-6">
+                        <h3 class="text-sm font-medium text-gray-900 mb-2">How long does it take to process my request?</h3>
+                        <p class="text-sm text-gray-600">Most academic service requests are processed within 3-5 business days. Urgent requests may be expedited.</p>
+                    </div>
+                    
+                    <div class="border-b border-gray-200 pb-6">
+                        <h3 class="text-sm font-medium text-gray-900 mb-2">Can I cancel my request after submission?</h3>
+                        <p class="text-sm text-gray-600">Yes, you can cancel pending requests from your requests page. Once processing begins, cancellation may not be possible.</p>
+                    </div>
+                    
+                    <div class="border-b border-gray-200 pb-6">
+                        <h3 class="text-sm font-medium text-gray-900 mb-2">How do I download my documents?</h3>
+                        <p class="text-sm text-gray-600">Visit your Document Inbox to view and download all available documents. You'll receive an email notification when new documents are ready.</p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-900 mb-2">What if I need urgent assistance?</h3>
+                        <p class="text-sm text-gray-600">For urgent matters, please call our support line at +1 (555) 123-4567 or visit the Student Services Office in person.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

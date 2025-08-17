@@ -1,0 +1,136 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Financial Dashboard - My University Services{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">
+                            <i class="fas fa-chart-line mr-3" style="color: #102A71;"></i>
+                            Financial Dashboard
+                        </h1>
+                        <p class="text-gray-600 mt-2">Manage your university fees and payments</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm text-gray-500 mb-1">Academic Year</div>
+                        <div class="text-lg font-semibold text-gray-900">2024-2025</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Financial Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Total Fees -->
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Total Fees</p>
+                        <p class="text-2xl font-bold text-gray-900">${{ total_fees|default:"0" }}</p>
+                    </div>
+                    <div class="bg-blue-100 rounded-full p-3">
+                        <i class="fas fa-dollar-sign text-blue-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pending Payments -->
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Pending Payments</p>
+                        <p class="text-2xl font-bold text-red-600">${{ pending_payments|default:"0" }}</p>
+                    </div>
+                    <div class="bg-red-100 rounded-full p-3">
+                        <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Paid This Semester -->
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Paid This Semester</p>
+                        <p class="text-2xl font-bold text-green-600">$0</p>
+                    </div>
+                    <div class="bg-green-100 rounded-full p-3">
+                        <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Recent Transactions -->
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">
+                    <i class="fas fa-history mr-2" style="color: #102A71;"></i>
+                    Recent Transactions
+                </h2>
+                
+                {% if recent_transactions %}
+                    <div class="space-y-4">
+                        {% for transaction in recent_transactions %}
+                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-check text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">{{ transaction.description }}</p>
+                                        <p class="text-xs text-gray-500">{{ transaction.date }}</p>
+                                    </div>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">${{ transaction.amount }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-receipt text-3xl mb-3"></i>
+                        <p>No recent transactions</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">
+                    <i class="fas fa-bolt mr-2" style="color: #F5C400;"></i>
+                    Quick Actions
+                </h2>
+                
+                <div class="space-y-4">
+                    <a href="{% url 'financial:pay_fees' %}" class="block w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center py-3 px-4 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200">
+                        <i class="fas fa-credit-card mr-2"></i>
+                        Pay Fees
+                    </a>
+                    
+                    <button class="block w-full bg-gray-100 text-gray-700 text-center py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-download mr-2"></i>
+                        Download Statement
+                    </button>
+                    
+                    <button class="block w-full bg-gray-100 text-gray-700 text-center py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-calendar-alt mr-2"></i>
+                        Payment Schedule
+                    </button>
+                    
+                    <button class="block w-full bg-gray-100 text-gray-700 text-center py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-question-circle mr-2"></i>
+                        Financial Aid Info
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

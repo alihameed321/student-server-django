@@ -30,7 +30,9 @@ urlpatterns = [
     
     # Digital ID
     path('digital-id/', views.digital_id_view, name='digital_id'),
-    path('digital-id/generate-qr/', views.generate_qr_code, name='generate_qr_code'),
-    path('digital-id/regenerate/', views.regenerate_digital_id, name='regenerate_digital_id'),
-    path('digital-id/download/', views.download_digital_id, name='download_digital_id'),
+    path('student-id-card/', views.student_id_card_view, name='student_id_card'),
+    path('generate-qr/', views.generate_qr_code, name='generate_qr'),
+    path('regenerate-digital-id/', views.regenerate_digital_id, name='regenerate_digital_id'),
+    path('download-digital-id/', views.download_digital_id, name='download_digital_id'),
+    path('download-id-card/', views.download_id_card, name='download_id_card'),
 ]

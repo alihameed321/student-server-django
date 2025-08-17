@@ -296,7 +296,7 @@ class Command(BaseCommand):
                     title=f'{request_type.replace("_", " ").title()} Request',
                     description=f'Request for {request_type.replace("_", " ")} by {student.get_full_name()}',
                     status=status,
-                    priority=random.randint(1, 3),
+                    priority=random.choice(['low', 'medium', 'high']),
                     processed_by=random.choice(staff_users) if status != 'pending' else None,
                     created_at=timezone.now() - timedelta(days=random.randint(0, 30))
                 )

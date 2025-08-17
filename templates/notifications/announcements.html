@@ -1,0 +1,205 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Announcements - My University Services{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">
+                            <i class="fas fa-bullhorn mr-3" style="color: #102A71;"></i>
+                            Announcements
+                        </h1>
+                        <p class="text-gray-600 mt-2">Stay updated with the latest university news and announcements</p>
+                    </div>
+                    <a href="{% url 'student_portal:dashboard' %}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Filters -->
+        <div class="mb-6">
+            <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+                <div class="flex flex-wrap items-center gap-4">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-filter text-gray-500"></i>
+                        <span class="text-sm font-medium text-gray-700">Filter by category:</span>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors">
+                            All
+                        </button>
+                        {% for category in categories %}
+                        <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition-colors">
+                            {{ category }}
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Announcements List -->
+        <div class="space-y-6">
+            {% if announcements %}
+                {% for announcement in announcements %}
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center" 
+                                     style="background: linear-gradient(135deg, #102A71 0%, #1a3a8a 100%);">
+                                    <i class="fas fa-bullhorn text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">{{ announcement.title }}</h3>
+                                    <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                        <span>
+                                            <i class="fas fa-calendar mr-1"></i>
+                                            {{ announcement.created_at|date:"M d, Y" }}
+                                        </span>
+                                        <span>
+                                            <i class="fas fa-user mr-1"></i>
+                                            {{ announcement.author }}
+                                        </span>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                                               {% if announcement.category == 'Emergency' %}bg-red-100 text-red-800
+                                               {% elif announcement.category == 'Academic' %}bg-blue-100 text-blue-800
+                                               {% elif announcement.category == 'Events' %}bg-green-100 text-green-800
+                                               {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                            {{ announcement.category }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if announcement.is_urgent %}
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                <i class="fas fa-exclamation-triangle mr-1"></i>
+                                Urgent
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="prose max-w-none text-gray-700 mb-4">
+                            {{ announcement.content|truncatewords:50 }}
+                        </div>
+                        
+                        {% if announcement.attachments %}
+                        <div class="mb-4">
+                            <h4 class="text-sm font-medium text-gray-700 mb-2">Attachments:</h4>
+                            <div class="flex flex-wrap gap-2">
+                                {% for attachment in announcement.attachments %}
+                                <a href="{{ attachment.url }}" class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+                                    <i class="fas fa-paperclip mr-1"></i>
+                                    {{ attachment.name }}
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                            <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                <span>
+                                    <i class="fas fa-eye mr-1"></i>
+                                    {{ announcement.views_count }} views
+                                </span>
+                                {% if announcement.comments_count %}
+                                <span>
+                                    <i class="fas fa-comment mr-1"></i>
+                                    {{ announcement.comments_count }} comments
+                                </span>
+                                {% endif %}
+                            </div>
+                            <button class="inline-flex items-center px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
+                                <i class="fas fa-external-link-alt mr-1"></i>
+                                Read More
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <!-- Empty State -->
+                <div class="bg-white rounded-xl shadow-sm p-12 text-center border border-gray-100">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" 
+                         style="background: linear-gradient(135deg, #102A71 0%, #1a3a8a 100%);">
+                        <i class="fas fa-bullhorn text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">No Announcements Yet</h3>
+                    <p class="text-gray-600 mb-6">There are currently no announcements to display. Check back later for updates.</p>
+                    <a href="{% url 'student_portal:dashboard' %}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back to Dashboard
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if announcements %}
+        <div class="mt-8 flex justify-center">
+            <nav class="flex items-center space-x-2">
+                <button class="px-3 py-2 text-sm bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="fas fa-chevron-left mr-1"></i>
+                    Previous
+                </button>
+                <button class="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg">1</button>
+                <button class="px-3 py-2 text-sm bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">2</button>
+                <button class="px-3 py-2 text-sm bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">3</button>
+                <button class="px-3 py-2 text-sm bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                    Next
+                    <i class="fas fa-chevron-right ml-1"></i>
+                </button>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Sample Data for Demo (Remove when real data is available) -->
+<script>
+// This script can be used to simulate announcements for demo purposes
+// Remove when real announcement data is implemented
+const sampleAnnouncements = [
+    {
+        title: "Spring Semester Registration Opens",
+        content: "Registration for Spring 2024 semester will begin on November 15th. Students are advised to meet with their academic advisors before registration.",
+        category: "Academic",
+        author: "Registrar's Office",
+        created_at: "2023-11-01",
+        is_urgent: false,
+        views_count: 245,
+        comments_count: 12
+    },
+    {
+        title: "Campus Safety Alert",
+        content: "Due to severe weather conditions, all classes scheduled for today have been cancelled. The campus will remain open for essential services only.",
+        category: "Emergency",
+        author: "Campus Security",
+        created_at: "2023-11-05",
+        is_urgent: true,
+        views_count: 892,
+        comments_count: 3
+    },
+    {
+        title: "Annual Science Fair - Call for Participants",
+        content: "The annual university science fair will be held on December 10th. Students from all departments are invited to participate and showcase their research projects.",
+        category: "Events",
+        author: "Student Affairs",
+        created_at: "2023-10-28",
+        is_urgent: false,
+        views_count: 156,
+        comments_count: 8
+    }
+];
+</script>
+{% endblock %}

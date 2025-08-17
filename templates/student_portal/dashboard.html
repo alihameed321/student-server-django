@@ -66,14 +66,14 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-white text-sm font-medium opacity-90">Pending Requests</p>
-                <p class="text-3xl font-bold text-white" x-text="pendingRequests">0</p>
-                <div class="mt-4">
+                        <p class="text-3xl font-bold text-white" x-text="pendingRequests">0</p>
+                    </div>
                     <div class="bg-white bg-opacity-20 rounded-full p-3">
                         <i class="fas fa-clock text-2xl"></i>
                     </div>
                 </div>
                 <div class="mt-4">
-                    <a href="{% url 'student_portal:my_requests' %}" class="text-white hover:text-yellow-200 text-sm font-medium opacity-90">
+                    <a href="{% url 'student_portal:eservices_center' %}" class="text-white hover:text-yellow-200 text-sm font-medium opacity-90">
                         View all requests →
                     </a>
                 </div>
@@ -102,8 +102,8 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-white text-sm font-medium opacity-90">New Documents</p>
-                <p class="text-3xl font-bold text-white" x-text="newDocuments">0</p>
-                <div class="mt-4">
+                        <p class="text-3xl font-bold text-white" x-text="newDocuments">0</p>
+                    </div>
                     <div class="bg-white bg-opacity-20 rounded-full p-3">
                         <i class="fas fa-file-alt text-2xl"></i>
                     </div>
@@ -120,8 +120,8 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-white text-sm font-medium opacity-90">Notifications</p>
-                <p class="text-3xl font-bold text-white" x-text="notifications">0</p>
-                <div class="mt-4">
+                        <p class="text-3xl font-bold text-white" x-text="notifications">0</p>
+                    </div>
                     <div class="bg-white bg-opacity-20 rounded-full p-3">
                         <i class="fas fa-bell text-2xl"></i>
                     </div>
@@ -152,14 +152,14 @@
                             <span class="text-sm font-medium text-gray-700 text-center">New Request</span>
                         </a>
                         
-                        <a href="{% url 'financial:pay_fees' %}" class="group flex flex-col items-center p-4 rounded-lg transition-colors" style="background-color: rgba(245, 196, 0, 0.1); hover:background-color: rgba(245, 196, 0, 0.2);">
+                        <a href="{% url 'financial:pay_fees' %}" class="group flex flex-col items-center p-4 rounded-lg transition-colors bg-yellow-50 hover:bg-yellow-100">
                             <div class="text-white rounded-full p-3 mb-3 transition-colors" style="background-color: #F5C400; group-hover:background-color: #e6b000;">
                                 <i class="fas fa-credit-card text-lg"></i>
                             </div>
                             <span class="text-sm font-medium text-gray-700 text-center">Pay Fees</span>
                         </a>
                         
-                        <a href="{% url 'student_portal:support' %}" class="group flex flex-col items-center p-4 rounded-lg transition-colors" style="background-color: rgba(16, 42, 113, 0.1); hover:background-color: rgba(16, 42, 113, 0.2);">
+                        <a href="{% url 'student_portal:support' %}" class="group flex flex-col items-center p-4 rounded-lg transition-colors" style="background-color: rgba(16, 42, 113, 0.1); hover:background-color rgba(16, 42, 113, 0.2);">
                             <div class="text-white rounded-full p-3 mb-3 transition-colors" style="background-color: #102A71; group-hover:background-color: #0d2159;">
                                 <i class="fas fa-headset text-lg"></i>
                             </div>
@@ -167,7 +167,7 @@
                         </a>
                         
                         <a href="{% url 'accounts:profile' %}" class="group flex flex-col items-center p-4 rounded-lg transition-colors" style="background-color: rgba(245, 196, 0, 0.1); hover:background-color: rgba(245, 196, 0, 0.2);">
-                            <div class="text-white rounded-full p-3 mb-3 transition-colors" style="background-color: #F5C400; group-hover:background-color: #e6b000;">
+                            <div class="text-white rounded-full p-3 mb-3 transition-colors" style="background-color: #F5C400; group-hover:background-color #e6b000;">
                                 <i class="fas fa-user-edit text-lg"></i>
                             </div>
                             <span class="text-sm font-medium text-gray-700 text-center">Edit Profile</span>
@@ -182,9 +182,9 @@
                             <i class="fas fa-clipboard-list mr-2" style="color: #102A71;"></i>
                             Recent Requests
                         </h2>
-                        <a href="{% url 'student_portal:my_requests' %}" class="text-sm font-medium hover:underline" style="color: #102A71; hover:color: #F5C400;">
-                            View all
-                        </a>
+                        <a href="{% url 'student_portal:eservices_center' %}" class="text-sm font-medium hover:underline" style="color: #102A71; hover:color: #F5C400;">
+                                View all requests
+                            </a>
                     </div>
                     
                     <div class="space-y-4" x-show="!loadingRequests">

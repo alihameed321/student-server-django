@@ -1,0 +1,223 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}My Requests - My University Services{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                            <i class="fas fa-list-alt mr-3" style="color: #102A71;"></i>
+                            My Requests
+                        </h1>
+                        <p class="text-gray-600">Track all your submitted service requests</p>
+                    </div>
+                    <a href="{% url 'student_portal:create_request' %}" class="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
+                        <i class="fas fa-plus mr-2"></i>
+                        New Request
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="mb-6">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-1">
+                <nav class="flex space-x-1">
+                    <button class="flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors text-white" style="background-color: #102A71;" onclick="filterRequests('all')">
+                        All Requests
+                    </button>
+                    <button class="flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors text-gray-600 hover:text-gray-900 hover:bg-gray-100" onclick="filterRequests('pending')">
+                        Pending
+                    </button>
+                    <button class="flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors text-gray-600 hover:text-gray-900 hover:bg-gray-100" onclick="filterRequests('in_review')">
+                        In Review
+                    </button>
+                    <button class="flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors text-gray-600 hover:text-gray-900 hover:bg-gray-100" onclick="filterRequests('completed')">
+                        Completed
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Requests List -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+            {% if requests %}
+                <div class="divide-y divide-gray-200">
+                    {% for request in requests %}
+                        <div class="p-6 request-item" data-status="{{ request.status }}">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="p-3 rounded-lg" style="background-color: rgba(16, 42, 113, 0.1);">
+                                        {% if request.request_type == 'enrollment_certificate' %}
+                                            <i class="fas fa-certificate text-xl" style="color: #102A71;"></i>
+                                        {% elif request.request_type == 'transcript' %}
+                                            <i class="fas fa-file-alt text-xl" style="color: #102A71;"></i>
+                                        {% elif request.request_type == 'schedule_modification' %}
+                                            <i class="fas fa-calendar-alt text-xl" style="color: #102A71;"></i>
+                                        {% elif request.request_type == 'graduation_certificate' %}
+                                            <i class="fas fa-graduation-cap text-xl" style="color: #102A71;"></i>
+                                        {% elif request.request_type == 'semester_postponement' %}
+                                            <i class="fas fa-pause-circle text-xl" style="color: #102A71;"></i>
+                                        {% else %}
+                                            <i class="fas fa-file text-xl" style="color: #102A71;"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900">{{ request.title }}</h3>
+                                        <p class="text-sm text-gray-600 mb-1">{{ request.get_request_type_display }}</p>
+                                        <p class="text-sm text-gray-500">
+                                            Submitted: {{ request.created_at|date:"M d, Y \a\t H:i" }}
+                                            {% if request.processed_by %}
+                                                • Processed by: {{ request.processed_by.get_full_name }}
+                                            {% endif %}
+                                        </p>
+                                        {% if request.description %}
+                                            <p class="text-sm text-gray-600 mt-2">{{ request.description|truncatewords:20 }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <div class="text-right">
+                                        <span class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full
+                                            {% if request.status == 'pending' %}
+                                                bg-yellow-100 text-yellow-800
+                                            {% elif request.status == 'in_review' %}
+                                                bg-blue-100 text-blue-800
+                                            {% elif request.status == 'approved' %}
+                                                bg-green-100 text-green-800
+                                            {% elif request.status == 'completed' %}
+                                                bg-green-100 text-green-800
+                                            {% elif request.status == 'rejected' %}
+                                                bg-red-100 text-red-800
+                                            {% endif %}
+                                        ">
+                                            <i class="fas fa-circle text-xs mr-2"></i>
+                                            {{ request.get_status_display }}
+                                        </span>
+                                        {% if request.priority %}
+                                            <div class="text-xs text-gray-500 mt-1">
+                                                Priority: 
+                                                {% if request.priority == 'high' %}
+                                                    <span class="text-red-600 font-medium">High</span>
+                                                {% elif request.priority == 'medium' %}
+                                                    <span class="text-yellow-600 font-medium">Medium</span>
+                                                {% else %}
+                                                    <span class="text-green-600 font-medium">Low</span>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex flex-col space-y-2">
+                                        <a href="{% url 'student_portal:request_detail' request.id %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
+                                            <i class="fas fa-eye mr-2"></i>
+                                            View Details
+                                        </a>
+                                        {% if request.status == 'pending' %}
+                                            <button onclick="cancelRequest({{ request.id }})" class="inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
+                                                <i class="fas fa-times mr-2"></i>
+                                                Cancel
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                {% if requests.has_other_pages %}
+                    <div class="flex justify-center py-6 border-t border-gray-200">
+                        <nav class="flex space-x-2">
+                            {% if requests.has_previous %}
+                                <a href="?page={{ requests.previous_page_number }}" class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                                    <i class="fas fa-chevron-left mr-1"></i>
+                                    Previous
+                                </a>
+                            {% endif %}
+                            
+                            <span class="px-4 py-2 text-sm font-medium text-white rounded-md" style="background-color: #102A71;">
+                                Page {{ requests.number }} of {{ requests.paginator.num_pages }}
+                            </span>
+                            
+                            {% if requests.has_next %}
+                                <a href="?page={{ requests.next_page_number }}" class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                                    Next
+                                    <i class="fas fa-chevron-right ml-1"></i>
+                                </a>
+                            {% endif %}
+                        </nav>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-16">
+                    <i class="fas fa-clipboard-list text-6xl text-gray-300 mb-6"></i>
+                    <h3 class="text-xl font-medium text-gray-900 mb-2">No requests found</h3>
+                    <p class="text-gray-600 mb-8">You haven't submitted any service requests yet.</p>
+                    <a href="{% url 'student_portal:create_request' %}" class="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
+                        <i class="fas fa-plus mr-2"></i>
+                        Create Your First Request
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function filterRequests(status) {
+        const items = document.querySelectorAll('.request-item');
+        const buttons = document.querySelectorAll('nav button');
+        
+        // Reset button styles
+        buttons.forEach(btn => {
+            btn.className = 'flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors text-gray-600 hover:text-gray-900 hover:bg-gray-100';
+        });
+        
+        // Set active button
+        event.target.className = 'flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors text-white';
+        event.target.style.backgroundColor = '#102A71';
+        
+        // Filter items
+        items.forEach(item => {
+            if (status === 'all' || item.dataset.status === status) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+    
+    function cancelRequest(requestId) {
+        if (confirm('Are you sure you want to cancel this request?')) {
+            fetch(`/student/requests/${requestId}/cancel/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.error || 'Unable to cancel request'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while canceling the request.');
+            });
+        }
+    }
+</script>
+{% endblock %}

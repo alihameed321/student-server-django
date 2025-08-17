@@ -1,0 +1,238 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}My Documents - My University Services{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                            <i class="fas fa-folder-open mr-3" style="color: #102A71;"></i>
+                            My Documents
+                        </h1>
+                        <p class="text-gray-600">Access and download your official university documents</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button onclick="refreshDocuments()" class="inline-flex items-center px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                            <i class="fas fa-sync-alt mr-2"></i>
+                            Refresh
+                        </button>
+                        <a href="{% url 'student_portal:create_request' %}" class="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
+                            <i class="fas fa-plus mr-2"></i>
+                            Request Document
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Document Categories -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Certificates -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center mb-4">
+                    <div class="p-3 rounded-lg" style="background-color: rgba(16, 42, 113, 0.1);">
+                        <i class="fas fa-certificate text-2xl" style="color: #102A71;"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Certificates</h3>
+                        <p class="text-sm text-gray-600">Official university certificates</p>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    {% for doc in documents %}
+                        {% if doc.document_type == 'enrollment_certificate' or doc.document_type == 'graduation_certificate' %}
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <i class="fas fa-file-pdf text-red-500 mr-3"></i>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">{{ doc.get_document_type_display }}</p>
+                                        <p class="text-xs text-gray-500">{{ doc.issued_date|date:"M d, Y" }}</p>
+                                    </div>
+                                </div>
+                                <a href="{{ doc.file.url }}" target="_blank" class="text-blue-600 hover:text-blue-800">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% empty %}
+                        <p class="text-sm text-gray-500 text-center py-4">No certificates available</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Academic Records -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center mb-4">
+                    <div class="p-3 rounded-lg" style="background-color: rgba(16, 42, 113, 0.1);">
+                        <i class="fas fa-file-alt text-2xl" style="color: #102A71;"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Academic Records</h3>
+                        <p class="text-sm text-gray-600">Transcripts and grade reports</p>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    {% for doc in documents %}
+                        {% if doc.document_type == 'transcript' or doc.document_type == 'grade_report' %}
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <i class="fas fa-file-pdf text-red-500 mr-3"></i>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">{{ doc.get_document_type_display }}</p>
+                                        <p class="text-xs text-gray-500">{{ doc.issued_date|date:"M d, Y" }}</p>
+                                    </div>
+                                </div>
+                                <a href="{{ doc.file.url }}" target="_blank" class="text-blue-600 hover:text-blue-800">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% empty %}
+                        <p class="text-sm text-gray-500 text-center py-4">No academic records available</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Other Documents -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center mb-4">
+                    <div class="p-3 rounded-lg" style="background-color: rgba(16, 42, 113, 0.1);">
+                        <i class="fas fa-folder text-2xl" style="color: #102A71;"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Other Documents</h3>
+                        <p class="text-sm text-gray-600">Additional university documents</p>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    {% for doc in documents %}
+                        {% if doc.document_type not in 'enrollment_certificate,graduation_certificate,transcript,grade_report' %}
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <i class="fas fa-file-pdf text-red-500 mr-3"></i>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">{{ doc.get_document_type_display }}</p>
+                                        <p class="text-xs text-gray-500">{{ doc.issued_date|date:"M d, Y" }}</p>
+                                    </div>
+                                </div>
+                                <a href="{{ doc.file.url }}" target="_blank" class="text-blue-600 hover:text-blue-800">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% empty %}
+                        <p class="text-sm text-gray-500 text-center py-4">No other documents available</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- All Documents Table -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-900">All Documents</h2>
+                <p class="text-gray-600 mt-1">Complete list of your university documents</p>
+            </div>
+            
+            {% if documents %}
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Document
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Type
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Issued Date
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for doc in documents %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-file-pdf text-red-500 mr-3"></i>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900">{{ doc.title|default:doc.get_document_type_display }}</div>
+                                                {% if doc.description %}
+                                                    <div class="text-sm text-gray-500">{{ doc.description|truncatewords:10 }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            {{ doc.get_document_type_display }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ doc.issued_date|date:"M d, Y" }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                            {% if doc.is_verified %}
+                                                bg-green-100 text-green-800
+                                            {% else %}
+                                                bg-yellow-100 text-yellow-800
+                                            {% endif %}
+                                        ">
+                                            <i class="fas fa-circle text-xs mr-1"></i>
+                                            {% if doc.is_verified %}Verified{% else %}Pending{% endif %}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <a href="{{ doc.file.url }}" target="_blank" class="text-blue-600 hover:text-blue-900">
+                                                <i class="fas fa-eye mr-1"></i>
+                                                View
+                                            </a>
+                                            <a href="{{ doc.file.url }}" download class="text-green-600 hover:text-green-900">
+                                                <i class="fas fa-download mr-1"></i>
+                                                Download
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-16">
+                    <i class="fas fa-folder-open text-6xl text-gray-300 mb-6"></i>
+                    <h3 class="text-xl font-medium text-gray-900 mb-2">No documents found</h3>
+                    <p class="text-gray-600 mb-8">You don't have any documents yet. Request official documents through our services.</p>
+                    <a href="{% url 'student_portal:create_request' %}" class="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
+                        <i class="fas fa-plus mr-2"></i>
+                        Request Your First Document
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function refreshDocuments() {
+        location.reload();
+    }
+</script>
+{% endblock %}

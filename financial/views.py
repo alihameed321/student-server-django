@@ -19,3 +19,20 @@ class FinancialDashboardView(LoginRequiredMixin, TemplateView):
         })
         
         return context
+
+
+class PayFeesView(LoginRequiredMixin, TemplateView):
+    """Pay fees view"""
+    template_name = 'financial/pay_fees.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Add fee information here
+        context.update({
+            'outstanding_fees': 0,
+            'payment_methods': ['Credit Card', 'Bank Transfer', 'Online Banking'],
+            'fee_breakdown': [],
+        })
+        
+        return context

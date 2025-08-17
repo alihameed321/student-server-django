@@ -1,0 +1,227 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Profile - My University Services{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">
+                            <i class="fas fa-user mr-3" style="color: #102A71;"></i>
+                            My Profile
+                        </h1>
+                        <p class="text-gray-600 mt-2">Manage your personal information and account settings</p>
+                    </div>
+                    <a href="{% url 'student_portal:dashboard' %}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Profile Picture and Basic Info -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="text-center">
+                        <!-- Profile Picture -->
+                        <div class="mb-6">
+                            {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="w-32 h-32 rounded-full mx-auto object-cover border-4" style="border-color: rgba(245, 196, 0, 0.3);">
+                            {% else %}
+                                <div class="w-32 h-32 rounded-full mx-auto flex items-center justify-center" style="background: linear-gradient(135deg, #102A71 0%, #1a3a8a 100%);">
+                                    <i class="fas fa-user text-white text-4xl"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Basic Info -->
+                        <h2 class="text-xl font-bold text-gray-900 mb-2">{{ user.get_full_name|default:user.username }}</h2>
+                        <p class="text-gray-600 mb-1">{{ user.email }}</p>
+                        <p class="text-sm text-gray-500 mb-4">ID: {{ user.university_id }}</p>
+                        
+                        <!-- Status Badge -->
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                            <i class="fas fa-check-circle mr-1"></i>
+                            Active Student
+                        </span>
+                        
+                        <!-- Quick Actions -->
+                        <div class="mt-6 space-y-3">
+                            <button class="w-full flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-camera mr-2"></i>
+                                Change Photo
+                            </button>
+                            <a href="{% url 'accounts:student_id_card' %}" class="w-full flex items-center justify-center px-4 py-2 text-white rounded-lg hover:opacity-90 transition-colors" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <i class="fas fa-credit-card mr-2"></i>
+                                Student ID Card
+                            </a>
+                            <a href="{% url 'accounts:digital_id' %}" class="w-full flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                                <i class="fas fa-id-card mr-2"></i>
+                                Digital ID Report
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Profile Details -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Personal Information -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            <i class="fas fa-user-circle mr-2" style="color: #102A71;"></i>
+                            Personal Information
+                        </h3>
+                        <button class="inline-flex items-center px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
+                            <i class="fas fa-edit mr-1"></i>
+                            Edit
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.first_name|default:"Not provided" }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.last_name|default:"Not provided" }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.email }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.phone_number|default:"Not provided" }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.date_of_birth|date:"M d, Y"|default:"Not provided" }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">University ID</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.university_id }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Academic Information -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            <i class="fas fa-graduation-cap mr-2" style="color: #F5C400;"></i>
+                            Academic Information
+                        </h3>
+                        <button class="inline-flex items-center px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
+                            <i class="fas fa-edit mr-1"></i>
+                            Edit
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Program/Major</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.major|default:"Not provided" }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Academic Level</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.get_academic_level_display|default:"Not provided" }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Enrollment Year</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.enrollment_year|default:"Not provided" }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.department|default:"Not provided" }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Account Settings -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-6">
+                        <i class="fas fa-cog mr-2" style="color: #102A71;"></i>
+                        Account Settings
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-900">Change Password</h4>
+                                <p class="text-sm text-gray-500">Update your account password</p>
+                            </div>
+                            <a href="{% url 'accounts:change_password' %}" class="inline-flex items-center px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
+                                <i class="fas fa-key mr-1"></i>
+                                Change
+                            </a>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-900">Notification Preferences</h4>
+                                <p class="text-sm text-gray-500">Manage your notification settings</p>
+                            </div>
+                            <a href="{% url 'notifications:notification_preferences' %}" class="inline-flex items-center px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
+                                <i class="fas fa-bell mr-1"></i>
+                                Manage
+                            </a>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-900">Privacy Settings</h4>
+                                <p class="text-sm text-gray-500">Control your privacy preferences</p>
+                            </div>
+                            <button class="inline-flex items-center px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
+                                <i class="fas fa-shield-alt mr-1"></i>
+                                Manage
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Account Activity -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-6">
+                        <i class="fas fa-history mr-2" style="color: #F5C400;"></i>
+                        Recent Activity
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-sign-in-alt text-green-600 text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">Logged in</p>
+                                <p class="text-xs text-gray-500">{{ user.last_login|date:"M d, Y \a\t H:i"|default:"Never" }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user-plus text-blue-600 text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">Account created</p>
+                                <p class="text-xs text-gray-500">{{ user.date_joined|date:"M d, Y" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
