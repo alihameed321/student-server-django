@@ -1,0 +1,46 @@
+# Django and Core Dependencies
+Django==4.2.7
+psycopg2-binary==2.9.7
+Pillow==10.0.1
+
+# Celery and Redis for Background Tasks
+celery==5.3.4
+redis==5.0.1
+
+# Additional Utilities
+django-crispy-forms==2.1
+crispy-tailwind==0.5.0
+django-extensions==3.2.3
+django-debug-toolbar==4.2.0
+
+# QR Code Generation
+qrcode==7.4.2
+
+# PDF Generation
+reportlab==4.0.7
+weasyprint==60.2
+
+# Excel/CSV Export
+openpyxl==3.1.2
+django-import-export==3.3.1
+
+# Environment Variables
+python-decouple==3.8
+
+# Development Dependencies
+django-cors-headers==4.3.1
+whitenoise==6.6.0
+
+# Testing
+pytest==7.4.3
+pytest-django==4.7.0
+factory-boy==3.3.0
+
+# Code Quality
+flake8==6.1.0
+black==23.10.1
+isort==5.12.0
+
+# Security
+django-ratelimit==4.1.0
+django-axes==6.1.1

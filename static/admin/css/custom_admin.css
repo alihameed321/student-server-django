@@ -1,0 +1,265 @@
+/* University Services Admin Custom Styling */
+/* Main Colors: Blue #102A71, Yellow #F5C400 */
+
+/* Header Styling */
+#header {
+    background: linear-gradient(135deg, #102A71 0%, #1a3a8a 100%);
+    color: white;
+}
+
+#header h1, #header h1 a:link, #header h1 a:visited {
+    color: white;
+}
+
+#header a:link, #header a:visited {
+    color: #F5C400;
+}
+
+#header a:focus, #header a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+    background: #0960b7;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.breadcrumbs a {
+    color: #102A71;
+}
+
+.breadcrumbs a:hover {
+    color: #F5C400;
+}
+
+/* Navigation */
+#nav-sidebar {
+    background: #0960b7;
+    border-right: 1px solid #dee2e6;
+}
+
+#nav-sidebar .module th {
+    background: #102A71;
+    color: white;
+}
+
+#nav-sidebar .module th a {
+    color: white;
+}
+
+#nav-sidebar .module th a:hover {
+    color: #F5C400;
+}
+
+/* Buttons */
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+    background: #102A71;
+    border: 1px solid #102A71;
+    color: white;
+}
+
+.button:hover, input[type=submit]:hover, input[type=button]:hover, .submit-row input:hover, a.button:hover {
+    background: #0d2159;
+    border-color: #0d2159;
+}
+
+.button.default, input[type=submit].default, .submit-row input.default {
+    background: #F5C400;
+    border-color: #F5C400;
+    color: #102A71;
+    font-weight: bold;
+}
+
+.button.default:hover, input[type=submit].default:hover, .submit-row input.default:hover {
+    background: #e6b000;
+    border-color: #e6b000;
+}
+
+/* Links */
+a:link, a:visited {
+    color: #102A71;
+}
+
+a:focus, a:hover {
+    color: #F5C400;
+}
+
+/* Tables */
+.results th {
+    background: #102A71;
+    color: white;
+}
+
+.results th a:link, .results th a:visited {
+    color: white;
+}
+
+.results th a:hover {
+    color: #F5C400;
+}
+
+/* Form styling */
+.form-row .help {
+    color: #6c757d;
+}
+
+/* Status badges - already styled in admin.py files */
+
+/* Module headers */
+.module h2, .module caption, .inline-group h2 {
+    background: #102A71;
+    color: white;
+}
+
+/* Fieldset headers */
+fieldset h2 {
+    background: #0960b7;
+    color: #102A71;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Calendar widget */
+.calendarbox h2 {
+    background: #102A71;
+    color: white;
+}
+
+.calendar td a {
+    color: #102A71;
+}
+
+.calendar td a:hover {
+    background: #F5C400;
+    color: #102A71;
+}
+
+/* Pagination */
+.paginator a:link, .paginator a:visited {
+    background: #102A71;
+    color: white;
+    border: 1px solid #102A71;
+}
+
+.paginator a:hover {
+    background: #F5C400;
+    color: #102A71;
+    border-color: #F5C400;
+}
+
+.paginator .this-page {
+    background: #F5C400;
+    color: #102A71;
+    border: 1px solid #F5C400;
+}
+
+/* Search */
+#searchbar {
+    border: 1px solid #102A71;
+}
+
+#searchbar:focus {
+    border-color: #F5C400;
+    box-shadow: 0 0 0 2px rgba(245, 196, 0, 0.25);
+}
+
+/* Action buttons */
+.actions select {
+    border: 1px solid #102A71;
+}
+
+.actions .button {
+    background: #F5C400;
+    color: #102A71;
+    border-color: #F5C400;
+}
+
+.actions .button:hover {
+    background: #e6b000;
+    border-color: #e6b000;
+}
+
+/* Dashboard modules */
+.dashboard .module table th {
+    background: #102A71;
+    color: white;
+}
+
+.dashboard .module table th a {
+    color: white;
+}
+
+.dashboard .module table th a:hover {
+    color: #F5C400;
+}
+
+/* Error and success messages */
+.messagelist .success {
+    background: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.messagelist .warning {
+    background: #fff3cd;
+    border-color: #ffeaa7;
+    color: #856404;
+}
+
+.messagelist .error {
+    background: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+/* Custom badge styles for consistency */
+.status-badge {
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: bold;
+    color: white;
+    display: inline-block;
+}
+
+.status-badge.active {
+    background-color: #102A71;
+}
+
+.status-badge.inactive {
+    background-color: #6c757d;
+}
+
+.status-badge.pending {
+    background-color: #F5C400;
+}
+
+.status-badge.verified {
+    background-color: #102A71;
+}
+
+.status-badge.primary {
+    background-color: #102A71;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .status-badge {
+        font-size: 10px;
+        padding: 2px 6px;
+    }
+}
+
+/* Print styles */
+@media print {
+    #header {
+        background: #102A71 !important;
+        -webkit-print-color-adjust: exact;
+    }
+    
+    .status-badge {
+        border: 1px solid #000;
+        -webkit-print-color-adjust: exact;
+    }
+}

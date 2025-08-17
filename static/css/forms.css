@@ -1,0 +1,43 @@
+/* University Forms Styling */
+
+/* Focus ring colors for form inputs */
+.w-full.focus\:ring-blue-500:focus {
+    --tw-ring-color: #102A71 !important;
+    border-color: #102A71 !important;
+}
+
+/* Custom focus styles for university forms */
+.univ-form-input {
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.univ-form-input:focus {
+    outline: none;
+    border-color: #102A71;
+    box-shadow: 0 0 0 3px rgba(16, 42, 113, 0.1);
+}
+
+/* Button styles with university colors */
+.univ-btn-primary {
+    background-color: #102A71;
+    color: white;
+    border: 1px solid #102A71;
+    transition: all 0.15s ease-in-out;
+}
+
+.univ-btn-primary:hover {
+    background-color: #0d2159;
+    border-color: #0d2159;
+}
+
+.univ-btn-secondary {
+    background-color: #F5C400;
+    color: #102A71;
+    border: 1px solid #F5C400;
+    transition: all 0.15s ease-in-out;
+}
+
+.univ-btn-secondary:hover {
+    background-color: #e6b000;
+    border-color: #e6b000;
+}

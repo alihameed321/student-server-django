@@ -1,0 +1,61 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('University Services Admin') }}{% endblock %}
+
+{% block branding %}
+<div style="display: flex; align-items: center; padding: 10px 20px;">
+    <img src="{% static 'images/logo.png' %}" alt="University Logo" style="height: 40px; margin-right: 15px;">
+    <h1 id="site-name" style="margin: 0; color: white; font-size: 24px; font-weight: bold;">
+        <a href="{% url 'admin:index' %}" style="color: white; text-decoration: none;">
+            University Services Administration
+        </a>
+    </h1>
+</div>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'admin/css/custom_admin.css' %}">
+<style>
+    /* Additional logo and branding styles */
+    #header {
+        background: linear-gradient(135deg, #102A71 0%, #1a3a8a 100%);
+        min-height: 60px;
+        display: flex;
+        align-items: center;
+    }
+    
+    #branding {
+        flex: 1;
+    }
+    
+    #user-tools {
+        color: white;
+        padding: 10px 20px;
+    }
+    
+    #user-tools a {
+        color: #F5C400;
+        text-decoration: none;
+    }
+    
+    #user-tools a:hover {
+        color: white;
+        text-decoration: underline;
+    }
+    
+    /* Logo responsive adjustments */
+    @media (max-width: 768px) {
+        #branding img {
+            height: 30px;
+        }
+        
+        #site-name {
+            font-size: 18px;
+        }
+    }
+</style>
+{% endblock %}

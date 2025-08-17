@@ -1,0 +1,156 @@
+<nav class="shadow-lg fixed w-full top-0 z-40" style="background: linear-gradient(135deg, #102A71 0%, #1a3a8a 100%);" x-data="{ mobileMenuOpen: false, profileDropdown: false, notificationDropdown: false }">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <!-- Logo and Brand -->
+            <div class="flex items-center">
+                <a href="{% url 'student_portal:dashboard' %}" class="flex items-center">
+                    <i class="fas fa-university text-white text-2xl mr-3"></i>
+                    <span class="text-white text-xl font-bold hidden sm:block">My University</span>
+                </a>
+            </div>
+            
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="{% url 'student_portal:dashboard' %}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-colors" style="hover:color: #F5C400;">
+                    <i class="fas fa-home mr-1"></i> Dashboard
+                </a>
+                <a href="{% url 'student_portal:services' %}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-colors" style="hover:color: #F5C400;">
+                    <i class="fas fa-clipboard-list mr-1"></i> E-Services
+                </a>
+                <a href="{% url 'financial:dashboard' %}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-colors" style="hover:color: #F5C400;">
+                    <i class="fas fa-credit-card mr-1"></i> Financial
+                </a>
+                <a href="{% url 'student_portal:documents' %}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-colors" style="hover:color: #F5C400;">
+                    <i class="fas fa-folder mr-1"></i> Documents
+                </a>
+                <a href="{% url 'student_portal:support' %}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-colors" style="hover:color: #F5C400;">
+                    <i class="fas fa-headset mr-1"></i> Support
+                </a>
+            </div>
+            
+            <!-- Right Side Icons -->
+            <div class="flex items-center space-x-4">
+                <!-- Notifications -->
+                <div class="relative" x-data="{ unreadCount: 0 }" x-init="
+                    fetch('{% url 'notifications:ajax_unread_count' %}')
+                        .then(response => response.json())
+                        .then(data => unreadCount = data.count)
+                ">
+                    <button @click="notificationDropdown = !notificationDropdown" 
+                            class="text-white relative p-2 rounded-full transition-colors" style="hover:color: #F5C400;">
+                        <i class="fas fa-bell text-lg"></i>
+                        <span x-show="unreadCount > 0" 
+                              x-text="unreadCount" 
+                              class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"></span>
+                    </button>
+                    
+                    <!-- Notification Dropdown -->
+                    <div x-show="notificationDropdown" 
+                         @click.away="notificationDropdown = false"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 scale-95"
+                         x-transition:enter-end="opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-75"
+                         x-transition:leave-start="opacity-100 scale-100"
+                         x-transition:leave-end="opacity-0 scale-95"
+                         class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 z-50">
+                        <div class="px-4 py-2 border-b border-gray-200">
+                            <h3 class="text-sm font-medium text-gray-900">Notifications</h3>
+                        </div>
+                        <div class="max-h-64 overflow-y-auto">
+                            <!-- Notifications will be loaded via AJAX -->
+                            <div id="notification-list" class="divide-y divide-gray-200">
+                                <div class="px-4 py-3 text-sm text-gray-500 text-center">
+                                    Loading notifications...
+                                </div>
+                            </div>
+                        </div>
+                        <div class="border-t border-gray-200 px-4 py-2">
+                            <a href="{% url 'notifications:notification_center' %}" class="text-sm hover:underline" style="color: #102A71; hover:color: #F5C400;">
+                                View all notifications
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Profile Dropdown -->
+                <div class="relative">
+                    <button @click="profileDropdown = !profileDropdown" 
+                            class="flex items-center text-white space-x-2 p-2 rounded-md transition-colors" style="hover:color: #F5C400;">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="Profile" class="h-8 w-8 rounded-full object-cover">
+                        {% else %}
+                            <div class="h-8 w-8 rounded-full flex items-center justify-center" style="background-color: #102A71;">
+                                <i class="fas fa-user text-sm"></i>
+                            </div>
+                        {% endif %}
+                        <span class="hidden sm:block text-sm font-medium">{{ user.first_name|default:user.username }}</span>
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </button>
+                    
+                    <!-- Profile Dropdown Menu -->
+                    <div x-show="profileDropdown" 
+                         @click.away="profileDropdown = false"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 scale-95"
+                         x-transition:enter-end="opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-75"
+                         x-transition:leave-start="opacity-100 scale-100"
+                         x-transition:leave-end="opacity-0 scale-95"
+                         class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                        <a href="{% url 'accounts:profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-user mr-2"></i> My Profile
+                        </a>
+                        <a href="{% url 'accounts:digital_id' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-id-card mr-2"></i> Digital ID
+                        </a>
+                        <a href="{% url 'accounts:change_password' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-key mr-2"></i> Change Password
+                        </a>
+                        <a href="{% url 'notifications:notification_preferences' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-cog mr-2"></i> Preferences
+                        </a>
+                        <div class="border-t border-gray-200"></div>
+                        <a href="{% url 'accounts:logout' %}" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-white p-2" style="hover:color: #F5C400;">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div x-show="mobileMenuOpen" 
+         @click.away="mobileMenuOpen = false"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 -translate-y-1"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 -translate-y-1"
+         class="md:hidden" style="background-color: #0d2159;">
+        <div class="px-2 pt-2 pb-3 space-y-1">
+            <a href="{% url 'student_portal:dashboard' %}" class="text-white block px-3 py-2 rounded-md text-base font-medium" style="hover:color: #F5C400;">
+                <i class="fas fa-home mr-2"></i> Dashboard
+            </a>
+            <a href="{% url 'student_portal:services' %}" class="text-white block px-3 py-2 rounded-md text-base font-medium" style="hover:color: #F5C400;">
+                <i class="fas fa-clipboard-list mr-2"></i> E-Services
+            </a>
+            <a href="{% url 'financial:dashboard' %}" class="text-white block px-3 py-2 rounded-md text-base font-medium" style="hover:color: #F5C400;">
+                <i class="fas fa-credit-card mr-2"></i> Financial
+            </a>
+            <a href="{% url 'student_portal:documents' %}" class="text-white block px-3 py-2 rounded-md text-base font-medium" style="hover:color: #F5C400;">
+                <i class="fas fa-folder mr-2"></i> Documents
+            </a>
+            <a href="{% url 'student_portal:support' %}" class="text-white block px-3 py-2 rounded-md text-base font-medium" style="hover:color: #F5C400;">
+                <i class="fas fa-headset mr-2"></i> Support
+            </a>
+        </div>
+    </div>
+</nav>

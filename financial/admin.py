@@ -1,0 +1,292 @@
+from django.contrib import admin
+from django.utils.html import format_html
+from django.db.models import Sum
+from decimal import Decimal
+from .models import FeeType, StudentFee, PaymentProvider, Payment, PaymentReceipt, FinancialReport
+
+
+@admin.register(FeeType)
+class FeeTypeAdmin(admin.ModelAdmin):
+    """Admin for Fee Types with university branding"""
+    
+    list_display = ('name', 'get_active_badge', 'created_at')
+    list_filter = ('is_active', 'created_at')
+    search_fields = ('name', 'description')
+    ordering = ('name',)
+    
+    fieldsets = (
+        ('Fee Type Information', {
+            'fields': ('name', 'description', 'is_active'),
+            'classes': ('wide',)
+        }),
+        ('Metadata', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    readonly_fields = ('created_at',)
+    
+    def get_active_badge(self, obj):
+        if obj.is_active:
+            return format_html(
+                '<span style="background-color: #28a745; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: bold;">ACTIVE</span>'
+            )
+        return format_html(
+            '<span style="background-color: #dc3545; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: bold;">INACTIVE</span>'
+        )
+    get_active_badge.short_description = 'Status'
+    get_active_badge.admin_order_field = 'is_active'
+
+
+@admin.register(StudentFee)
+class StudentFeeAdmin(admin.ModelAdmin):
+    """Admin for Student Fees"""
+    
+    list_display = ('get_student_id', 'get_student_name', 'fee_type', 'get_amount_display', 'get_status_badge', 'due_date')
+    list_filter = ('status', 'fee_type', 'due_date', 'created_at')
+    search_fields = ('student__university_id', 'student__first_name', 'student__last_name', 'fee_type__name')
+    ordering = ('-created_at',)
+    date_hierarchy = 'due_date'
+    
+    fieldsets = (
+        ('Fee Information', {
+            'fields': ('student', 'fee_type', 'amount', 'due_date', 'description'),
+            'classes': ('wide',)
+        }),
+        ('Status & Processing', {
+            'fields': ('status', 'created_by'),
+            'classes': ('wide',)
+        }),
+        ('Metadata', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    readonly_fields = ('created_at',)
+    
+    def get_student_id(self, obj):
+        return obj.student.university_id
+    get_student_id.short_description = 'Student ID'
+    get_student_id.admin_order_field = 'student__university_id'
+    
+    def get_student_name(self, obj):
+        return obj.student.get_full_name()
+    get_student_name.short_description = 'Student Name'
+    get_student_name.admin_order_field = 'student__first_name'
+    
+    def get_amount_display(self, obj):
+        return f"${obj.amount:,.2f}"
+    get_amount_display.short_description = 'Amount'
+    get_amount_display.admin_order_field = 'amount'
+    
+    def get_status_badge(self, obj):
+        colors = {
+            'pending': '#F5C400',
+            'paid': '#28a745',
+            'overdue': '#dc3545',
+            'cancelled': '#6c757d',
+            'partial': '#102A71'
+        }
+        color = colors.get(obj.status, '#6c757d')
+        return format_html(
+            '<span style="background-color: {}; color: white; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: bold;">{}</span>',
+            color,
+            obj.get_status_display()
+        )
+    get_status_badge.short_description = 'Status'
+    get_status_badge.admin_order_field = 'status'
+
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    """Admin for Payments"""
+    
+    list_display = ('get_student_info', 'get_fee_info', 'get_amount', 'get_status_badge', 'payment_date')
+    list_filter = ('status', 'payment_date', 'payment_provider')
+    search_fields = ('student__university_id', 'student__first_name', 'student__last_name', 'transaction_reference')
+    ordering = ('-payment_date',)
+    date_hierarchy = 'payment_date'
+    
+    fieldsets = (
+        ('Payment Information', {
+            'fields': ('student', 'fee', 'amount', 'payment_provider'),
+            'classes': ('wide',)
+        }),
+        ('Transaction Details', {
+            'fields': ('transaction_reference', 'payment_date'),
+            'classes': ('wide',)
+        }),
+        ('Status & Verification', {
+            'fields': ('status', 'verification_notes', 'verified_by', 'verified_at'),
+            'classes': ('wide',)
+        }),
+        ('Metadata', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    readonly_fields = ('created_at', 'verified_at')
+    actions = ['verify_payments', 'reject_payments']
+    
+    def get_student_info(self, obj):
+        return f"{obj.student.university_id} - {obj.student.get_full_name()}"
+    get_student_info.short_description = 'Student'
+    get_student_info.admin_order_field = 'student__university_id'
+    
+    def get_fee_info(self, obj):
+        return f"{obj.fee.fee_type.name} - ${obj.fee.amount}"
+    get_fee_info.short_description = 'Fee'
+    get_fee_info.admin_order_field = 'fee__fee_type__name'
+    
+    def get_amount(self, obj):
+        return f"${obj.amount:,.2f}"
+    get_amount.short_description = 'Amount'
+    get_amount.admin_order_field = 'amount'
+    
+    def get_status_badge(self, obj):
+        colors = {
+            'pending': '#F5C400',
+            'verified': '#28a745',
+            'rejected': '#dc3545'
+        }
+        color = colors.get(obj.status, '#6c757d')
+        return format_html(
+            '<span style="background-color: {}; color: white; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: bold;">{}</span>',
+            color,
+            obj.get_status_display()
+        )
+    get_status_badge.short_description = 'Status'
+    get_status_badge.admin_order_field = 'status'
+    
+    def verify_payments(self, request, queryset):
+        """Bulk verify payments"""
+        updated = 0
+        for payment in queryset.filter(status='pending'):
+            payment.verify_payment(request.user)
+            updated += 1
+        self.message_user(request, f'{updated} payments verified successfully.')
+    verify_payments.short_description = "Verify selected payments"
+    
+    def reject_payments(self, request, queryset):
+        """Bulk reject payments"""
+        updated = 0
+        for payment in queryset.filter(status='pending'):
+            payment.reject_payment(request.user, "Bulk rejection")
+            updated += 1
+        self.message_user(request, f'{updated} payments rejected.')
+    reject_payments.short_description = "Reject selected payments"
+
+
+@admin.register(PaymentProvider)
+class PaymentProviderAdmin(admin.ModelAdmin):
+    """Admin for Payment Providers"""
+    
+    list_display = ('name', 'get_status_badge', 'get_payments_count')
+    list_filter = ('is_active',)
+    search_fields = ('name', 'description')
+    ordering = ('name',)
+    
+    fieldsets = (
+        ('Provider Information', {
+            'fields': ('name', 'description', 'instructions'),
+            'classes': ('wide',)
+        }),
+        ('Display & Status', {
+            'fields': ('logo', 'is_active'),
+            'classes': ('wide',)
+        }),
+    )
+    
+    def get_status_badge(self, obj):
+        if obj.is_active:
+            return format_html(
+                '<span style="background-color: #28a745; color: white; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: bold;">Active</span>'
+            )
+        else:
+            return format_html(
+                '<span style="background-color: #6c757d; color: white; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: bold;">Inactive</span>'
+            )
+    get_status_badge.short_description = 'Status'
+    get_status_badge.admin_order_field = 'is_active'
+    
+    def get_payments_count(self, obj):
+        return obj.payment_set.count()
+    get_payments_count.short_description = 'Total Payments'
+
+
+@admin.register(PaymentReceipt)
+class PaymentReceiptAdmin(admin.ModelAdmin):
+    """Admin for Payment Receipts"""
+    
+    list_display = ('receipt_number', 'get_student_info', 'get_payment_amount', 'generated_at', 'generated_by')
+    list_filter = ('generated_at', 'generated_by')
+    search_fields = ('receipt_number', 'payment__student__university_id', 'payment__student__first_name', 'payment__student__last_name')
+    ordering = ('-generated_at',)
+    date_hierarchy = 'generated_at'
+    
+    fieldsets = (
+        ('Receipt Information', {
+            'fields': ('receipt_number', 'payment'),
+            'classes': ('wide',)
+        }),
+        ('File & Generation', {
+            'fields': ('receipt_file', 'generated_by', 'generated_at'),
+            'classes': ('wide',)
+        }),
+    )
+    
+    readonly_fields = ('generated_at',)
+    
+    def get_student_info(self, obj):
+        return f"{obj.payment.student.university_id} - {obj.payment.student.get_full_name()}"
+    get_student_info.short_description = 'Student'
+    get_student_info.admin_order_field = 'payment__student__university_id'
+    
+    def get_payment_amount(self, obj):
+        return f"${obj.payment.amount:,.2f}"
+    get_payment_amount.short_description = 'Amount'
+    get_payment_amount.admin_order_field = 'payment__amount'
+
+
+@admin.register(FinancialReport)
+class FinancialReportAdmin(admin.ModelAdmin):
+    """Admin for Financial Reports"""
+    
+    list_display = ('report_type', 'get_period_display', 'get_total_amount_display', 'generated_by', 'generated_at')
+    list_filter = ('report_type', 'start_date', 'end_date', 'generated_at')
+    search_fields = ('report_type', 'generated_by__username')
+    ordering = ('-generated_at',)
+    date_hierarchy = 'generated_at'
+    
+    fieldsets = (
+        ('Report Information', {
+            'fields': ('report_type', 'start_date', 'end_date', 'generated_by'),
+            'classes': ('wide',)
+        }),
+        ('Report Data', {
+            'fields': ('report_data', 'total_payments_received'),
+            'classes': ('wide',)
+        }),
+        ('File', {
+            'fields': ('file_path',),
+            'classes': ('collapse',)
+        }),
+        ('Metadata', {
+            'fields': ('generated_at',),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    readonly_fields = ('generated_at',)
+    
+    def get_period_display(self, obj):
+        return f"{obj.start_date} to {obj.end_date}"
+    get_period_display.short_description = 'Period'
+    
+    def get_total_amount_display(self, obj):
+        return f"${obj.total_payments_received:,.2f}" if obj.total_payments_received else '-'
+    get_total_amount_display.short_description = 'Total Amount'
+    get_total_amount_display.admin_order_field = 'total_payments_received'
