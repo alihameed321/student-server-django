@@ -468,10 +468,80 @@ def download_id_card(request):
         
         qr_image_reader = ImageReader(qr_buffer)
         qr_size = 0.75 * inch
-        c.drawImage(qr_image_reader, card_width - qr_size - 0.2 * inch, 0.2 * inch, width=qr_size, height=qr_size, mask='auto')
+        # Align QR code with photo position
+        qr_x = card_width - qr_size - 0.2 * inch
+        qr_y = photo_y  # Align with photo's Y position
+        c.drawImage(qr_image_reader, qr_x, qr_y, width=qr_size, height=qr_size, mask='auto')
+
+        # --- Start Back Side of Card ---
+        c.showPage()  # Start new page for back side
+        
+        # --- Back Side Background Gradient ---
+        for i in range(int(card_height)):
+            ratio = i / card_height
+            # Lighter gradient for back side
+            r = (1 - ratio) * color_secondary.red + ratio * 0.9
+            g = (1 - ratio) * color_secondary.green + ratio * 0.9
+            b = (1 - ratio) * color_secondary.blue + ratio * 0.9
+            c.setStrokeColorRGB(r, g, b)
+            c.line(0, i, card_width, i)
+        
+        # Add border
+        c.setStrokeColor(colors.HexColor('#ffffff'))
+        c.setLineWidth(2)
+        c.roundRect(1, 1, card_width - 2, card_height - 2, radius=10, stroke=1, fill=0)
+
+        # --- Back Side Header ---
+        c.setFillColor(color_primary)
+        c.setFont("Helvetica-Bold", 10)
+        c.drawCentredString(card_width / 2, card_height - 0.3 * inch, "STUDENT IDENTIFICATION CARD")
+        
+        # --- Terms and Conditions ---
+        c.setFillColor(color_dark_text)
+        c.setFont("Helvetica-Bold", 8)
+        c.drawString(0.2 * inch, card_height - 0.6 * inch, "TERMS OF USE:")
+        
+        terms_text = [
+            "• This card is property of Global University",
+            "• Must be carried at all times on campus",
+            "• Report lost or stolen cards immediately",
+            "• Non-transferable - for authorized use only",
+            "• Valid for current academic year only"
+        ]
+        
+        c.setFont("Helvetica", 6)
+        y_pos = card_height - 0.75 * inch
+        for term in terms_text:
+            c.drawString(0.25 * inch, y_pos, term)
+            y_pos -= 0.12 * inch
+        
+        # --- Emergency Contact ---
+        c.setFont("Helvetica-Bold", 8)
+        c.drawString(0.2 * inch, y_pos - 0.1 * inch, "EMERGENCY CONTACT:")
+        c.setFont("Helvetica", 7)
+        c.drawString(0.2 * inch, y_pos - 0.25 * inch, "Campus Security: (555) 123-4567")
+        c.drawString(0.2 * inch, y_pos - 0.37 * inch, "Student Services: (555) 123-4568")
+        
+        # --- Validity Information ---
+        c.setFont("Helvetica-Bold", 7)
+        c.drawString(0.2 * inch, 0.4 * inch, "VALID UNTIL: December 2025")
+        
+        # --- Card Number ---
+        c.setFont("Helvetica", 6)
+        card_number = f"CARD #{request.user.university_id}-{datetime.now().year}"
+        c.drawRightString(card_width - 0.2 * inch, 0.2 * inch, card_number)
+        
+        # --- University Logo/Seal (placeholder) ---
+        c.setFillColor(colors.lightgrey)
+        c.setStrokeColor(color_primary)
+        c.circle(card_width - 0.6 * inch, 0.6 * inch, 0.25 * inch, fill=1, stroke=1)
+        c.setFillColor(color_primary)
+        c.setFont("Helvetica-Bold", 8)
+        c.drawCentredString(card_width - 0.6 * inch, 0.58 * inch, "GLOBAL")
+        c.setFont("Helvetica", 6)
+        c.drawCentredString(card_width - 0.6 * inch, 0.52 * inch, "UNIVERSITY")
 
         # --- Finalize PDF ---
-        c.showPage()
         c.save()
         
         pdf = buffer.getvalue()
