@@ -247,6 +247,11 @@ class FeeManagementView(LoginRequiredMixin, TemplateView):
         return context
 
 
+class CreateFeeView(LoginRequiredMixin, TemplateView):
+    """Create new fee"""
+    template_name = 'staff_panel/create_fee.html'
+
+
 # Student Management Views
 class StudentManagementView(LoginRequiredMixin, TemplateView):
     """Manage students"""
@@ -299,6 +304,34 @@ class StudentDetailView(LoginRequiredMixin, TemplateView):
 class AddStudentView(LoginRequiredMixin, TemplateView):
     """Add new student"""
     template_name = 'staff_panel/add_student.html'
+
+
+class StudentSearchView(LoginRequiredMixin, TemplateView):
+    """Search for students"""
+    template_name = 'staff_panel/student_search.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from accounts.models import User
+        
+        search_query = self.request.GET.get('q', '')
+        students = []
+        
+        if search_query:
+            students = User.objects.filter(
+                user_type='student'
+            ).filter(
+                models.Q(first_name__icontains=search_query) |
+                models.Q(last_name__icontains=search_query) |
+                models.Q(university_id__icontains=search_query) |
+                models.Q(email__icontains=search_query)
+            ).select_related('studentprofile')[:20]
+        
+        context.update({
+            'students': students,
+            'search_query': search_query,
+        })
+        return context
 
 
 # Announcement Management Views

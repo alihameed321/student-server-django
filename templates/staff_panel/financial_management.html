@@ -1,0 +1,106 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Financial Management - Staff Panel{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Financial Management</h1>
+                    <p class="mt-2 text-gray-600">Manage payments, fees, and financial operations</p>
+                </div>
+                <a href="{% url 'staff_panel:dashboard' %}" 
+                   class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Financial Overview Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-green-100">
+                        <i class="fas fa-dollar-sign text-green-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Total Revenue</p>
+                        <p class="text-2xl font-bold text-gray-900">${{ total_revenue|floatformat:2 }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-yellow-100">
+                        <i class="fas fa-clock text-yellow-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Pending Payments</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ pending_payments }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-blue-100">
+                        <i class="fas fa-check-circle text-blue-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Verified Today</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ verified_today }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <a href="{% url 'staff_panel:payment_verification' %}" 
+                       class="flex items-center p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                        <i class="fas fa-credit-card text-blue-600 text-xl mr-3"></i>
+                        <span class="font-medium text-blue-900">Verify Payments</span>
+                    </a>
+                    
+                    <a href="{% url 'staff_panel:fee_management' %}" 
+                       class="flex items-center p-4 bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
+                        <i class="fas fa-file-invoice-dollar text-green-600 text-xl mr-3"></i>
+                        <span class="font-medium text-green-900">Manage Fees</span>
+                    </a>
+                    
+                    <a href="{% url 'staff_panel:create_fee' %}" 
+                       class="flex items-center p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors">
+                        <i class="fas fa-plus text-purple-600 text-xl mr-3"></i>
+                        <span class="font-medium text-purple-900">Create Fee</span>
+                    </a>
+                    
+                    <a href="{% url 'staff_panel:pending_payments' %}" 
+                       class="flex items-center p-4 bg-orange-50 hover:bg-orange-100 rounded-lg transition-colors">
+                        <i class="fas fa-hourglass-half text-orange-600 text-xl mr-3"></i>
+                        <span class="font-medium text-orange-900">Pending Payments</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Financial Activity -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Recent Financial Activity</h2>
+                <div class="text-center py-8 text-gray-500">
+                    <i class="fas fa-chart-line text-4xl mb-4"></i>
+                    <p>Financial activity tracking will be displayed here</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

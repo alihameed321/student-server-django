@@ -1,0 +1,166 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Student Search - Staff Panel{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Student Search</h1>
+                    <p class="mt-2 text-gray-600">Find and view student information</p>
+                </div>
+                <a href="{% url 'staff_panel:student_management' %}" 
+                   class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Student Management
+                </a>
+            </div>
+        </div>
+
+        <!-- Search Form -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+            <form method="get" class="flex gap-4">
+                <div class="flex-1">
+                    <label for="search" class="sr-only">Search students</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                        <input type="text" id="search" name="q" value="{{ search_query }}"
+                               class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Search by name, university ID, or email...">
+                    </div>
+                </div>
+                <button type="submit" 
+                        class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-search mr-2"></i>Search
+                </button>
+                {% if search_query %}
+                <a href="{% url 'staff_panel:student_search' %}" 
+                   class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors">
+                    <i class="fas fa-times mr-2"></i>Clear
+                </a>
+                {% endif %}
+            </form>
+        </div>
+
+        <!-- Search Results -->
+        {% if search_query %}
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-900">
+                    Search Results
+                    {% if students %}
+                        <span class="text-sm text-gray-500 font-normal">({{ students|length }} found)</span>
+                    {% endif %}
+                </h2>
+            </div>
+            
+            {% if students %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Student
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                University ID
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Email
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for student in students %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    {% if student.profile_picture %}
+                                        <img class="h-10 w-10 rounded-full object-cover" src="{{ student.profile_picture.url }}" alt="">
+                                    {% else %}
+                                        <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                                            <i class="fas fa-user text-gray-600"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">
+                                            {{ student.get_full_name|default:student.username }}
+                                        </div>
+                                        <div class="text-sm text-gray-500">
+                                            Joined {{ student.date_joined|date:"M d, Y" }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{ student.university_id|default:"-" }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{ student.email }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if student.is_active %}
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                        Active
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                        Inactive
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <a href="{% url 'staff_panel:student_detail' student.id %}" 
+                                   class="text-blue-600 hover:text-blue-900 mr-3">
+                                    <i class="fas fa-eye mr-1"></i>View
+                                </a>
+                                <a href="mailto:{{ student.email }}" 
+                                   class="text-green-600 hover:text-green-900">
+                                    <i class="fas fa-envelope mr-1"></i>Email
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="px-6 py-12 text-center">
+                <i class="fas fa-search text-gray-400 text-4xl mb-4"></i>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">No students found</h3>
+                <p class="text-gray-500">No students match your search criteria "{{ search_query }}". Try a different search term.</p>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <!-- Search Instructions -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+            <i class="fas fa-search text-gray-400 text-6xl mb-6"></i>
+            <h3 class="text-xl font-medium text-gray-900 mb-4">Search for Students</h3>
+            <p class="text-gray-500 mb-6 max-w-md mx-auto">
+                Enter a student's name, university ID, or email address in the search box above to find their information.
+            </p>
+            <div class="text-sm text-gray-400">
+                <p class="mb-2"><strong>Search tips:</strong></p>
+                <ul class="space-y-1">
+                    <li>• Use partial names or IDs for broader results</li>
+                    <li>• Search is case-insensitive</li>
+                    <li>• Results are limited to 20 students</li>
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

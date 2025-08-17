@@ -18,11 +18,13 @@ urlpatterns = [
     path('financial/payments/', views.PaymentVerificationView.as_view(), name='payment_verification'),
     path('financial/payments/pending/', views.PendingPaymentsView.as_view(), name='pending_payments'),
     path('financial/fees/', views.FeeManagementView.as_view(), name='fee_management'),
+    path('financial/fees/create/', views.CreateFeeView.as_view(), name='create_fee'),
     
     # Student Management
     path('students/', views.StudentManagementView.as_view(), name='student_management'),
     path('students/<int:student_id>/', views.StudentDetailView.as_view(), name='student_detail'),
     path('students/add/', views.AddStudentView.as_view(), name='add_student'),
+    path('students/search/', views.StudentSearchView.as_view(), name='student_search'),
     
     # Announcement Management
     path('announcements/', views.AnnouncementManagementView.as_view(), name='announcement_management'),
@@ -36,6 +38,6 @@ urlpatterns = [
     path('settings/', views.SystemSettingsView.as_view(), name='system_settings'),
     
     # API Endpoints for AJAX
-    path('api/stats/', views.get_dashboard_stats, name='api_stats'),
+    path('api/stats/', views.get_dashboard_stats, name='ajax_dashboard_stats'),
     path('api/activities/', views.get_recent_activities, name='api_activities'),
 ]

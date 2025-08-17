@@ -34,8 +34,8 @@ class CustomLoginView(LoginView):
     
     def get_success_url(self):
         user = self.request.user
-        if user.is_staff:
-            return '/staff/dashboard/'
+        if user.is_staff_member:
+            return '/staff/'
         else:
             return '/student/dashboard/'
     

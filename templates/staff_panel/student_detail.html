@@ -1,0 +1,274 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Student Details - {{ student.get_full_name }} - Staff Panel{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'staff_panel:student_management' %}" 
+                       class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-arrow-left text-xl"></i>
+                    </a>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">Student Details</h1>
+                        <p class="mt-2 text-gray-600">Complete information for {{ student.get_full_name }}</p>
+                    </div>
+                </div>
+                <div class="flex space-x-3">
+                    <button onclick="editStudent()" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        <i class="fas fa-edit mr-2"></i>Edit Student
+                    </button>
+                    <button onclick="printProfile()" 
+                            class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        <i class="fas fa-print mr-2"></i>Print
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Student Profile -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div class="text-center">
+                        {% if student.profile_picture %}
+                            <img src="{{ student.profile_picture.url }}" alt="{{ student.get_full_name }}" 
+                                 class="w-32 h-32 rounded-full mx-auto object-cover border-4 border-gray-200">
+                        {% else %}
+                            <div class="w-32 h-32 bg-gray-300 rounded-full mx-auto flex items-center justify-center border-4 border-gray-200">
+                                <i class="fas fa-user text-gray-600 text-4xl"></i>
+                            </div>
+                        {% endif %}
+                        <h2 class="mt-4 text-xl font-bold text-gray-900">{{ student.get_full_name }}</h2>
+                        <p class="text-gray-600">{{ student.university_id }}</p>
+                        <div class="mt-4">
+                            {% if student.is_active %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                    <i class="fas fa-check-circle mr-1"></i>Active
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                                    <i class="fas fa-times-circle mr-1"></i>Inactive
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 space-y-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-envelope text-gray-400 w-5"></i>
+                            <span class="ml-3 text-sm text-gray-900">{{ student.email }}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-phone text-gray-400 w-5"></i>
+                            <span class="ml-3 text-sm text-gray-900">{{ student.phone_number|default:"Not provided" }}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-calendar text-gray-400 w-5"></i>
+                            <span class="ml-3 text-sm text-gray-900">Joined {{ student.date_joined|date:"M d, Y" }}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-graduation-cap text-gray-400 w-5"></i>
+                            <span class="ml-3 text-sm text-gray-900">{{ student.program|default:"Program not specified" }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                    <div class="space-y-3">
+                        <button onclick="sendMessage()" 
+                                class="flex items-center w-full p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                            <i class="fas fa-envelope text-blue-600 mr-3"></i>
+                            <span class="text-blue-700 font-medium">Send Message</span>
+                        </button>
+                        <button onclick="viewPayments()" 
+                                class="flex items-center w-full p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
+                            <i class="fas fa-dollar-sign text-green-600 mr-3"></i>
+                            <span class="text-green-700 font-medium">View Payments</span>
+                        </button>
+                        <button onclick="viewRequests()" 
+                                class="flex items-center w-full p-3 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors">
+                            <i class="fas fa-file-alt text-yellow-600 mr-3"></i>
+                            <span class="text-yellow-700 font-medium">View Requests</span>
+                        </button>
+                        <button onclick="generateReport()" 
+                                class="flex items-center w-full p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors">
+                            <i class="fas fa-chart-bar text-purple-600 mr-3"></i>
+                            <span class="text-purple-700 font-medium">Generate Report</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="lg:col-span-2">
+                <!-- Tabs -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="border-b border-gray-200">
+                        <nav class="-mb-px flex space-x-8 px-6" aria-label="Tabs">
+                            <button onclick="showTab('overview')" 
+                                    class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm active">
+                                Overview
+                            </button>
+                            <button onclick="showTab('academic')" 
+                                    class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                                Academic
+                            </button>
+                            <button onclick="showTab('financial')" 
+                                    class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                                Financial
+                            </button>
+                            <button onclick="showTab('requests')" 
+                                    class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                                Requests
+                            </button>
+                        </nav>
+                    </div>
+                    
+                    <!-- Tab Content -->
+                    <div class="p-6">
+                        <!-- Overview Tab -->
+                        <div id="overview-tab" class="tab-content">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Student Overview</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-700 mb-3">Personal Information</h4>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Full Name:</span>
+                                            <span class="text-gray-900">{{ student.get_full_name }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Student ID:</span>
+                                            <span class="text-gray-900">{{ student.university_id }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Email:</span>
+                                            <span class="text-gray-900">{{ student.email }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Phone:</span>
+                                            <span class="text-gray-900">{{ student.phone_number|default:"Not provided" }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Date of Birth:</span>
+                                            <span class="text-gray-900">{{ student.date_of_birth|date:"M d, Y"|default:"Not provided" }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-700 mb-3">Academic Information</h4>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Program:</span>
+                                            <span class="text-gray-900">{{ student.program|default:"Not specified" }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Year:</span>
+                                            <span class="text-gray-900">{{ student.year|default:"Not specified" }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">GPA:</span>
+                                            <span class="text-gray-900">{{ student.gpa|default:"Not available" }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Enrollment Date:</span>
+                                            <span class="text-gray-900">{{ student.date_joined|date:"M d, Y" }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Status:</span>
+                                            <span class="text-gray-900">{% if student.is_active %}Active{% else %}Inactive{% endif %}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Academic Tab -->
+                        <div id="academic-tab" class="tab-content hidden">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Academic Records</h3>
+                            <div class="text-center py-8">
+                                <i class="fas fa-graduation-cap text-gray-400 text-4xl mb-4"></i>
+                                <p class="text-gray-500">Academic records will be displayed here.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Financial Tab -->
+                        <div id="financial-tab" class="tab-content hidden">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Financial Records</h3>
+                            <div class="text-center py-8">
+                                <i class="fas fa-dollar-sign text-gray-400 text-4xl mb-4"></i>
+                                <p class="text-gray-500">Financial records will be displayed here.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Requests Tab -->
+                        <div id="requests-tab" class="tab-content hidden">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Student Requests</h3>
+                            <div class="text-center py-8">
+                                <i class="fas fa-file-alt text-gray-400 text-4xl mb-4"></i>
+                                <p class="text-gray-500">Student requests will be displayed here.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showTab(tabName) {
+    // Hide all tab contents
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.add('hidden');
+    });
+    
+    // Remove active class from all tab buttons
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active', 'border-blue-500', 'text-blue-600');
+        button.classList.add('border-transparent', 'text-gray-500');
+    });
+    
+    // Show selected tab content
+    document.getElementById(tabName + '-tab').classList.remove('hidden');
+    
+    // Add active class to selected tab button
+    event.target.classList.add('active', 'border-blue-500', 'text-blue-600');
+    event.target.classList.remove('border-transparent', 'text-gray-500');
+}
+
+function editStudent() {
+    // Redirect to edit student page
+    window.location.href = '{% url "staff_panel:student_management" %}{{ student.id }}/edit/';
+}
+
+function printProfile() {
+    window.print();
+}
+
+function sendMessage() {
+    alert('Message functionality will be implemented soon.');
+}
+
+function viewPayments() {
+    alert('Payment history will be displayed here.');
+}
+
+function viewRequests() {
+    alert('Student requests will be displayed here.');
+}
+
+function generateReport() {
+    alert('Student report generation will be available soon.');
+}
+</script>
+{% endblock %}

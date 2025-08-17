@@ -1,0 +1,245 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Fee Management - Staff Panel{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Fee Management</h1>
+                    <p class="mt-2 text-gray-600">Manage university fees and payment structures</p>
+                </div>
+                <div class="flex space-x-3">
+                    <a href="{% url 'staff_panel:create_fee' %}" 
+                       class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Create Fee
+                    </a>
+                    <a href="{% url 'staff_panel:financial_management' %}" 
+                       class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>Back
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fee Statistics -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-blue-100">
+                        <i class="fas fa-list text-blue-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Total Fees</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ total_fees|default:0 }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-green-100">
+                        <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Active Fees</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ active_fees|default:0 }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-yellow-100">
+                        <i class="fas fa-dollar-sign text-yellow-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Total Revenue</p>
+                        <p class="text-2xl font-bold text-gray-900">${{ total_revenue|default:0|floatformat:0 }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-purple-100">
+                        <i class="fas fa-users text-purple-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Students Enrolled</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ enrolled_students|default:0 }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fee Categories -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div class="lg:col-span-2">
+                <!-- Fee List -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-semibold text-gray-900">Fee Structure</h2>
+                            <div class="flex space-x-2">
+                                <select class="border border-gray-300 rounded-md px-3 py-1 text-sm">
+                                    <option value="">All Categories</option>
+                                    <option value="tuition">Tuition</option>
+                                    <option value="library">Library</option>
+                                    <option value="lab">Laboratory</option>
+                                    <option value="sports">Sports</option>
+                                    <option value="other">Other</option>
+                                </select>
+                                <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm transition-colors">
+                                    <i class="fas fa-filter"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        {% if fees %}
+                            <div class="space-y-4">
+                                {% for fee in fees %}
+                                    <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex-1">
+                                                <div class="flex items-center space-x-3">
+                                                    <h3 class="text-lg font-medium text-gray-900">{{ fee.name }}</h3>
+                                                    {% if fee.is_active %}
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                            Active
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                            Inactive
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+                                                <p class="text-sm text-gray-600 mt-1">{{ fee.description|default:"No description available" }}</p>
+                                                <div class="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                                                    <span><i class="fas fa-dollar-sign mr-1"></i>${{ fee.amount|floatformat:2 }}</span>
+                                                    <span><i class="fas fa-tag mr-1"></i>{{ fee.category|title }}</span>
+                                                    <span><i class="fas fa-calendar mr-1"></i>{{ fee.due_date|date:"M d, Y" }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex space-x-2">
+                                                <button onclick="editFee({{ fee.id }})" 
+                                                        class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs transition-colors">
+                                                    <i class="fas fa-edit mr-1"></i>Edit
+                                                </button>
+                                                <button onclick="toggleFeeStatus({{ fee.id }})" 
+                                                        class="{% if fee.is_active %}bg-yellow-600 hover:bg-yellow-700{% else %}bg-green-600 hover:bg-green-700{% endif %} text-white px-3 py-1 rounded text-xs transition-colors">
+                                                    <i class="fas fa-{% if fee.is_active %}pause{% else %}play{% endif %} mr-1"></i>{% if fee.is_active %}Deactivate{% else %}Activate{% endif %}
+                                                </button>
+                                                <button onclick="deleteFee({{ fee.id }})" 
+                                                        class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs transition-colors">
+                                                    <i class="fas fa-trash mr-1"></i>Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-12">
+                                <i class="fas fa-money-bill-wave text-gray-400 text-4xl mb-4"></i>
+                                <h3 class="text-lg font-medium text-gray-900 mb-2">No fees configured</h3>
+                                <p class="text-gray-500 mb-4">Start by creating your first fee structure.</p>
+                                <a href="{% url 'staff_panel:create_fee' %}" 
+                                   class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                    <i class="fas fa-plus mr-2"></i>Create Fee
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                    <div class="space-y-3">
+                        <a href="{% url 'staff_panel:create_fee' %}" 
+                           class="flex items-center p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                            <i class="fas fa-plus text-blue-600 mr-3"></i>
+                            <span class="text-blue-700 font-medium">Create New Fee</span>
+                        </a>
+                        <a href="{% url 'staff_panel:pending_payments' %}" 
+                           class="flex items-center p-3 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors">
+                            <i class="fas fa-clock text-yellow-600 mr-3"></i>
+                            <span class="text-yellow-700 font-medium">Pending Payments</span>
+                        </a>
+                        <a href="{% url 'staff_panel:payment_verification' %}" 
+                           class="flex items-center p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
+                            <i class="fas fa-check-circle text-green-600 mr-3"></i>
+                            <span class="text-green-700 font-medium">Verify Payments</span>
+                        </a>
+                        <button onclick="exportFees()" 
+                                class="flex items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors w-full text-left">
+                            <i class="fas fa-download text-gray-600 mr-3"></i>
+                            <span class="text-gray-700 font-medium">Export Fee Data</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Fee Categories Summary -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Fee Categories</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Tuition Fees</span>
+                            <span class="text-sm font-medium text-gray-900">{{ tuition_count|default:0 }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Library Fees</span>
+                            <span class="text-sm font-medium text-gray-900">{{ library_count|default:0 }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Laboratory Fees</span>
+                            <span class="text-sm font-medium text-gray-900">{{ lab_count|default:0 }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Sports Fees</span>
+                            <span class="text-sm font-medium text-gray-900">{{ sports_count|default:0 }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Other Fees</span>
+                            <span class="text-sm font-medium text-gray-900">{{ other_count|default:0 }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function editFee(feeId) {
+    // Redirect to edit fee page
+    window.location.href = `/staff/fees/${feeId}/edit/`;
+}
+
+function toggleFeeStatus(feeId) {
+    if (confirm('Are you sure you want to change the status of this fee?')) {
+        // Add AJAX call to toggle fee status
+        console.log('Toggling fee status:', feeId);
+        location.reload();
+    }
+}
+
+function deleteFee(feeId) {
+    if (confirm('Are you sure you want to delete this fee? This action cannot be undone.')) {
+        // Add AJAX call to delete fee
+        console.log('Deleting fee:', feeId);
+        location.reload();
+    }
+}
+
+function exportFees() {
+    // Add export functionality
+    console.log('Exporting fee data...');
+    alert('Fee data export will be available soon!');
+}
+</script>
+{% endblock %}
