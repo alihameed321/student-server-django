@@ -1,0 +1,379 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Staff Dashboard - University Services{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stats-card {
+        background: linear-gradient(135deg, #102A71 0%, #1a3a8a 100%);
+        transition: transform 0.2s ease-in-out;
+    }
+    .stats-card:hover {
+        transform: translateY(-2px);
+    }
+    .stats-card-success {
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    }
+    .stats-card-warning {
+        background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+    }
+    .stats-card-danger {
+        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+    }
+    .activity-item {
+        transition: all 0.2s ease-in-out;
+    }
+    .activity-item:hover {
+        background-color: #F9FAFB;
+        transform: translateX(4px);
+    }
+    .chart-container {
+        background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8" x-data="staffDashboard()">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Welcome Header -->
+        <div class="mb-8">
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="Profile" class="h-16 w-16 rounded-full object-cover border-4 border-blue-200">
+                        {% else %}
+                            <div class="h-16 w-16 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-600 to-blue-800">
+                                <i class="fas fa-user-tie text-white text-xl"></i>
+                            </div>
+                        {% endif %}
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">
+                                Welcome, {{ user.first_name|default:user.username }}!
+                            </h1>
+                            <p class="text-gray-600">
+                                Staff ID: {{ user.university_id }} | {{ user.staffprofile.position|default:"Staff Member" }}
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                Last login: {{ user.last_login|date:"M d, Y \a\t H:i" }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm text-gray-500 mb-1">Current Session</div>
+                        <div class="text-lg font-semibold text-gray-900" x-text="currentTime"></div>
+                        <div class="flex space-x-2 mt-2">
+                            <button @click="refreshDashboard()" class="inline-flex items-center px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors">
+                                <i class="fas fa-sync-alt mr-1" :class="{'fa-spin': isRefreshing}"></i>
+                                Refresh
+                            </button>
+                            <a href="{% url 'accounts:profile' %}" class="inline-flex items-center px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
+                                <i class="fas fa-cog mr-1"></i>
+                                Settings
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Students -->
+            <div class="stats-card rounded-xl shadow-sm p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-blue-100 text-sm font-medium">Total Students</p>
+                        <p class="text-3xl font-bold">{{ total_students|default:0 }}</p>
+                        <p class="text-blue-200 text-xs mt-1">
+                            <i class="fas fa-arrow-up mr-1"></i>
+                            +{{ new_students_today|default:0 }} today
+                        </p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                        <i class="fas fa-users text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Requests -->
+            <div class="stats-card-warning rounded-xl shadow-sm p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-yellow-100 text-sm font-medium">Pending Requests</p>
+                        <p class="text-3xl font-bold">{{ pending_requests|default:0 }}</p>
+                        <p class="text-yellow-200 text-xs mt-1">
+                            <i class="fas fa-clock mr-1"></i>
+                            Requires attention
+                        </p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                        <i class="fas fa-clipboard-list text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Revenue -->
+            <div class="stats-card-success rounded-xl shadow-sm p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-green-100 text-sm font-medium">Today's Revenue</p>
+                        <p class="text-3xl font-bold">${{ total_fees_collected_today|default:0|floatformat:0 }}</p>
+                        <p class="text-green-200 text-xs mt-1">
+                            <i class="fas fa-check-circle mr-1"></i>
+                            {{ verified_payments_today|default:0 }} payments
+                        </p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                        <i class="fas fa-dollar-sign text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Tickets -->
+            <div class="stats-card-danger rounded-xl shadow-sm p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-red-100 text-sm font-medium">Open Tickets</p>
+                        <p class="text-3xl font-bold">{{ open_support_tickets|default:0 }}</p>
+                        <p class="text-red-200 text-xs mt-1">
+                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                            {{ resolved_tickets_today|default:0 }} resolved today
+                        </p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                        <i class="fas fa-life-ring text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column - Quick Actions & Recent Activity -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="p-6 border-b border-gray-100">
+                        <h2 class="text-xl font-semibold text-gray-900">
+                            <i class="fas fa-bolt mr-2 text-blue-600"></i>
+                            Quick Actions
+                        </h2>
+                        <p class="text-gray-600 text-sm mt-1">Frequently used administrative tasks</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <a href="#" class="flex flex-col items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors group">
+                                <div class="bg-blue-600 text-white p-3 rounded-lg mb-2 group-hover:bg-blue-700 transition-colors">
+                                    <i class="fas fa-user-plus text-lg"></i>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900">Add Student</span>
+                            </a>
+                            <a href="#" class="flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors group">
+                                <div class="bg-green-600 text-white p-3 rounded-lg mb-2 group-hover:bg-green-700 transition-colors">
+                                    <i class="fas fa-check-circle text-lg"></i>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900">Approve Requests</span>
+                            </a>
+                            <a href="#" class="flex flex-col items-center p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-colors group">
+                                <div class="bg-yellow-600 text-white p-3 rounded-lg mb-2 group-hover:bg-yellow-700 transition-colors">
+                                    <i class="fas fa-credit-card text-lg"></i>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900">Verify Payments</span>
+                            </a>
+                            <a href="#" class="flex flex-col items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors group">
+                                <div class="bg-purple-600 text-white p-3 rounded-lg mb-2 group-hover:bg-purple-700 transition-colors">
+                                    <i class="fas fa-bullhorn text-lg"></i>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900">Send Notice</span>
+                            </a>
+                            <a href="#" class="flex flex-col items-center p-4 bg-red-50 rounded-lg hover:bg-red-100 transition-colors group">
+                                <div class="bg-red-600 text-white p-3 rounded-lg mb-2 group-hover:bg-red-700 transition-colors">
+                                    <i class="fas fa-chart-bar text-lg"></i>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900">Generate Report</span>
+                            </a>
+                            <a href="#" class="flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group">
+                                <div class="bg-gray-600 text-white p-3 rounded-lg mb-2 group-hover:bg-gray-700 transition-colors">
+                                    <i class="fas fa-cog text-lg"></i>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900">System Settings</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="p-6 border-b border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-xl font-semibold text-gray-900">
+                                <i class="fas fa-history mr-2 text-blue-600"></i>
+                                Recent Activity
+                            </h2>
+                            <a href="#" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View All</a>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            {% for activity in recent_activities|slice:":5" %}
+                            <div class="activity-item flex items-center space-x-4 p-3 rounded-lg">
+                                <div class="flex-shrink-0">
+                                    <div class="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-user text-blue-600 text-sm"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-gray-900">{{ activity.description }}</p>
+                                    <p class="text-xs text-gray-500">{{ activity.timestamp|timesince }} ago</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        {{ activity.activity_type|title }}
+                                    </span>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="text-center py-8">
+                                <i class="fas fa-history text-gray-300 text-3xl mb-3"></i>
+                                <p class="text-gray-500">No recent activity</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Analytics & Notifications -->
+            <div class="space-y-8">
+                <!-- Performance Chart -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="p-6 border-b border-gray-100">
+                        <h2 class="text-xl font-semibold text-gray-900">
+                            <i class="fas fa-chart-line mr-2 text-blue-600"></i>
+                            Performance Overview
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="chart-container rounded-lg p-4 mb-4">
+                            <canvas id="performanceChart" width="300" height="200"></canvas>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 text-center">
+                            <div>
+                                <div class="text-2xl font-bold text-green-600">{{ approved_requests_today|default:0 }}</div>
+                                <div class="text-xs text-gray-500">Approved Today</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold text-red-600">{{ rejected_requests_today|default:0 }}</div>
+                                <div class="text-xs text-gray-500">Rejected Today</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Priority Alerts -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="p-6 border-b border-gray-100">
+                        <h2 class="text-xl font-semibold text-gray-900">
+                            <i class="fas fa-exclamation-triangle mr-2 text-yellow-600"></i>
+                            Priority Alerts
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-3">
+                            {% if pending_requests > 10 %}
+                            <div class="flex items-center p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                                <i class="fas fa-clock text-yellow-600 mr-3"></i>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-yellow-800">High Request Volume</p>
+                                    <p class="text-xs text-yellow-600">{{ pending_requests }} requests pending review</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if open_support_tickets > 5 %}
+                            <div class="flex items-center p-3 bg-red-50 rounded-lg border border-red-200">
+                                <i class="fas fa-life-ring text-red-600 mr-3"></i>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-red-800">Support Backlog</p>
+                                    <p class="text-xs text-red-600">{{ open_support_tickets }} tickets need attention</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="flex items-center p-3 bg-blue-50 rounded-lg border border-blue-200">
+                                <i class="fas fa-info-circle text-blue-600 mr-3"></i>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-blue-800">System Status</p>
+                                    <p class="text-xs text-blue-600">All systems operational</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats Summary -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="p-6 border-b border-gray-100">
+                        <h2 class="text-xl font-semibold text-gray-900">
+                            <i class="fas fa-tachometer-alt mr-2 text-blue-600"></i>
+                            Today's Summary
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Active Students</span>
+                                <span class="font-semibold text-gray-900">{{ active_students|default:0 }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Payments Verified</span>
+                                <span class="font-semibold text-green-600">{{ verified_payments_today|default:0 }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Tickets Resolved</span>
+                                <span class="font-semibold text-blue-600">{{ resolved_tickets_today|default:0 }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">New Registrations</span>
+                                <span class="font-semibold text-purple-600">{{ new_students_today|default:0 }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function staffDashboard() {
+    return {
+        currentTime: '',
+        isRefreshing: false,
+        
+        init() {
+            this.updateTime();
+            setInterval(() => {
+                this.updateTime();
+            }, 1000);
+        },
+        
+        updateTime() {
+            const now = new Date();
+            this.currentTime = now.toLocaleTimeString();
+        },
+        
+        refreshDashboard() {
+            this.isRefreshing = true;
+            setTimeout(() => {
+                this.isRefreshing = false;
+                location.reload();
+            }, 1000);
+        }
+    }
+}
+</script>
+{% endblock %}

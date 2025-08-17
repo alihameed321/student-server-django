@@ -66,7 +66,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-white text-sm font-medium opacity-90">Pending Requests</p>
-                        <p class="text-3xl font-bold text-white" x-text="pendingRequests">0</p>
+                        <p class="text-3xl font-bold text-white" x-text="stats.pending_requests">0</p>
                     </div>
                     <div class="bg-white bg-opacity-20 rounded-full p-3">
                         <i class="fas fa-clock text-2xl"></i>
@@ -102,7 +102,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-white text-sm font-medium opacity-90">New Documents</p>
-                        <p class="text-3xl font-bold text-white" x-text="newDocuments">0</p>
+                        <p class="text-3xl font-bold text-white" x-text="stats.new_documents">0</p>
                     </div>
                     <div class="bg-white bg-opacity-20 rounded-full p-3">
                         <i class="fas fa-file-alt text-2xl"></i>
@@ -120,7 +120,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-white text-sm font-medium opacity-90">Notifications</p>
-                        <p class="text-3xl font-bold text-white" x-text="notifications">0</p>
+                        <p class="text-3xl font-bold text-white" x-text="stats.unread_notifications">0</p>
                     </div>
                     <div class="bg-white bg-opacity-20 rounded-full p-3">
                         <i class="fas fa-bell text-2xl"></i>
@@ -344,14 +344,14 @@
             async loadDashboardData() {
                 try {
                     // Load stats
-                    const statsResponse = await fetch('/student-portal/ajax/dashboard-stats/');
+                    const statsResponse = await fetch('/student/ajax/dashboard-stats/');
                     if (statsResponse.ok) {
                         const statsData = await statsResponse.json();
                         this.stats = { ...this.stats, ...statsData };
                     }
                     
                     // Load recent requests
-                    const requestsResponse = await fetch('/student-portal/ajax/recent-requests/');
+                    const requestsResponse = await fetch('/student/ajax/recent-requests/');
                     if (requestsResponse.ok) {
                         const requestsData = await requestsResponse.json();
                         this.recentRequests = requestsData.requests || [];

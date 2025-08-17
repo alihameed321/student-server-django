@@ -1,5 +1,37 @@
 /* Custom CSS for My University Services */
 
+/* Font Configuration */
+:root {
+    --font-tajawal: 'Tajawal', sans-serif;
+    --font-ibm-plex-arabic: 'IBM Plex Sans Arabic', sans-serif;
+}
+
+/* Apply fonts to body and common elements */
+body {
+    font-family: var(--font-tajawal);
+}
+
+.font-tajawal {
+    font-family: var(--font-tajawal);
+}
+
+.font-ibm-plex-arabic {
+    font-family: var(--font-ibm-plex-arabic);
+}
+
+/* Arabic text styling */
+.arabic-text {
+    font-family: var(--font-ibm-plex-arabic);
+    direction: rtl;
+    text-align: right;
+}
+
+/* Headings with Tajawal */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-tajawal);
+    font-weight: 600;
+}
+
 /* Smooth transitions */
 * {
     transition: all 0.2s ease-in-out;

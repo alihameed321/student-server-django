@@ -62,3 +62,32 @@ def ajax_unread_count(request):
     return JsonResponse({
         'unread_count': unread_count
     })
+
+
+@login_required
+def ajax_recent_notifications(request):
+    """AJAX endpoint to get recent notifications"""
+    # For now, return sample data as we don't have notification models implemented
+    # This can be updated when notification functionality is fully implemented
+    recent_notifications = [
+        {
+            'id': 1,
+            'title': 'Welcome to University Services',
+            'message': 'Your account has been successfully created.',
+            'type': 'info',
+            'created_at': '2024-01-15T10:30:00Z',
+            'is_read': False
+        },
+        {
+            'id': 2,
+            'title': 'System Maintenance',
+            'message': 'Scheduled maintenance on Sunday 2-4 AM.',
+            'type': 'warning',
+            'created_at': '2024-01-14T15:45:00Z',
+            'is_read': True
+        }
+    ]
+    
+    return JsonResponse({
+        'notifications': recent_notifications
+    })
