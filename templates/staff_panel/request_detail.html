@@ -281,10 +281,10 @@ function approveRequest(requestId) {
         })
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
+            if (data.status === 'success') {
                 location.reload();
             } else {
-                alert('Error approving request: ' + (data.error || 'Unknown error'));
+                alert('Error approving request: ' + (data.message || 'Unknown error'));
             }
         })
         .catch(error => {
@@ -305,10 +305,10 @@ function rejectRequest(requestId) {
         })
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
+            if (data.status === 'success') {
                 location.reload();
             } else {
-                alert('Error rejecting request: ' + (data.error || 'Unknown error'));
+                alert('Error rejecting request: ' + (data.message || 'Unknown error'));
             }
         })
         .catch(error => {

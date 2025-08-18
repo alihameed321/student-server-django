@@ -172,6 +172,9 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- CSRF Token -->
+{% csrf_token %}
+
 <script>
     function filterRequests(status) {
         const items = document.querySelectorAll('.request-item');

@@ -194,6 +194,9 @@
     </div>
 </div>
 
+<!-- CSRF Token -->
+{% csrf_token %}
+
 <script>
 function approveRequest(requestId) {
     if (confirm('Are you sure you want to approve this request?')) {
@@ -209,7 +212,7 @@ function approveRequest(requestId) {
             if (data.status === 'success') {
                 location.reload();
             } else {
-                alert('Error approving request');
+                alert(data.message || 'Error approving request');
             }
         })
         .catch(error => {
@@ -233,7 +236,7 @@ function rejectRequest(requestId) {
             if (data.status === 'success') {
                 location.reload();
             } else {
-                alert('Error rejecting request');
+                alert(data.message || 'Error rejecting request');
             }
         })
         .catch(error => {

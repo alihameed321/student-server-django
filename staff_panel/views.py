@@ -125,22 +125,31 @@ def approve_request(request, request_id):
     from student_portal.models import ServiceRequest
     from .models import StaffActivity
     
-    service_request = ServiceRequest.objects.get(id=request_id)
-    service_request.status = 'approved'
-    service_request.processed_by = request.user
-    service_request.processed_at = timezone.now()
-    service_request.save()
-    
-    # Log staff activity
-    StaffActivity.objects.create(
-        staff_member=request.user,
-        activity_type='request_approved',
-        description=f'Approved {service_request.service_type} request for {service_request.student.get_full_name()}',
-        target_user=service_request.student
-    )
-    
-    messages.success(request, f'Request #{request_id} has been approved successfully.')
-    return JsonResponse({'status': 'success', 'message': 'Request approved'})
+    try:
+        service_request = get_object_or_404(ServiceRequest, id=request_id)
+        
+        # Check if request can be approved
+        if service_request.status not in ['pending', 'in_review']:
+            return JsonResponse({'status': 'error', 'message': 'Request cannot be approved in its current status'})
+        
+        service_request.status = 'approved'
+        service_request.processed_by = request.user
+        service_request.processed_at = timezone.now()
+        service_request.save()
+        
+        # Log staff activity
+        StaffActivity.objects.create(
+            staff_member=request.user,
+            activity_type='request_approved',
+            description=f'Approved {service_request.get_request_type_display()} request for {service_request.student.get_full_name()}',
+            target_user=service_request.student
+        )
+        
+        messages.success(request, f'Request #{request_id} has been approved successfully.')
+        return JsonResponse({'status': 'success', 'message': 'Request approved'})
+        
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': f'Error approving request: {str(e)}'})
 
 
 @login_required
@@ -149,22 +158,31 @@ def reject_request(request, request_id):
     from student_portal.models import ServiceRequest
     from .models import StaffActivity
     
-    service_request = ServiceRequest.objects.get(id=request_id)
-    service_request.status = 'rejected'
-    service_request.processed_by = request.user
-    service_request.processed_at = timezone.now()
-    service_request.save()
-    
-    # Log staff activity
-    StaffActivity.objects.create(
-        staff_member=request.user,
-        activity_type='request_rejected',
-        description=f'Rejected {service_request.service_type} request for {service_request.student.get_full_name()}',
-        target_user=service_request.student
-    )
-    
-    messages.success(request, f'Request #{request_id} has been rejected.')
-    return JsonResponse({'status': 'success', 'message': 'Request rejected'})
+    try:
+        service_request = get_object_or_404(ServiceRequest, id=request_id)
+        
+        # Check if request can be rejected
+        if service_request.status not in ['pending', 'in_review']:
+            return JsonResponse({'status': 'error', 'message': 'Request cannot be rejected in its current status'})
+        
+        service_request.status = 'rejected'
+        service_request.processed_by = request.user
+        service_request.processed_at = timezone.now()
+        service_request.save()
+        
+        # Log staff activity
+        StaffActivity.objects.create(
+            staff_member=request.user,
+            activity_type='request_rejected',
+            description=f'Rejected {service_request.get_request_type_display()} request for {service_request.student.get_full_name()}',
+            target_user=service_request.student
+        )
+        
+        messages.success(request, f'Request #{request_id} has been rejected.')
+        return JsonResponse({'status': 'success', 'message': 'Request rejected'})
+        
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': f'Error rejecting request: {str(e)}'})
 
 
 # Financial Management Views
