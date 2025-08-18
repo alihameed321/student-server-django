@@ -192,23 +192,92 @@ class FinancialManagementView(LoginRequiredMixin, TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        from financial.models import Payment, StudentFee
+        from financial.models import Payment, StudentFee, FeeType
+        from accounts.models import User
+        from decimal import Decimal
+        from datetime import datetime, timedelta
         
         # Financial statistics
         total_revenue = Payment.objects.filter(status='verified').aggregate(
             total=Sum('amount')
-        )['total'] or 0
+        )['total'] or Decimal('0.00')
         
-        pending_payments = Payment.objects.filter(status='pending').count()
+        pending_payments_count = Payment.objects.filter(status='pending').count()
+        pending_payments_amount = Payment.objects.filter(status='pending').aggregate(
+            total=Sum('amount')
+        )['total'] or Decimal('0.00')
+        
         verified_today = Payment.objects.filter(
             status='verified',
             verified_at__date=timezone.now().date()
         ).count()
         
+        revenue_today = Payment.objects.filter(
+            status='verified',
+            verified_at__date=timezone.now().date()
+        ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+        
+        # Outstanding fees
+        outstanding_fees = StudentFee.objects.exclude(status='paid').aggregate(
+            total=Sum('amount')
+        )['total'] or Decimal('0.00')
+        
+        # Recent transactions (last 10 verified payments)
+        recent_transactions = Payment.objects.filter(
+            status='verified'
+        ).select_related('student', 'fee__fee_type').order_by('-verified_at')[:10]
+        
+        # Payment trends (last 7 days)
+        payment_trends = []
+        for i in range(7):
+            date = timezone.now().date() - timedelta(days=i)
+            daily_revenue = Payment.objects.filter(
+                status='verified',
+                verified_at__date=date
+            ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+            payment_trends.append({
+                'date': date.strftime('%m/%d'),
+                'amount': float(daily_revenue)
+            })
+        payment_trends.reverse()
+        
+        # Fee type breakdown
+        fee_breakdown = []
+        fee_types = FeeType.objects.all()
+        for fee_type in fee_types:
+            total_fees = StudentFee.objects.filter(fee_type=fee_type).aggregate(
+                total=Sum('amount')
+            )['total'] or Decimal('0.00')
+            paid_fees = Payment.objects.filter(
+                fee__fee_type=fee_type,
+                status='verified'
+            ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+            
+            fee_breakdown.append({
+                'name': fee_type.name,
+                'total': total_fees,
+                'paid': paid_fees,
+                'outstanding': total_fees - paid_fees
+            })
+        
+        # Student payment status
+        total_students = User.objects.filter(user_type='student').count()
+        students_with_outstanding = StudentFee.objects.exclude(
+            status='paid'
+        ).values('student').distinct().count()
+        
         context.update({
             'total_revenue': total_revenue,
-            'pending_payments': pending_payments,
+            'pending_payments_count': pending_payments_count,
+            'pending_payments_amount': pending_payments_amount,
             'verified_today': verified_today,
+            'revenue_today': revenue_today,
+            'outstanding_fees': outstanding_fees,
+            'recent_transactions': recent_transactions,
+            'payment_trends': payment_trends,
+            'fee_breakdown': fee_breakdown,
+            'total_students': total_students,
+            'students_with_outstanding': students_with_outstanding,
         })
         return context
 
@@ -229,6 +298,112 @@ class PaymentVerificationView(LoginRequiredMixin, TemplateView):
             'pending_payments': pending_payments,
         })
         return context
+
+
+@login_required
+def verify_payment(request, payment_id):
+    """Verify a payment via AJAX"""
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+    
+    try:
+        from financial.models import Payment
+        from .models import StaffActivity
+        
+        payment = get_object_or_404(Payment, id=payment_id)
+        
+        if payment.status != 'pending':
+            return JsonResponse({'status': 'error', 'message': 'Payment is not pending verification'})
+        
+        # Verify the payment
+        payment.verify_payment(request.user, "Verified by staff")
+        
+        # Log staff activity
+        StaffActivity.objects.create(
+            staff_member=request.user,
+            activity_type='payment_verified',
+            description=f'Verified payment of ${payment.amount} for {payment.student.get_full_name()}',
+            target_user=payment.student
+        )
+        
+        return JsonResponse({
+            'status': 'success', 
+            'message': f'Payment #{payment_id} verified successfully'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': f'Error verifying payment: {str(e)}'})
+
+
+@login_required
+def reject_payment(request, payment_id):
+    """Reject a payment via AJAX"""
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+    
+    try:
+        from financial.models import Payment
+        from .models import StaffActivity
+        import json
+        
+        payment = get_object_or_404(Payment, id=payment_id)
+        
+        if payment.status != 'pending':
+            return JsonResponse({'status': 'error', 'message': 'Payment is not pending verification'})
+        
+        # Get rejection reason from request
+        data = json.loads(request.body) if request.body else {}
+        reason = data.get('reason', 'Rejected by staff')
+        
+        # Reject the payment
+        payment.reject_payment(request.user, reason)
+        
+        # Log staff activity
+        StaffActivity.objects.create(
+            staff_member=request.user,
+            activity_type='payment_rejected',
+            description=f'Rejected payment of ${payment.amount} for {payment.student.get_full_name()}',
+            target_user=payment.student
+        )
+        
+        return JsonResponse({
+            'status': 'success', 
+            'message': f'Payment #{payment_id} rejected successfully'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': f'Error rejecting payment: {str(e)}'})
+
+
+@login_required
+def get_payment_details(request, payment_id):
+    """Get payment details via AJAX"""
+    try:
+        from financial.models import Payment
+        
+        payment = get_object_or_404(Payment, id=payment_id)
+        
+        return JsonResponse({
+            'status': 'success',
+            'payment': {
+                'id': payment.id,
+                'student_name': payment.student.get_full_name(),
+                'student_id': payment.student.university_id,
+                'fee_name': payment.fee.fee_type.name if payment.fee else 'General Payment',
+                'fee_type': payment.fee.fee_type.name if payment.fee else 'N/A',
+                'amount': float(payment.amount),
+                'payment_method': payment.payment_provider.name if payment.payment_provider else 'Bank Transfer',
+                'transaction_reference': payment.transaction_reference,
+                'payment_date': payment.payment_date.strftime('%B %d, %Y at %I:%M %p'),
+                'status': payment.get_status_display(),
+                'verification_notes': payment.verification_notes or '',
+                'verified_by': payment.verified_by.get_full_name() if payment.verified_by else None,
+                'verified_at': payment.verified_at.strftime('%B %d, %Y at %I:%M %p') if payment.verified_at else None,
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': f'Error fetching payment details: {str(e)}'})
 
 
 class PendingPaymentsView(LoginRequiredMixin, TemplateView):
@@ -671,6 +846,9 @@ class CreateAnnouncementView(LoginRequiredMixin, TemplateView):
                 is_urgent=is_urgent,
                 created_by=request.user
             )
+            
+            # Send notifications to target users
+            announcement.send_notifications()
             
             # Log staff activity
             StaffActivity.objects.create(

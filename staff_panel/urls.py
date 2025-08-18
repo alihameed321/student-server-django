@@ -43,4 +43,7 @@ urlpatterns = [
     # API Endpoints for AJAX
     path('api/stats/', views.get_dashboard_stats, name='ajax_dashboard_stats'),
     path('api/activities/', views.get_recent_activities, name='api_activities'),
+    path('api/payments/<int:payment_id>/verify/', views.verify_payment, name='verify_payment'),
+    path('api/payments/<int:payment_id>/reject/', views.reject_payment, name='reject_payment'),
+    path('api/payments/<int:payment_id>/details/', views.get_payment_details, name='payment_details'),
 ]

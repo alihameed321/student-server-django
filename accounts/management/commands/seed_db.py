@@ -3,7 +3,13 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from datetime import datetime, timedelta
 from decimal import Decimal
+from django.core.files import File
+from django.core.files.storage import default_storage
+from django.conf import settings
 import random
+import os
+import glob
+import shutil
 
 # Import all models
 from accounts.models import User, StudentProfile, StaffProfile
@@ -100,30 +106,77 @@ class Command(BaseCommand):
         """Create payment providers"""
         providers = [
             {
-                'name': 'Bank Transfer',
-                'description': 'Direct bank transfer',
-                'instructions': 'Transfer to Account: 1234567890, Bank: University Bank'
+                'name': 'Jaib',
+                'description': 'Jaib mobile payment',
+                'instructions': 'Transfer money to the university Jaib account and submit your payment details below',
+                'university_account_name': 'University of Excellence',
+                'university_account_number': '967-123-456-789',
+                'university_phone': '+967-1-234-567',
+                'additional_info': 'Jaib Business Account - University Official Payment Gateway',
+                'logo_filename': 'jaib_logo.webp'
             },
             {
-                'name': 'Credit Card',
-                'description': 'Online credit card payment',
-                'instructions': 'Pay online using your credit or debit card'
+                'name': 'OneCash',
+                'description': 'OneCash digital wallet',
+                'instructions': 'Send money to the university OneCash account',
+                'university_account_name': 'University of Excellence',
+                'university_account_number': '967-987-654-321',
+                'university_phone': '+967-1-234-568',
+                'additional_info': 'OneCash Business Wallet - Secure Digital Payments',
+                'logo_filename': 'oneCash_logo.webp'
             },
             {
-                'name': 'Mobile Money',
-                'description': 'Mobile money payment',
-                'instructions': 'Send money to 0123456789 (University Account)'
+                'name': 'Cash',
+                'description': 'Cash mobile payment',
+                'instructions': 'Transfer funds using Cash mobile payment service',
+                'university_account_name': 'University of Excellence',
+                'university_account_number': '967-555-123-456',
+                'university_phone': '+967-1-234-569',
+                'additional_info': 'Cash Business Account - Mobile Payment Solution',
+                'logo_filename': 'cash_logo.webp'
+            },
+            {
+                'name': 'Kuraimi',
+                'description': 'Kuraimi banking service',
+                'instructions': 'Use Kuraimi banking to transfer funds to the university account',
+                'university_account_name': 'University of Excellence',
+                'university_account_number': '967-777-888-999',
+                'university_phone': '+967-1-234-570',
+                'additional_info': 'Kuraimi Bank - Branch: Main Campus, Account Type: Business',
+                'logo_filename': 'kuraimi_logo.webp'
             },
         ]
+
+        # Base path for provider logos in static files
+        static_provider_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'provider')
         
         for provider_data in providers:
-            PaymentProvider.objects.get_or_create(
+            provider, created = PaymentProvider.objects.get_or_create(
                 name=provider_data['name'],
                 defaults={
                     'description': provider_data['description'],
-                    'instructions': provider_data['instructions']
+                    'instructions': provider_data['instructions'],
+                    'university_account_name': provider_data['university_account_name'],
+                    'university_account_number': provider_data['university_account_number'],
+                    'university_phone': provider_data['university_phone'],
+                    'additional_info': provider_data['additional_info']
                 }
             )
+            
+            # Handle logo file upload
+            if created or not provider.logo:
+                logo_filename = provider_data['logo_filename']
+                static_logo_path = os.path.join(static_provider_path, logo_filename)
+                
+                if os.path.exists(static_logo_path):
+                    try:
+                        with open(static_logo_path, 'rb') as f:
+                            provider.logo.save(logo_filename, File(f), save=True)
+                        self.stdout.write(f'  - Assigned logo {logo_filename} to {provider.name}')
+                    except Exception as e:
+                        self.stdout.write(f'  - Error assigning logo to {provider.name}: {e}')
+                else:
+                    self.stdout.write(f'  - Logo file not found: {static_logo_path}')
         
         self.stdout.write(f'Created {len(providers)} payment providers')
 
@@ -214,6 +267,17 @@ class Command(BaseCommand):
         majors = ['Computer Science', 'Business Administration', 'Engineering', 'Medicine', 'Law', 'Arts']
         levels = ['Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate']
         
+        # Get available profile photos
+        photos_dir = os.path.join('static', 'images', 'persons')
+        available_photos = []
+        if os.path.exists(photos_dir):
+            # Create list of photo filenames (per1.jpg, per2.jpg, etc.)
+            for i in range(1, 62):  # Based on the available photos per1.jpg to per61.jpg
+                photo_file = f'per{i}.jpg'
+                photo_full_path = os.path.join(photos_dir, photo_file)
+                if os.path.exists(photo_full_path):
+                    available_photos.append((photo_file, photo_full_path))
+        
         for i in range(count):
             username = f'student{i+1:03d}'
             if not User.objects.filter(username=username).exists():
@@ -230,6 +294,19 @@ class Command(BaseCommand):
                     enrollment_year=random.randint(2020, 2024),
                     date_of_birth=datetime(1995, 1, 1).date() + timedelta(days=random.randint(0, 3650))
                 )
+                
+                # Assign random profile photo
+                if available_photos:
+                    photo_file, photo_path = random.choice(available_photos)
+                    try:
+                        with open(photo_path, 'rb') as f:
+                            student.profile_picture.save(
+                                photo_file,
+                                File(f),
+                                save=True
+                            )
+                    except Exception as e:
+                        print(f'Error assigning photo to {username}: {e}')
                 
                 # Create student profile
                 StudentProfile.objects.create(

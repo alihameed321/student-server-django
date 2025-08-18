@@ -32,11 +32,11 @@
                 Outstanding Fees
             </h2>
             
-            {% if outstanding_fees > 0 %}
+            {% if has_outstanding_fees %}
                 <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
                     <div class="flex items-center">
                         <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
-                        <span class="text-red-800 font-medium">Total Outstanding: ${{ outstanding_fees }}</span>
+                        <span class="text-red-800 font-medium">Total Outstanding: ${{ outstanding_fees|floatformat:2 }}</span>
                     </div>
                 </div>
             {% else %}
@@ -49,28 +49,38 @@
             {% endif %}
             
             <!-- Fee Breakdown -->
+            {% if fee_breakdown %}
             <div class="space-y-3">
-                <div class="flex justify-between items-center py-2 border-b border-gray-200">
-                    <span class="text-gray-700">Tuition Fee</span>
-                    <span class="font-semibold text-gray-900">$5,000.00</span>
+                {% for fee in fee_breakdown %}
+                <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                    <div class="flex items-center">
+                        <input type="checkbox" name="selected_fees" value="{{ fee.id }}" class="mr-3 fee-checkbox" data-amount="{{ fee.remaining }}">
+                        <div>
+                            <span class="text-gray-900 font-medium">{{ fee.name }}</span>
+                            {% if fee.is_overdue %}
+                                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i> Overdue
+                                </span>
+                            {% endif %}
+                            <div class="text-sm text-gray-500">Due: {{ fee.due_date|date:"M d, Y" }}</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-semibold text-gray-900">${{ fee.amount|floatformat:2 }}</div>
+                        <div class="text-sm text-green-600">Paid: ${{ fee.paid|floatformat:2 }}</div>
+                        <div class="text-sm font-medium {% if fee.remaining > 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                            Remaining: ${{ fee.remaining|floatformat:2 }}
+                        </div>
+                    </div>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-200">
-                    <span class="text-gray-700">Library Fee</span>
-                    <span class="font-semibold text-gray-900">$150.00</span>
-                </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-200">
-                    <span class="text-gray-700">Technology Fee</span>
-                    <span class="font-semibold text-gray-900">$200.00</span>
-                </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-200">
-                    <span class="text-gray-700">Student Activity Fee</span>
-                    <span class="font-semibold text-gray-900">$100.00</span>
-                </div>
+                {% endfor %}
+                
                 <div class="flex justify-between items-center py-3 bg-gray-50 px-4 rounded-lg">
-                    <span class="text-lg font-semibold text-gray-900">Total</span>
-                    <span class="text-lg font-bold" style="color: #102A71;">$5,450.00</span>
+                    <span class="text-lg font-semibold text-gray-900">Total Outstanding</span>
+                    <span class="text-lg font-bold" style="color: #102A71;">${{ outstanding_fees|floatformat:2 }}</span>
                 </div>
             </div>
+            {% endif %}
         </div>
         
         <!-- Payment Form -->
@@ -88,31 +98,149 @@
                     <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">Payment Amount</label>
                     <div class="relative">
                         <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
-                        <input type="number" id="amount" name="amount" step="0.01" min="0" max="5450" value="5450.00" 
+                        <input type="number" id="amount" name="amount" step="0.01" min="0" max="{{ outstanding_fees }}" value="{{ outstanding_fees|floatformat:2 }}" 
                                class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     </div>
-                    <p class="text-sm text-gray-500 mt-1">You can pay the full amount or make a partial payment</p>
+                    <div class="flex justify-between items-center mt-2">
+                        <p class="text-sm text-gray-500">You can pay the full amount or make a partial payment</p>
+                        <button type="button" id="select-all-fees" class="text-sm text-blue-600 hover:text-blue-800">Select All Fees</button>
+                    </div>
+                </div>
+                
+                <!-- Transaction Reference -->
+                <div>
+                    <label for="transaction_reference" class="block text-sm font-medium text-gray-700 mb-2">Transaction Reference (Optional)</label>
+                    <input type="text" id="transaction_reference" name="transaction_reference" placeholder="Enter your transaction reference" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <p class="text-sm text-gray-500 mt-1">If you have a reference number from your bank or payment provider</p>
                 </div>
                 
                 <!-- Payment Method -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-3">Payment Method</label>
-                    <div class="space-y-3">
-                        <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                            <input type="radio" name="payment_method" value="credit_card" class="mr-3" checked>
-                            <i class="fas fa-credit-card mr-3 text-blue-600"></i>
-                            <span class="font-medium">Credit/Debit Card</span>
-                        </label>
-                        <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                            <input type="radio" name="payment_method" value="bank_transfer" class="mr-3">
-                            <i class="fas fa-university mr-3 text-green-600"></i>
-                            <span class="font-medium">Bank Transfer</span>
-                        </label>
-                        <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                            <input type="radio" name="payment_method" value="online_banking" class="mr-3">
-                            <i class="fas fa-laptop mr-3 text-purple-600"></i>
-                            <span class="font-medium">Online Banking</span>
-                        </label>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Select Payment Provider</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {% for provider in payment_providers %}
+                        <div class="provider-card border border-gray-300 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                            <label class="block cursor-pointer">
+                                <input type="radio" name="payment_method" value="{{ provider.id }}" class="sr-only provider-radio" {% if forloop.first %}checked{% endif %}>
+                                <div class="provider-content p-4 border-2 border-transparent hover:border-blue-200 transition-colors">
+                                    <!-- Provider Header -->
+                                    <div class="flex items-center mb-3">
+                                        {% if provider.logo %}
+                                            <img src="{{ provider.logo.url }}" alt="{{ provider.name }}" class="w-12 h-12 object-contain mr-3">
+                                        {% else %}
+                                            {% if 'credit' in provider.name.lower or 'card' in provider.name.lower %}
+                                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                                    <i class="fas fa-credit-card text-blue-600 text-xl"></i>
+                                                </div>
+                                            {% elif 'bank' in provider.name.lower or 'transfer' in provider.name.lower %}
+                                                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                                    <i class="fas fa-university text-green-600 text-xl"></i>
+                                                </div>
+                                            {% elif 'online' in provider.name.lower %}
+                                                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                                    <i class="fas fa-laptop text-purple-600 text-xl"></i>
+                                                </div>
+                                            {% else %}
+                                                <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                                                    <i class="fas fa-money-bill text-gray-600 text-xl"></i>
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+                                        <div>
+                                            <h3 class="font-semibold text-gray-900">{{ provider.name }}</h3>
+                                            {% if provider.description %}
+                                                <p class="text-sm text-gray-600">{{ provider.description }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- University Account Details -->
+                                    {% if provider.university_account_name or provider.university_account_number %}
+                                    <div class="bg-gray-50 rounded-lg p-3 text-sm">
+                                        <h4 class="font-medium text-gray-700 mb-2">University Account Details:</h4>
+                                        <div class="space-y-1">
+                                            {% if provider.university_account_name %}
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-600">Account Name:</span>
+                                                <span class="font-medium">{{ provider.university_account_name }}</span>
+                                            </div>
+                                            {% endif %}
+                                            {% if provider.university_account_number %}
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-600">Account Number:</span>
+                                                <span class="font-medium">{{ provider.university_account_number }}</span>
+                                            </div>
+                                            {% endif %}
+                                            {% if provider.university_phone %}
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-600">Phone:</span>
+                                                <span class="font-medium">{{ provider.university_phone }}</span>
+                                            </div>
+                                            {% endif %}
+                                            {% if provider.additional_info %}
+                                            <div class="mt-2 pt-2 border-t border-gray-200">
+                                                <p class="text-gray-600">{{ provider.additional_info }}</p>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <div class="bg-yellow-50 rounded-lg p-3 text-sm">
+                                        <p class="text-yellow-800">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                                            Account details will be provided after selection
+                                        </p>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if provider.instructions %}
+                                    <div class="mt-3 p-3 bg-blue-50 rounded-lg">
+                                        <p class="text-sm text-blue-800">
+                                            <i class="fas fa-info-circle mr-1"></i>
+                                            {{ provider.instructions }}
+                                        </p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </label>
+                        </div>
+                        {% empty %}
+                        <div class="col-span-2">
+                            <p class="text-gray-500 text-center py-8">No payment methods available</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Transfer Details -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-user mr-2 text-yellow-600"></i>
+                        Transfer Details
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="sender_name" class="block text-sm font-medium text-gray-700 mb-2">Sender Name (Optional)</label>
+                            <input type="text" id="sender_name" name="sender_name" 
+                                   placeholder="Name of person who sent the money" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <p class="text-xs text-gray-500 mt-1">Enter the name of the person who made the transfer</p>
+                        </div>
+                        <div>
+                            <label for="sender_phone" class="block text-sm font-medium text-gray-700 mb-2">Sender Phone (Optional)</label>
+                            <input type="tel" id="sender_phone" name="sender_phone" 
+                                   placeholder="Phone number of sender" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <p class="text-xs text-gray-500 mt-1">Phone number for verification purposes</p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <label for="transfer_notes" class="block text-sm font-medium text-gray-700 mb-2">Additional Notes (Optional)</label>
+                        <textarea id="transfer_notes" name="transfer_notes" rows="3" 
+                                  placeholder="Any additional information about the transfer..." 
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                        <p class="text-xs text-gray-500 mt-1">Include any relevant details about your payment</p>
                     </div>
                 </div>
                 
@@ -174,18 +302,153 @@
 </div>
 {% endblock %}
 
+{% block extra_css %}
+<style>
+    .provider-card.selected .provider-content {
+        border-color: #3B82F6 !important;
+        background-color: #EFF6FF;
+    }
+    
+    .provider-card.selected {
+        box-shadow: 0 0 0 2px #3B82F6;
+    }
+    
+    .provider-radio:checked + .provider-content {
+        border-color: #3B82F6 !important;
+        background-color: #EFF6FF;
+    }
+</style>
+{% endblock %}
+
 {% block extra_js %}
 <script>
-    // Show/hide card details based on payment method
-    document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
-        radio.addEventListener('change', function() {
+    document.addEventListener('DOMContentLoaded', function() {
+        const amountInput = document.getElementById('amount');
+        const feeCheckboxes = document.querySelectorAll('.fee-checkbox');
+        const selectAllBtn = document.getElementById('select-all-fees');
+        const providerRadios = document.querySelectorAll('.provider-radio');
+        const providerCards = document.querySelectorAll('.provider-card');
+        
+        // Handle provider selection visual feedback
+        function updateProviderSelection() {
+            providerCards.forEach(card => {
+                const radio = card.querySelector('.provider-radio');
+                if (radio.checked) {
+                    card.classList.add('selected');
+                } else {
+                    card.classList.remove('selected');
+                }
+            });
+        }
+        
+        // Add click handlers to provider cards
+        providerCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const radio = this.querySelector('.provider-radio');
+                radio.checked = true;
+                updateProviderSelection();
+                
+                // Trigger change event for card details visibility
+                radio.dispatchEvent(new Event('change'));
+            });
+        });
+        
+        // Show/hide card details based on payment method
+        providerRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                const cardDetails = document.getElementById('card-details');
+                const providerCard = this.closest('.provider-card');
+                const providerName = providerCard.querySelector('h3').textContent.toLowerCase();
+                
+                if (providerName.includes('credit') || providerName.includes('card')) {
+                    cardDetails.style.display = 'block';
+                } else {
+                    cardDetails.style.display = 'none';
+                }
+                
+                updateProviderSelection();
+            });
+        });
+        
+        // Initialize provider selection and card details visibility on page load
+        updateProviderSelection();
+        const checkedRadio = document.querySelector('.provider-radio:checked');
+        if (checkedRadio) {
             const cardDetails = document.getElementById('card-details');
-            if (this.value === 'credit_card') {
+            const providerCard = checkedRadio.closest('.provider-card');
+            const providerName = providerCard.querySelector('h3').textContent.toLowerCase();
+            
+            if (providerName.includes('credit') || providerName.includes('card')) {
                 cardDetails.style.display = 'block';
             } else {
                 cardDetails.style.display = 'none';
             }
+        }
+        
+        // Handle fee selection and amount calculation
+        function updatePaymentAmount() {
+            let totalSelected = 0;
+            feeCheckboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    totalSelected += parseFloat(checkbox.dataset.amount) || 0;
+                }
+            });
+            
+            if (totalSelected > 0) {
+                amountInput.value = totalSelected.toFixed(2);
+                amountInput.max = totalSelected;
+            } else {
+                amountInput.value = '{{ outstanding_fees|floatformat:2 }}';
+                amountInput.max = '{{ outstanding_fees }}';
+            }
+        }
+        
+        // Add event listeners to fee checkboxes
+        feeCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updatePaymentAmount);
         });
+        
+        // Select all fees button
+        if (selectAllBtn) {
+            selectAllBtn.addEventListener('click', function() {
+                const allChecked = Array.from(feeCheckboxes).every(cb => cb.checked);
+                
+                feeCheckboxes.forEach(checkbox => {
+                    checkbox.checked = !allChecked;
+                });
+                
+                updatePaymentAmount();
+                this.textContent = allChecked ? 'Select All Fees' : 'Deselect All';
+            });
+        }
+        
+        // Form validation
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const amount = parseFloat(amountInput.value);
+                const maxAmount = parseFloat(amountInput.max);
+                
+                if (amount <= 0) {
+                    e.preventDefault();
+                    alert('Please enter a valid payment amount.');
+                    return;
+                }
+                
+                if (amount > maxAmount) {
+                    e.preventDefault();
+                    alert('Payment amount cannot exceed the outstanding balance.');
+                    return;
+                }
+                
+                // Show loading state
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+                }
+            });
+        }
     });
 </script>
 {% endblock %}

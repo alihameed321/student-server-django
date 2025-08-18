@@ -87,7 +87,7 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex space-x-2">
-                                                <button onclick="verifyPayment({{ payment.id }})" 
+                                                <button onclick="verifyPayment({{ payment.id }}, this)" 
                                                         class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition-colors">
                                                     <i class="fas fa-check mr-1"></i>Verify
                                                 </button>
@@ -121,7 +121,7 @@
 <!-- Payment Details Modal -->
 <div id="paymentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
     <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold text-gray-900">Payment Details</h3>
@@ -130,7 +130,46 @@
                     </button>
                 </div>
                 <div id="modalContent">
-                    <!-- Payment details will be loaded here -->
+                    <div class="flex items-center justify-center py-8">
+                        <i class="fas fa-spinner fa-spin text-gray-400 text-2xl mr-3"></i>
+                        <span class="text-gray-500">Loading payment details...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rejection Reason Modal -->
+<div id="rejectionModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Reject Payment</h3>
+                    <button onclick="closeRejectionModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label for="rejectionReason" class="block text-sm font-medium text-gray-700 mb-2">
+                            Reason for rejection:
+                        </label>
+                        <textarea id="rejectionReason" rows="3" 
+                                  class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                  placeholder="Please provide a reason for rejecting this payment..."></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button onclick="closeRejectionModal()" 
+                                class="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors">
+                            Cancel
+                        </button>
+                        <button onclick="confirmRejectPayment(this)" 
+                                class="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors">
+                            <i class="fas fa-times mr-2"></i>Reject Payment
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -138,47 +177,259 @@
 </div>
 
 <script>
-function verifyPayment(paymentId) {
+let currentPaymentId = null;
+
+function getCsrfToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+
+function verifyPayment(paymentId, buttonElement) {
     if (confirm('Are you sure you want to verify this payment?')) {
-        // Add AJAX call to verify payment
-        console.log('Verifying payment:', paymentId);
-        // Reload page or update UI
-        location.reload();
+        const button = buttonElement || event.target.closest('button');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Verifying...';
+        button.disabled = true;
+        
+        fetch(`/staff/api/payments/${paymentId}/verify/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken(),
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showNotification(data.message, 'success');
+                // Remove the row from the table
+                const row = button.closest('tr');
+                row.style.transition = 'opacity 0.3s';
+                row.style.opacity = '0';
+                setTimeout(() => row.remove(), 300);
+            } else {
+                showNotification(data.message, 'error');
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('An error occurred while verifying the payment', 'error');
+            button.innerHTML = originalText;
+            button.disabled = false;
+        });
     }
 }
 
 function rejectPayment(paymentId) {
-    if (confirm('Are you sure you want to reject this payment?')) {
-        // Add AJAX call to reject payment
-        console.log('Rejecting payment:', paymentId);
-        // Reload page or update UI
-        location.reload();
+    currentPaymentId = paymentId;
+    document.getElementById('rejectionModal').classList.remove('hidden');
+    document.getElementById('rejectionReason').value = '';
+}
+
+function confirmRejectPayment(buttonElement) {
+    const reason = document.getElementById('rejectionReason').value.trim();
+    if (!reason) {
+        showNotification('Please provide a reason for rejection', 'error');
+        return;
     }
+    
+    const button = buttonElement || document.querySelector('#rejectionModal button[onclick*="confirmRejectPayment"]');
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Rejecting...';
+    button.disabled = true;
+    
+    fetch(`/staff/api/payments/${currentPaymentId}/reject/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken(),
+        },
+        body: JSON.stringify({ reason: reason })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            showNotification(data.message, 'success');
+            closeRejectionModal();
+            // Remove the row from the table
+            const row = document.querySelector(`button[onclick="rejectPayment(${currentPaymentId})"]`).closest('tr');
+            row.style.transition = 'opacity 0.3s';
+            row.style.opacity = '0';
+            setTimeout(() => row.remove(), 300);
+        } else {
+            showNotification(data.message, 'error');
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('An error occurred while rejecting the payment', 'error');
+        button.innerHTML = originalText;
+        button.disabled = false;
+    });
 }
 
 function viewPaymentDetails(paymentId) {
-    // Show modal with payment details
     document.getElementById('paymentModal').classList.remove('hidden');
     document.getElementById('modalContent').innerHTML = `
-        <div class="space-y-3">
-            <div class="flex justify-between">
-                <span class="text-gray-600">Payment ID:</span>
-                <span class="font-medium">#${paymentId}</span>
-            </div>
-            <div class="flex justify-between">
-                <span class="text-gray-600">Status:</span>
-                <span class="font-medium text-yellow-600">Pending</span>
-            </div>
-            <div class="flex justify-between">
-                <span class="text-gray-600">Receipt:</span>
-                <a href="#" class="text-blue-600 hover:text-blue-800">View Receipt</a>
-            </div>
+        <div class="flex items-center justify-center py-8">
+            <i class="fas fa-spinner fa-spin text-gray-400 text-2xl mr-3"></i>
+            <span class="text-gray-500">Loading payment details...</span>
         </div>
     `;
+    
+    fetch(`/staff/api/payments/${paymentId}/details/`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const payment = data.payment;
+            document.getElementById('modalContent').innerHTML = `
+                <div class="space-y-6">
+                    <!-- Student Information -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h4 class="font-semibold text-gray-900 mb-3">Student Information</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <span class="text-sm text-gray-600">Name:</span>
+                                <p class="font-medium">${payment.student_name}</p>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-600">Student ID:</span>
+                                <p class="font-medium">${payment.student_id}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Information -->
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <h4 class="font-semibold text-gray-900 mb-3">Payment Information</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <span class="text-sm text-gray-600">Amount:</span>
+                                <p class="font-medium text-lg text-green-600">$${payment.amount.toFixed(2)}</p>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-600">Payment Method:</span>
+                                <p class="font-medium">${payment.payment_method}</p>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-600">Fee Type:</span>
+                                <p class="font-medium">${payment.fee_name}</p>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-600">Transaction Reference:</span>
+                                <p class="font-medium">${payment.transaction_reference}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Status Information -->
+                    <div class="bg-yellow-50 rounded-lg p-4">
+                        <h4 class="font-semibold text-gray-900 mb-3">Status Information</h4>
+                        <div class="grid grid-cols-1 gap-3">
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">Status:</span>
+                                <span class="font-medium px-2 py-1 rounded-full text-xs ${payment.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : payment.status === 'Verified' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${payment.status}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">Payment Date:</span>
+                                <span class="font-medium">${payment.payment_date}</span>
+                            </div>
+                            ${payment.verified_by ? `
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">Verified By:</span>
+                                <span class="font-medium">${payment.verified_by}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">Verified At:</span>
+                                <span class="font-medium">${payment.verified_at}</span>
+                            </div>
+                            ` : ''}
+                            ${payment.verification_notes ? `
+                            <div>
+                                <span class="text-sm text-gray-600">Notes:</span>
+                                <p class="font-medium mt-1">${payment.verification_notes}</p>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    ${payment.status === 'Pending' ? `
+                    <div class="flex justify-end space-x-3 pt-4 border-t">
+                        <button onclick="closeModal(); verifyPayment(${payment.id}, this)" 
+                                class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors">
+                            <i class="fas fa-check mr-2"></i>Verify Payment
+                        </button>
+                        <button onclick="closeModal(); rejectPayment(${payment.id})" 
+                                class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors">
+                            <i class="fas fa-times mr-2"></i>Reject Payment
+                        </button>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+        } else {
+            document.getElementById('modalContent').innerHTML = `
+                <div class="text-center py-8">
+                    <i class="fas fa-exclamation-triangle text-red-400 text-2xl mb-3"></i>
+                    <p class="text-red-600">${data.message}</p>
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('modalContent').innerHTML = `
+            <div class="text-center py-8">
+                <i class="fas fa-exclamation-triangle text-red-400 text-2xl mb-3"></i>
+                <p class="text-red-600">Failed to load payment details</p>
+            </div>
+        `;
+    });
 }
 
 function closeModal() {
     document.getElementById('paymentModal').classList.add('hidden');
+}
+
+function closeRejectionModal() {
+    document.getElementById('rejectionModal').classList.add('hidden');
+    currentPaymentId = null;
+}
+
+function showNotification(message, type) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 ${
+        type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+    }`;
+    notification.innerHTML = `
+        <div class="flex items-center">
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} mr-2"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// Add CSRF token to page if not present
+if (!document.querySelector('[name=csrfmiddlewaretoken]')) {
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = '{{ csrf_token }}';
+    document.body.appendChild(csrfInput);
 }
 </script>
 {% endblock %}

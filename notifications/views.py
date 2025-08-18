@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.http import JsonResponse
+from .models import Notification, Announcement
 
 
 class NotificationCenterView(LoginRequiredMixin, TemplateView):
@@ -12,10 +13,25 @@ class NotificationCenterView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Add notification data here
+        # Get user's notifications
+        notifications = Notification.objects.filter(
+            recipient=self.request.user
+        ).order_by('-created_at')[:20]  # Get latest 20 notifications
+        
+        unread_count = Notification.objects.filter(
+            recipient=self.request.user,
+            is_read=False
+        ).count()
+        
+        read_count = Notification.objects.filter(
+            recipient=self.request.user,
+            is_read=True
+        ).count()
+        
         context.update({
-            'notifications': [],
-            'unread_count': 0,
+            'notifications': notifications,
+            'unread_count': unread_count,
+            'read_count': read_count,
         })
         
         return context
@@ -43,9 +59,13 @@ class AnnouncementsView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Add announcements data here
+        # Get active announcements
+        announcements = Announcement.objects.filter(
+            is_active=True
+        ).order_by('-created_at')
+        
         context.update({
-            'announcements': [],
+            'announcements': announcements,
             'categories': ['General', 'Academic', 'Events', 'Emergency'],
         })
         
@@ -55,39 +75,62 @@ class AnnouncementsView(LoginRequiredMixin, TemplateView):
 @login_required
 def ajax_unread_count(request):
     """AJAX endpoint to get unread notification count"""
-    # For now, return 0 as we don't have notification models implemented
-    # This can be updated when notification functionality is fully implemented
-    unread_count = 0
+    unread_count = Notification.objects.filter(
+        recipient=request.user,
+        is_read=False
+    ).count()
     
     return JsonResponse({
-        'unread_count': unread_count
+        'count': unread_count
     })
 
 
 @login_required
 def ajax_recent_notifications(request):
     """AJAX endpoint to get recent notifications"""
-    # For now, return sample data as we don't have notification models implemented
-    # This can be updated when notification functionality is fully implemented
-    recent_notifications = [
-        {
-            'id': 1,
-            'title': 'Welcome to University Services',
-            'message': 'Your account has been successfully created.',
-            'type': 'info',
-            'created_at': '2024-01-15T10:30:00Z',
-            'is_read': False
-        },
-        {
-            'id': 2,
-            'title': 'System Maintenance',
-            'message': 'Scheduled maintenance on Sunday 2-4 AM.',
-            'type': 'warning',
-            'created_at': '2024-01-14T15:45:00Z',
-            'is_read': True
-        }
-    ]
+    notifications = Notification.objects.filter(
+        recipient=request.user
+    ).order_by('-created_at')[:5]  # Get latest 5 notifications
+    
+    notifications_data = []
+    for notification in notifications:
+        notifications_data.append({
+            'id': notification.id,
+            'title': notification.title,
+            'message': notification.message,
+            'type': notification.notification_type,
+            'created_at': notification.created_at.isoformat(),
+            'is_read': notification.is_read
+        })
     
     return JsonResponse({
-        'notifications': recent_notifications
+        'notifications': notifications_data
     })
+
+
+@login_required
+def ajax_mark_read(request, notification_id):
+    """AJAX endpoint to mark a notification as read"""
+    if request.method == 'POST':
+        try:
+            notification = Notification.objects.get(
+                id=notification_id,
+                recipient=request.user
+            )
+            notification.is_read = True
+            notification.save()
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Notification marked as read'
+            })
+        except Notification.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'message': 'Notification not found'
+            }, status=404)
+    
+    return JsonResponse({
+        'success': False,
+        'message': 'Invalid request method'
+    }, status=405)

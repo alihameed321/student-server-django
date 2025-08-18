@@ -64,7 +64,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Read</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ notifications|length|add:"-"|add:unread_count }}</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ read_count }}</p>
                     </div>
                 </div>
             </div>
@@ -80,16 +80,16 @@
                             <span class="text-sm font-medium text-gray-700">Filter notifications:</span>
                         </div>
                         <div class="flex flex-wrap gap-2">
-                            <button class="px-4 py-2 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-medium">
+                            <button onclick="filterNotifications('all')" id="filter-all" class="px-4 py-2 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-medium">
                                 All
                             </button>
-                            <button class="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                            <button onclick="filterNotifications('unread')" id="filter-unread" class="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
                                 Unread
                             </button>
-                            <button class="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                            <button onclick="filterNotifications('important')" id="filter-important" class="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
                                 Important
                             </button>
-                            <button class="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                            <button onclick="filterNotifications('announcement')" id="filter-announcement" class="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
                                 Announcements
                             </button>
                         </div>
@@ -102,7 +102,10 @@
         <div class="space-y-4">
             {% if notifications %}
                 {% for notification in notifications %}
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden {% if not notification.is_read %}border-l-4 border-l-blue-500{% endif %}">
+                <div class="notification-item bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden {% if not notification.is_read %}border-l-4 border-l-blue-500{% endif %}" 
+                     data-read="{% if notification.is_read %}true{% else %}false{% endif %}" 
+                     data-type="{{ notification.notification_type }}" 
+                     data-priority="{{ notification.priority }}">
                     <div class="p-6">
                         <div class="flex items-start justify-between">
                             <div class="flex items-start space-x-4 flex-1">
@@ -237,6 +240,44 @@ function markAsRead(notificationId) {
     .catch(error => {
         console.error('Error:', error);
         alert('Error marking notification as read');
+    });
+}
+
+function filterNotifications(filter) {
+    const notifications = document.querySelectorAll('.notification-item');
+    const filterButtons = document.querySelectorAll('[id^="filter-"]');
+    
+    // Reset all button styles
+    filterButtons.forEach(btn => {
+        btn.className = 'px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors';
+    });
+    
+    // Highlight active filter button
+    const activeButton = document.getElementById(`filter-${filter}`);
+    if (activeButton) {
+        activeButton.className = 'px-4 py-2 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-medium';
+    }
+    
+    // Filter notifications
+    notifications.forEach(notification => {
+        let show = false;
+        
+        switch(filter) {
+            case 'all':
+                show = true;
+                break;
+            case 'unread':
+                show = notification.dataset.read === 'false';
+                break;
+            case 'important':
+                show = notification.dataset.priority === 'high' || notification.dataset.priority === 'urgent';
+                break;
+            case 'announcement':
+                show = notification.dataset.type === 'announcement';
+                break;
+        }
+        
+        notification.style.display = show ? 'block' : 'none';
     });
 }
 </script>

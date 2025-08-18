@@ -31,13 +31,27 @@
             <!-- Right Side Icons -->
             <div class="flex items-center space-x-4">
                 <!-- Notifications -->
-                <div class="relative" x-data="{ unreadCount: 0 }" x-init="
+                <div class="relative" x-data="{ 
+                    unreadCount: 0, 
+                    notifications: [], 
+                    notificationsLoaded: false 
+                }" x-init="
                     fetch('{% url 'notifications:ajax_unread_count' %}')
                         .then(response => response.json())
                         .then(data => unreadCount = data.count)
                 ">
-                    <button @click="notificationDropdown = !notificationDropdown" 
-                            class="text-white relative p-2 rounded-full transition-colors" style="hover:color: #F5C400;">
+                    <button @click="
+                        notificationDropdown = !notificationDropdown;
+                        if (notificationDropdown && !notificationsLoaded) {
+                            fetch('{% url 'notifications:ajax_recent_notifications' %}')
+                                .then(response => response.json())
+                                .then(data => {
+                                    notifications = data.notifications || [];
+                                    notificationsLoaded = true;
+                                })
+                                .catch(error => console.error('Error loading notifications:', error));
+                        }
+                    " class="text-white relative p-2 rounded-full transition-colors" style="hover:color: #F5C400;">
                         <i class="fas fa-bell text-lg"></i>
                         <span x-show="unreadCount > 0" 
                               x-text="unreadCount" 
@@ -60,8 +74,51 @@
                         <div class="max-h-64 overflow-y-auto">
                             <!-- Notifications will be loaded via AJAX -->
                             <div id="notification-list" class="divide-y divide-gray-200">
-                                <div class="px-4 py-3 text-sm text-gray-500 text-center">
+                                <!-- Loading state -->
+                                <div x-show="!notificationsLoaded" class="px-4 py-3 text-sm text-gray-500 text-center">
                                     Loading notifications...
+                                </div>
+                                
+                                <!-- Notifications list -->
+                                <template x-for="notification in notifications" :key="notification.id">
+                                    <div class="px-4 py-3 hover:bg-gray-50 cursor-pointer" :class="{ 'bg-blue-50': !notification.is_read }">
+                                        <div class="flex items-start space-x-3">
+                                            <div class="flex-shrink-0">
+                                                <div class="w-8 h-8 rounded-full flex items-center justify-center"
+                                                     :class="{
+                                                         'bg-blue-100': notification.type === 'info',
+                                                         'bg-yellow-100': notification.type === 'warning',
+                                                         'bg-green-100': notification.type === 'success',
+                                                         'bg-red-100': notification.type === 'error',
+                                                         'bg-purple-100': notification.type === 'announcement',
+                                                         'bg-gray-100': !['info', 'warning', 'success', 'error', 'announcement'].includes(notification.type)
+                                                     }">
+                                                    <i :class="{
+                                                        'fas fa-info-circle text-blue-600': notification.type === 'info',
+                                                        'fas fa-exclamation-triangle text-yellow-600': notification.type === 'warning',
+                                                        'fas fa-check-circle text-green-600': notification.type === 'success',
+                                                        'fas fa-times-circle text-red-600': notification.type === 'error',
+                                                        'fas fa-bullhorn text-purple-600': notification.type === 'announcement',
+                                                        'fas fa-bell text-gray-600': !['info', 'warning', 'success', 'error', 'announcement'].includes(notification.type)
+                                                    }" class="text-sm"></i>
+                                                </div>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-sm font-medium text-gray-900" :class="{ 'font-bold': !notification.is_read }" x-text="notification.title"></p>
+                                                <p class="text-sm text-gray-600 truncate" x-text="notification.message"></p>
+                                                <p class="text-xs text-gray-400 mt-1" x-text="new Date(notification.created_at).toLocaleDateString()"></p>
+                                            </div>
+                                            <div x-show="!notification.is_read" class="flex-shrink-0">
+                                                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                                
+                                <!-- Empty state -->
+                                <div x-show="notificationsLoaded && notifications.length === 0" class="px-4 py-6 text-center">
+                                    <i class="fas fa-bell-slash text-gray-400 text-2xl mb-2"></i>
+                                    <p class="text-sm text-gray-500">No notifications yet</p>
                                 </div>
                             </div>
                         </div>

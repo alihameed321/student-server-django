@@ -80,6 +80,12 @@ class PaymentProvider(models.Model):
     is_active = models.BooleanField(default=True)
     logo = models.ImageField(upload_to='payment_providers/', null=True, blank=True)
     
+    # University account information
+    university_account_name = models.CharField(max_length=200, blank=True, null=True, help_text="University account holder name")
+    university_account_number = models.CharField(max_length=100, blank=True, null=True, help_text="University account number")
+    university_phone = models.CharField(max_length=20, blank=True, help_text="University phone number for this provider")
+    additional_info = models.TextField(blank=True, help_text="Additional account information (IBAN, routing number, etc.)")
+    
     def __str__(self):
         return self.name
 
@@ -100,6 +106,12 @@ class Payment(models.Model):
     transaction_reference = models.CharField(max_length=200)
     payment_date = models.DateTimeField()
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='pending')
+    
+    # Transfer details from student
+    sender_name = models.CharField(max_length=200, blank=True, null=True, help_text="Name of person who sent the money")
+    sender_phone = models.CharField(max_length=20, blank=True, null=True, help_text="Phone number of sender")
+    transfer_notes = models.TextField(blank=True, help_text="Additional notes from student about the transfer")
+    
     verification_notes = models.TextField(blank=True)
     verified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='verified_payments')
     verified_at = models.DateTimeField(null=True, blank=True)
@@ -129,6 +141,9 @@ class Payment(models.Model):
         self.verified_at = timezone.now()
         self.verification_notes = reason
         self.save()
+        
+        # Update fee status
+        self.fee.update_status()
 
 
 class PaymentReceipt(models.Model):
