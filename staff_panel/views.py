@@ -658,19 +658,24 @@ class CreateAnnouncementView(LoginRequiredMixin, TemplateView):
         title = request.POST.get('title')
         content = request.POST.get('content')
         priority = request.POST.get('priority', 'medium')
+        target_audience = request.POST.get('target_audience', 'all')
         
         if title and content:
+            # Map priority to is_urgent field
+            is_urgent = priority in ['high', 'critical']
+            
             announcement = Announcement.objects.create(
                 title=title,
                 content=content,
-                priority=priority,
+                target_audience=target_audience,
+                is_urgent=is_urgent,
                 created_by=request.user
             )
             
             # Log staff activity
             StaffActivity.objects.create(
                 staff_member=request.user,
-                action='created_announcement',
+                activity_type='announcement_created',
                 description=f'Created announcement: {title}'
             )
             
