@@ -1,7 +1,7 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, View
 from django.http import JsonResponse
 from django.contrib import messages
 from django.utils import timezone
@@ -411,11 +411,119 @@ class StudentDetailView(LoginRequiredMixin, TemplateView):
 class AddStudentView(LoginRequiredMixin, TemplateView):
     """Add new student"""
     template_name = 'staff_panel/add_student.html'
+    
+    def post(self, request, *args, **kwargs):
+        from accounts.models import User, StudentProfile
+        from .models import StaffActivity
+        from django.contrib.auth.hashers import make_password
+        import random
+        import string
+        
+        # Get form data
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        university_id = request.POST.get('university_id')
+        phone_number = request.POST.get('phone_number', '')
+        date_of_birth = request.POST.get('date_of_birth')
+        program = request.POST.get('program', '')
+        year_of_study = request.POST.get('year_of_study', '')
+        is_active = request.POST.get('is_active') == 'on'
+        
+        if first_name and last_name and email and university_id:
+            try:
+                # Check if university ID or email already exists
+                if User.objects.filter(university_id=university_id).exists():
+                    messages.error(request, 'A student with this University ID already exists.')
+                    return self.get(request, *args, **kwargs)
+                    
+                if User.objects.filter(email=email).exists():
+                    messages.error(request, 'A user with this email already exists.')
+                    return self.get(request, *args, **kwargs)
+                
+                # Generate username and password
+                username = f"student_{university_id.lower()}"
+                password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+                
+                # Create user
+                student = User.objects.create_user(
+                    username=username,
+                    email=email,
+                    password=password,
+                    university_id=university_id,
+                    user_type='student',
+                    first_name=first_name,
+                    last_name=last_name,
+                    phone_number=phone_number,
+                    date_of_birth=date_of_birth if date_of_birth else None,
+                    major=program,  # program maps to major
+                    academic_level=year_of_study,  # year_of_study maps to academic_level
+                    is_active=is_active
+                )
+                
+                # Handle profile picture upload
+                if 'profile_picture' in request.FILES:
+                    student.profile_picture = request.FILES['profile_picture']
+                    student.save()
+                
+                # Create student profile
+                StudentProfile.objects.create(
+                    user=student,
+                    student_id_number=university_id
+                )
+                
+                # Log staff activity
+                StaffActivity.objects.create(
+                    staff_member=request.user,
+                    activity_type='user_created',
+                    target_user=student,
+                    description=f'Created new student: {student.get_full_name()} ({university_id})'
+                )
+                
+                messages.success(request, f'Student {student.get_full_name()} created successfully! Temporary password: {password}')
+                return redirect('staff_panel:student_detail', student_id=student.id)
+                
+            except Exception as e:
+                messages.error(request, f'Error creating student: {str(e)}')
+                return self.get(request, *args, **kwargs)
+        else:
+            messages.error(request, 'Please fill in all required fields.')
+            return self.get(request, *args, **kwargs)
 
 
 class StudentSearchView(LoginRequiredMixin, TemplateView):
-    """Search for students"""
+    """Search students"""
     template_name = 'staff_panel/student_search.html'
+
+
+class DeleteStudentView(LoginRequiredMixin, View):
+    """Delete student"""
+    
+    def post(self, request, student_id, *args, **kwargs):
+        from accounts.models import User
+        from .models import StaffActivity
+        
+        try:
+            student = get_object_or_404(User, id=student_id, user_type='student')
+            student_name = student.get_full_name()
+            student_university_id = student.university_id
+            
+            # Log staff activity before deletion
+            StaffActivity.objects.create(
+                staff_member=request.user,
+                activity_type='user_deleted',
+                description=f'Deleted student: {student_name} ({student_university_id})'
+            )
+            
+            # Delete the student (this will cascade to StudentProfile)
+            student.delete()
+            
+            messages.success(request, f'Student {student_name} has been deleted successfully.')
+            
+        except Exception as e:
+            messages.error(request, f'Error deleting student: {str(e)}')
+            
+        return redirect('staff_panel:student_management')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -472,14 +580,22 @@ class EditStudentView(LoginRequiredMixin, TemplateView):
         student.first_name = request.POST.get('first_name', student.first_name)
         student.last_name = request.POST.get('last_name', student.last_name)
         student.email = request.POST.get('email', student.email)
+        student.phone_number = request.POST.get('phone_number', student.phone_number)
+        student.date_of_birth = request.POST.get('date_of_birth') or student.date_of_birth
+        student.major = request.POST.get('program', student.major)  # program maps to major
+        student.academic_level = request.POST.get('year_of_study', student.academic_level)  # year_of_study maps to academic_level
+        
+        # Handle profile picture upload
+        if 'profile_picture' in request.FILES:
+            student.profile_picture = request.FILES['profile_picture']
+        
         student.save()
         
         # Update student profile fields
         if hasattr(student, 'student_profile'):
             profile = student.student_profile
-            profile.phone_number = request.POST.get('phone_number', profile.phone_number)
-            profile.program = request.POST.get('program', profile.program)
-            profile.year_of_study = request.POST.get('year_of_study', profile.year_of_study)
+            profile.emergency_contact_name = request.POST.get('emergency_contact_name', profile.emergency_contact_name)
+            profile.emergency_contact_phone = request.POST.get('emergency_contact_phone', profile.emergency_contact_phone)
             profile.save()
         
         # Log staff activity

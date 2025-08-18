@@ -153,11 +153,11 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Program/Major</label>
-                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.student_profile.program|default:"Not provided" }}</p>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.major|default:"Not provided" }}</p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Year of Study</label>
-                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.student_profile.year_of_study|default:"Not provided" }}</p>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.academic_level|default:"Not provided" }}</p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Enrollment Date</label>

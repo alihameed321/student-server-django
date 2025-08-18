@@ -271,7 +271,7 @@ def download_digital_id(request):
             ['University ID:', request.user.university_id],
             ['Email:', request.user.email],
             ['User Type:', request.user.user_type.title()],
-            ['Program:', getattr(request.user, 'student_profile', None) and request.user.student_profile.program or 'Not Set'],
+            ['Program:', getattr(request.user, 'major', None) or 'Not Set'],
             ['Academic Level:', getattr(request.user, 'academic_level', None) or 'Not Set'],
             ['Enrollment Year:', getattr(request.user, 'enrollment_year', None) or 'Not Set'],
             ['Status:', 'Active'],
@@ -463,7 +463,7 @@ def download_id_card(request):
         c.drawString(info_x, info_y_start - line_height, f"ID: {request.user.university_id}")
         
         # Program
-        program = getattr(request.user, 'student_profile', None) and request.user.student_profile.program or 'N/A'
+        program = getattr(request.user, 'major', None) or 'N/A'
         c.drawString(info_x, info_y_start - 2 * line_height, f"Program: {program}")
         
         # Valid Until
