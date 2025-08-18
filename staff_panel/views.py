@@ -250,6 +250,113 @@ class FeeManagementView(LoginRequiredMixin, TemplateView):
 class CreateFeeView(LoginRequiredMixin, TemplateView):
     """Create new fee"""
     template_name = 'staff_panel/create_fee.html'
+    
+    def post(self, request, *args, **kwargs):
+        from financial.models import StudentFee, FeeType
+        from accounts.models import User
+        from .models import StaffActivity
+        from decimal import Decimal
+        from datetime import datetime
+        
+        # Get form data
+        fee_name = request.POST.get('fee_name')
+        amount = request.POST.get('amount')
+        due_date = request.POST.get('due_date')
+        description = request.POST.get('description', '')
+        apply_to = request.POST.get('apply_to')
+        
+        if fee_name and amount and due_date:
+            try:
+                # Get or create fee type
+                fee_type, created = FeeType.objects.get_or_create(
+                    name=fee_name,
+                    defaults={'description': description}
+                )
+                
+                # Convert amount to decimal
+                amount_decimal = Decimal(amount)
+                
+                # Apply fee to students
+                if apply_to == 'all':
+                    students = User.objects.filter(user_type='student')
+                    for student in students:
+                        StudentFee.objects.create(
+                            student=student,
+                            fee_type=fee_type,
+                            amount=amount_decimal,
+                            due_date=due_date,
+                            description=description,
+                            created_by=request.user
+                        )
+                
+                # Log staff activity
+                StaffActivity.objects.create(
+                    staff_member=request.user,
+                    activity_type='fee_created',
+                    description=f'Created fee: {fee_name} - ${amount}'
+                )
+                
+                messages.success(request, 'Fee created successfully!')
+                return redirect('staff_panel:fee_management')
+                
+            except Exception as e:
+                messages.error(request, f'Error creating fee: {str(e)}')
+                return self.get(request, *args, **kwargs)
+        else:
+            messages.error(request, 'Please fill in all required fields.')
+            return self.get(request, *args, **kwargs)
+
+
+class EditFeeView(LoginRequiredMixin, TemplateView):
+    """Edit existing fee"""
+    template_name = 'staff_panel/edit_fee.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from financial.models import StudentFee
+        
+        fee_id = kwargs.get('fee_id')
+        try:
+            fee = StudentFee.objects.get(id=fee_id)
+            context['fee'] = fee
+        except StudentFee.DoesNotExist:
+            messages.error(self.request, 'Fee not found.')
+        
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        from financial.models import StudentFee
+        from .models import StaffActivity
+        from decimal import Decimal
+        
+        fee_id = kwargs.get('fee_id')
+        
+        try:
+            fee = StudentFee.objects.get(id=fee_id)
+            
+            # Update fee fields
+            fee.amount = Decimal(request.POST.get('amount', fee.amount))
+            fee.due_date = request.POST.get('due_date', fee.due_date)
+            fee.description = request.POST.get('description', fee.description)
+            fee.save()
+            
+            # Log staff activity
+            StaffActivity.objects.create(
+                staff_member=request.user,
+                activity_type='other',
+                description=f'Updated fee: {fee.fee_type.name} - ${fee.amount}',
+                target_user=fee.student
+            )
+            
+            messages.success(request, 'Fee updated successfully!')
+            return redirect('staff_panel:fee_management')
+            
+        except StudentFee.DoesNotExist:
+            messages.error(request, 'Fee not found.')
+            return redirect('staff_panel:fee_management')
+        except Exception as e:
+            messages.error(request, f'Error updating fee: {str(e)}')
+            return self.get(request, *args, **kwargs)
 
 
 # Student Management Views
@@ -263,7 +370,7 @@ class StudentManagementView(LoginRequiredMixin, TemplateView):
         
         students = User.objects.filter(
             user_type='student'
-        ).select_related('studentprofile').order_by('-date_joined')
+        ).select_related('student_profile').order_by('-date_joined')
         
         # Search functionality
         search_query = self.request.GET.get('search', '')
@@ -291,7 +398,7 @@ class StudentDetailView(LoginRequiredMixin, TemplateView):
         from accounts.models import User
         
         student_id = kwargs.get('student_id')
-        student = User.objects.select_related('studentprofile').get(
+        student = User.objects.select_related('student_profile').get(
             id=student_id, user_type='student'
         )
         
@@ -325,13 +432,66 @@ class StudentSearchView(LoginRequiredMixin, TemplateView):
                 models.Q(last_name__icontains=search_query) |
                 models.Q(university_id__icontains=search_query) |
                 models.Q(email__icontains=search_query)
-            ).select_related('studentprofile')[:20]
+            ).select_related('student_profile')[:20]
         
         context.update({
             'students': students,
             'search_query': search_query,
         })
         return context
+
+
+class EditStudentView(LoginRequiredMixin, TemplateView):
+    """Edit student information"""
+    template_name = 'staff_panel/edit_student.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from accounts.models import User
+        
+        student_id = kwargs.get('student_id')
+        student = User.objects.select_related('student_profile').get(
+            id=student_id, user_type='student'
+        )
+        
+        context.update({
+            'student': student,
+        })
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        from accounts.models import User, StudentProfile
+        from .models import StaffActivity
+        
+        student_id = kwargs.get('student_id')
+        student = User.objects.select_related('student_profile').get(
+            id=student_id, user_type='student'
+        )
+        
+        # Update user fields
+        student.first_name = request.POST.get('first_name', student.first_name)
+        student.last_name = request.POST.get('last_name', student.last_name)
+        student.email = request.POST.get('email', student.email)
+        student.save()
+        
+        # Update student profile fields
+        if hasattr(student, 'student_profile'):
+            profile = student.student_profile
+            profile.phone_number = request.POST.get('phone_number', profile.phone_number)
+            profile.program = request.POST.get('program', profile.program)
+            profile.year_of_study = request.POST.get('year_of_study', profile.year_of_study)
+            profile.save()
+        
+        # Log staff activity
+        StaffActivity.objects.create(
+            staff_member=request.user,
+            activity_type='user_modified',
+            target_user=student,
+            description=f'Updated student information for {student.get_full_name()}'
+        )
+        
+        messages.success(request, f'Student {student.get_full_name()} updated successfully.')
+        return redirect('staff_panel:student_detail', student_id=student.id)
 
 
 # Announcement Management Views
@@ -354,6 +514,37 @@ class AnnouncementManagementView(LoginRequiredMixin, TemplateView):
 class CreateAnnouncementView(LoginRequiredMixin, TemplateView):
     """Create new announcement"""
     template_name = 'staff_panel/create_announcement.html'
+    
+    def post(self, request, *args, **kwargs):
+        from notifications.models import Announcement
+        from .models import StaffActivity
+        from django.contrib import messages
+        from django.shortcuts import redirect
+        
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        priority = request.POST.get('priority', 'medium')
+        
+        if title and content:
+            announcement = Announcement.objects.create(
+                title=title,
+                content=content,
+                priority=priority,
+                created_by=request.user
+            )
+            
+            # Log staff activity
+            StaffActivity.objects.create(
+                staff_member=request.user,
+                action='created_announcement',
+                description=f'Created announcement: {title}'
+            )
+            
+            messages.success(request, 'Announcement created successfully!')
+            return redirect('staff_panel:announcement_management')
+        else:
+            messages.error(request, 'Please fill in all required fields.')
+            return self.get(request, *args, **kwargs)
 
 
 # Reports Views
@@ -377,6 +568,84 @@ class ReportsView(LoginRequiredMixin, TemplateView):
 class GenerateReportView(LoginRequiredMixin, TemplateView):
     """Generate specific reports"""
     template_name = 'staff_panel/generate_report.html'
+    
+    def post(self, request, *args, **kwargs):
+        from django.http import HttpResponse
+        from django.template.loader import render_to_string
+        from .models import StaffActivity
+        import csv
+        from io import StringIO
+        
+        report_type = request.POST.get('report_type')
+        date_from = request.POST.get('date_from')
+        date_to = request.POST.get('date_to')
+        
+        if report_type and date_from and date_to:
+            try:
+                # Generate CSV report based on type
+                output = StringIO()
+                writer = csv.writer(output)
+                
+                if report_type == 'students':
+                    from accounts.models import User
+                    writer.writerow(['University ID', 'Name', 'Email', 'Program', 'Year', 'Status'])
+                    students = User.objects.filter(user_type='student', date_joined__range=[date_from, date_to])
+                    for student in students:
+                        writer.writerow([
+                            student.university_id,
+                            student.get_full_name(),
+                            student.email,
+                            getattr(student.student_profile, 'program', 'N/A') if hasattr(student, 'student_profile') else 'N/A',
+                            getattr(student.student_profile, 'year_of_study', 'N/A') if hasattr(student, 'student_profile') else 'N/A',
+                            'Active' if student.is_active else 'Inactive'
+                        ])
+                
+                elif report_type == 'fees':
+                    from financial.models import StudentFee
+                    writer.writerow(['Student ID', 'Student Name', 'Fee Type', 'Amount', 'Due Date', 'Status'])
+                    fees = StudentFee.objects.filter(created_at__range=[date_from, date_to])
+                    for fee in fees:
+                        writer.writerow([
+                            fee.student.university_id,
+                            fee.student.get_full_name(),
+                            fee.fee_type.name,
+                            fee.amount,
+                            fee.due_date,
+                            fee.get_status_display()
+                        ])
+                
+                elif report_type == 'requests':
+                    from student_portal.models import ServiceRequest
+                    writer.writerow(['Request ID', 'Student', 'Service Type', 'Status', 'Created Date', 'Updated Date'])
+                    requests = ServiceRequest.objects.filter(created_at__range=[date_from, date_to])
+                    for req in requests:
+                        writer.writerow([
+                            req.id,
+                            req.student.get_full_name(),
+                            req.service_type,
+                            req.get_status_display(),
+                            req.created_at.strftime('%Y-%m-%d'),
+                            req.updated_at.strftime('%Y-%m-%d')
+                        ])
+                
+                # Log staff activity
+                StaffActivity.objects.create(
+                    staff_member=request.user,
+                    action='generated_report',
+                    description=f'Generated {report_type} report from {date_from} to {date_to}'
+                )
+                
+                # Return CSV response
+                response = HttpResponse(output.getvalue(), content_type='text/csv')
+                response['Content-Disposition'] = f'attachment; filename="{report_type}_report_{date_from}_to_{date_to}.csv"'
+                return response
+                
+            except Exception as e:
+                messages.error(request, f'Error generating report: {str(e)}')
+                return self.get(request, *args, **kwargs)
+        else:
+            messages.error(request, 'Please fill in all required fields.')
+            return self.get(request, *args, **kwargs)
 
 
 # System Settings Views

@@ -17,10 +17,17 @@
                         </h1>
                         <p class="text-gray-600 mt-2">Manage your personal information and account settings</p>
                     </div>
-                    <a href="{% url 'student_portal:dashboard' %}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        Back to Dashboard
-                    </a>
+                    {% if user.user_type == 'student' %}
+                        <a href="{% url 'student_portal:dashboard' %}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            Back to Dashboard
+                        </a>
+                    {% elif user.user_type == 'staff' %}
+                        <a href="{% url 'staff_panel:dashboard' %}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            Back to Dashboard
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -48,10 +55,17 @@
                         <p class="text-sm text-gray-500 mb-4">ID: {{ user.university_id }}</p>
                         
                         <!-- Status Badge -->
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                            <i class="fas fa-check-circle mr-1"></i>
-                            Active Student
-                        </span>
+                        {% if user.user_type == 'student' %}
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                <i class="fas fa-check-circle mr-1"></i>
+                                Active Student
+                            </span>
+                        {% elif user.user_type == 'staff' %}
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                <i class="fas fa-user-tie mr-1"></i>
+                                Staff Member
+                            </span>
+                        {% endif %}
                         
                         <!-- Quick Actions -->
                         <div class="mt-6 space-y-3">
@@ -59,14 +73,21 @@
                                 <i class="fas fa-camera mr-2"></i>
                                 Change Photo
                             </button>
-                            <a href="{% url 'accounts:student_id_card' %}" class="w-full flex items-center justify-center px-4 py-2 text-white rounded-lg hover:opacity-90 transition-colors" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                                <i class="fas fa-credit-card mr-2"></i>
-                                Student ID Card
-                            </a>
-                            <a href="{% url 'accounts:digital_id' %}" class="w-full flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                                <i class="fas fa-id-card mr-2"></i>
-                                Digital ID Report
-                            </a>
+                            {% if user.user_type == 'student' %}
+                                <a href="{% url 'accounts:student_id_card' %}" class="w-full flex items-center justify-center px-4 py-2 text-white rounded-lg hover:opacity-90 transition-colors" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <i class="fas fa-credit-card mr-2"></i>
+                                    Student ID Card
+                                </a>
+                                <a href="{% url 'accounts:digital_id' %}" class="w-full flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                                    <i class="fas fa-id-card mr-2"></i>
+                                    Digital ID Report
+                                </a>
+                            {% elif user.user_type == 'staff' %}
+                                <a href="{% url 'staff_panel:dashboard' %}" class="w-full flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                                    <i class="fas fa-tachometer-alt mr-2"></i>
+                                    Staff Dashboard
+                                </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -115,6 +136,7 @@
                     </div>
                 </div>
                 
+                {% if user.user_type == 'student' %}
                 <!-- Academic Information -->
                 <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                     <div class="flex items-center justify-between mb-6">
@@ -131,22 +153,56 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Program/Major</label>
-                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.major|default:"Not provided" }}</p>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.student_profile.program|default:"Not provided" }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Academic Level</label>
-                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.get_academic_level_display|default:"Not provided" }}</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Year of Study</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.student_profile.year_of_study|default:"Not provided" }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Enrollment Year</label>
-                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.enrollment_year|default:"Not provided" }}</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Enrollment Date</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.student_profile.enrollment_date|date:"M d, Y"|default:"Not provided" }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
-                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.department|default:"Not provided" }}</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Student Status</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.student_profile.status|default:"Active" }}</p>
                         </div>
                     </div>
                 </div>
+                {% elif user.user_type == 'staff' %}
+                <!-- Staff Information -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            <i class="fas fa-user-tie mr-2" style="color: #102A71;"></i>
+                            Staff Information
+                        </h3>
+                        <button class="inline-flex items-center px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
+                            <i class="fas fa-edit mr-1"></i>
+                            Edit
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Position</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.staffprofile.position|default:"Not provided" }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.staffprofile.department|default:"Not provided" }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Hire Date</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.staffprofile.hire_date|date:"M d, Y"|default:"Not provided" }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Employee ID</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.staffprofile.employee_id|default:"Not provided" }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
                 
                 <!-- Account Settings -->
                 <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">

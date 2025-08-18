@@ -19,10 +19,12 @@ urlpatterns = [
     path('financial/payments/pending/', views.PendingPaymentsView.as_view(), name='pending_payments'),
     path('financial/fees/', views.FeeManagementView.as_view(), name='fee_management'),
     path('financial/fees/create/', views.CreateFeeView.as_view(), name='create_fee'),
+    path('fees/<int:fee_id>/edit/', views.EditFeeView.as_view(), name='edit_fee'),
     
     # Student Management
     path('students/', views.StudentManagementView.as_view(), name='student_management'),
     path('students/<int:student_id>/', views.StudentDetailView.as_view(), name='student_detail'),
+    path('students/<int:student_id>/edit/', views.EditStudentView.as_view(), name='edit_student'),
     path('students/add/', views.AddStudentView.as_view(), name='add_student'),
     path('students/search/', views.StudentSearchView.as_view(), name='student_search'),
     

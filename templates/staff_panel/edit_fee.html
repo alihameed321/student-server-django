@@ -1,0 +1,177 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Edit Fee - Staff Panel{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Edit Fee</h1>
+                    <p class="mt-2 text-gray-600">Update fee information and settings</p>
+                </div>
+                <a href="{% url 'staff_panel:fee_management' %}" 
+                   class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Fee Management
+                </a>
+            </div>
+        </div>
+
+        {% if fee %}
+        <!-- Edit Fee Form -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="p-6">
+                <form method="POST" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    <!-- Fee Type (Read-only) -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Fee Type
+                        </label>
+                        <div class="bg-gray-50 px-3 py-2 rounded-lg text-gray-900">
+                            {{ fee.fee_type.name }}
+                        </div>
+                        <p class="text-sm text-gray-500 mt-1">Fee type cannot be changed</p>
+                    </div>
+                    
+                    <!-- Student (Read-only) -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Student
+                        </label>
+                        <div class="bg-gray-50 px-3 py-2 rounded-lg text-gray-900">
+                            {{ fee.student.get_full_name }} ({{ fee.student.university_id }})
+                        </div>
+                    </div>
+                    
+                    <!-- Amount -->
+                    <div>
+                        <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">
+                            Amount ($) <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" 
+                               id="amount" 
+                               name="amount" 
+                               step="0.01" 
+                               min="0" 
+                               value="{{ fee.amount }}"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                               required>
+                    </div>
+                    
+                    <!-- Due Date -->
+                    <div>
+                        <label for="due_date" class="block text-sm font-medium text-gray-700 mb-2">
+                            Due Date <span class="text-red-500">*</span>
+                        </label>
+                        <input type="date" 
+                               id="due_date" 
+                               name="due_date" 
+                               value="{{ fee.due_date|date:'Y-m-d' }}"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                               required>
+                    </div>
+                    
+                    <!-- Description -->
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                            Description
+                        </label>
+                        <textarea id="description" 
+                                  name="description" 
+                                  rows="3" 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                  placeholder="Optional description for this fee">{{ fee.description }}</textarea>
+                    </div>
+                    
+                    <!-- Current Status -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Current Status
+                        </label>
+                        <div class="bg-gray-50 px-3 py-2 rounded-lg">
+                            {% if fee.status == 'paid' %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <i class="fas fa-check-circle mr-1"></i>Paid
+                                </span>
+                            {% elif fee.status == 'pending' %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    <i class="fas fa-clock mr-1"></i>Pending
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>Overdue
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <div class="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+                        <a href="{% url 'staff_panel:fee_management' %}" 
+                           class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                            Cancel
+                        </a>
+                        <button type="submit" 
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-save mr-2"></i>Update Fee
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <!-- Fee Not Found -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+            <i class="fas fa-exclamation-triangle text-yellow-500 text-4xl mb-4"></i>
+            <h2 class="text-xl font-semibold text-gray-900 mb-2">Fee Not Found</h2>
+            <p class="text-gray-600 mb-4">The requested fee could not be found or may have been deleted.</p>
+            <a href="{% url 'staff_panel:fee_management' %}" 
+               class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Fee Management
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// Form validation
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const amountInput = document.getElementById('amount');
+    const dueDateInput = document.getElementById('due_date');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            
+            // Validate amount
+            if (!amountInput.value || parseFloat(amountInput.value) <= 0) {
+                isValid = false;
+                amountInput.classList.add('border-red-500');
+            } else {
+                amountInput.classList.remove('border-red-500');
+            }
+            
+            // Validate due date
+            if (!dueDateInput.value) {
+                isValid = false;
+                dueDateInput.classList.add('border-red-500');
+            } else {
+                dueDateInput.classList.remove('border-red-500');
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+                alert('Please fill in all required fields correctly.');
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

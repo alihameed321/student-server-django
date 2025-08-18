@@ -248,7 +248,7 @@ function showTab(tabName) {
 
 function editStudent() {
     // Redirect to edit student page
-    window.location.href = '{% url "staff_panel:student_management" %}{{ student.id }}/edit/';
+    window.location.href = '{% url "staff_panel:edit_student" student.id %}';
 }
 
 function printProfile() {

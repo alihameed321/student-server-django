@@ -202,7 +202,7 @@
                     <h4 class="student-name">{{ user.get_full_name|default:user.username }}</h4>
                     <div class="student-details">
                         <div><strong>ID:</strong> {{ user.university_id }}</div>
-                        <div><strong>Program:</strong> {{ user.studentprofile.program|default:"Not Set" }}</div>
+                        <div><strong>Program:</strong> {{ user.student_profile.program|default:"Not Set" }}</div>
                         <div><strong>Level:</strong> {{ user.academic_level|default:"Not Set" }}</div>
                         <div><strong>Year:</strong> {{ user.enrollment_year|default:"Not Set" }}</div>
                     </div>

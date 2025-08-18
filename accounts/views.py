@@ -118,6 +118,11 @@ def change_password(request):
 @login_required
 def digital_id_view(request):
     """Display digital ID page"""
+    # Only allow students to access this view
+    if request.user.user_type != 'student':
+        messages.error(request, 'Access denied. This feature is only available to students.')
+        return redirect('accounts:profile')
+    
     # Generate QR code for the user
     qr_data = {
         'university_id': request.user.university_id,
@@ -152,6 +157,11 @@ def digital_id_view(request):
 @login_required
 def student_id_card_view(request):
     """Display student ID card page"""
+    # Only allow students to access this view
+    if request.user.user_type != 'student':
+        messages.error(request, 'Access denied. This feature is only available to students.')
+        return redirect('accounts:profile')
+    
     return render(request, 'accounts/student_id_card.html')
 
 
@@ -206,6 +216,11 @@ def regenerate_digital_id(request):
 @login_required
 def download_digital_id(request):
     """Download digital ID as PDF"""
+    # Only allow students to download digital ID
+    if request.user.user_type != 'student':
+        messages.error(request, 'Access denied. This feature is only available to students.')
+        return redirect('accounts:profile')
+    
     try:
         # Create the HttpResponse object with PDF headers
         response = HttpResponse(content_type='application/pdf')
@@ -256,7 +271,7 @@ def download_digital_id(request):
             ['University ID:', request.user.university_id],
             ['Email:', request.user.email],
             ['User Type:', request.user.user_type.title()],
-            ['Program:', getattr(request.user, 'studentprofile', None) and request.user.studentprofile.program or 'Not Set'],
+            ['Program:', getattr(request.user, 'student_profile', None) and request.user.student_profile.program or 'Not Set'],
             ['Academic Level:', getattr(request.user, 'academic_level', None) or 'Not Set'],
             ['Enrollment Year:', getattr(request.user, 'enrollment_year', None) or 'Not Set'],
             ['Status:', 'Active'],
@@ -349,6 +364,11 @@ def download_digital_id(request):
 @login_required
 def download_id_card(request):
     """Download student ID card as a modern, stylish PDF"""
+    # Only allow students to download ID card
+    if request.user.user_type != 'student':
+        messages.error(request, 'Access denied. This feature is only available to students.')
+        return redirect('accounts:profile')
+    
     try:
         # --- Basic Setup ---
         response = HttpResponse(content_type='application/pdf')
@@ -443,7 +463,7 @@ def download_id_card(request):
         c.drawString(info_x, info_y_start - line_height, f"ID: {request.user.university_id}")
         
         # Program
-        program = getattr(request.user, 'studentprofile', None) and request.user.studentprofile.program or 'N/A'
+        program = getattr(request.user, 'student_profile', None) and request.user.student_profile.program or 'N/A'
         c.drawString(info_x, info_y_start - 2 * line_height, f"Program: {program}")
         
         # Valid Until
