@@ -90,10 +90,9 @@
                     <label class="text-sm font-medium text-gray-700">Fee Type:</label>
                     <select class="border border-gray-300 rounded-md px-3 py-1 text-sm">
                         <option value="">All Types</option>
-                        <option value="tuition">Tuition</option>
-                        <option value="library">Library</option>
-                        <option value="lab">Lab Fee</option>
-                        <option value="other">Other</option>
+                        {% for fee_type in fee_types %}
+                            <option value="{{ fee_type.name }}">{{ fee_type.name }}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="flex items-center space-x-2">
@@ -160,7 +159,7 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ payment.fee_type|default:"General Fee" }}
+                                            {{ payment.fee_type.name|default:"General Fee" }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                             ${{ payment.amount|floatformat:2 }}
@@ -173,9 +172,9 @@
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                                     <i class="fas fa-exclamation-triangle mr-1"></i>Overdue
                                                 </span>
-                                            {% elif payment.is_due_soon %}
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                    <i class="fas fa-clock mr-1"></i>Due Soon
+                                            {% elif payment.status == 'partial' %}
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                                    <i class="fas fa-clock mr-1"></i>Partial
                                                 </span>
                                             {% else %}
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">

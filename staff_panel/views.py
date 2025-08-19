@@ -196,6 +196,8 @@ class FinancialManagementView(LoginRequiredMixin, TemplateView):
         from accounts.models import User
         from decimal import Decimal
         from datetime import datetime, timedelta
+        from django.db.models import Sum
+        from django.utils import timezone
         
         # Financial statistics
         total_revenue = Payment.objects.filter(status='verified').aggregate(
@@ -225,26 +227,43 @@ class FinancialManagementView(LoginRequiredMixin, TemplateView):
         # Recent transactions (last 10 verified payments)
         recent_transactions = Payment.objects.filter(
             status='verified'
-        ).select_related('student', 'fee__fee_type').order_by('-verified_at')[:10]
+        ).select_related('student', 'fee', 'fee__fee_type').order_by('-verified_at')[:10]
         
         # Payment trends (last 7 days)
         payment_trends = []
+        daily_amounts = []
+        
+        # First pass: collect all amounts
         for i in range(7):
             date = timezone.now().date() - timedelta(days=i)
             daily_revenue = Payment.objects.filter(
                 status='verified',
                 verified_at__date=date
             ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+            daily_amounts.append(float(daily_revenue))
+        
+        # Calculate max for percentage calculation
+        max_amount = max(daily_amounts) if daily_amounts and max(daily_amounts) > 0 else 1
+        
+        # Second pass: create trends with percentages
+        for i in range(7):
+            date = timezone.now().date() - timedelta(days=i)
+            amount = daily_amounts[i]
+            percentage = (amount / max_amount) * 100 if max_amount > 0 else 0
+            
             payment_trends.append({
                 'date': date.strftime('%m/%d'),
-                'amount': float(daily_revenue)
+                'amount': amount,
+                'percentage': round(percentage, 1)
             })
         payment_trends.reverse()
         
         # Fee type breakdown
         fee_breakdown = []
         fee_types = FeeType.objects.all()
-        for fee_type in fee_types:
+        colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4']  # Blue, Green, Yellow, Red, Purple, Cyan
+        
+        for i, fee_type in enumerate(fee_types):
             total_fees = StudentFee.objects.filter(fee_type=fee_type).aggregate(
                 total=Sum('amount')
             )['total'] or Decimal('0.00')
@@ -252,12 +271,16 @@ class FinancialManagementView(LoginRequiredMixin, TemplateView):
                 fee__fee_type=fee_type,
                 status='verified'
             ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+            fee_count = StudentFee.objects.filter(fee_type=fee_type).count()
             
             fee_breakdown.append({
-                'name': fee_type.name,
+                'type': fee_type.name,
+                'name': fee_type.name,  # Keep for backward compatibility
                 'total': total_fees,
                 'paid': paid_fees,
-                'outstanding': total_fees - paid_fees
+                'outstanding': total_fees - paid_fees,
+                'count': fee_count,
+                'color': colors[i % len(colors)]
             })
         
         # Student payment status
@@ -289,13 +312,40 @@ class PaymentVerificationView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         from financial.models import Payment
+        from django.core.paginator import Paginator
         
+        # Get search query
+        search_query = self.request.GET.get('search', '')
+        
+        # Base queryset
         pending_payments = Payment.objects.filter(
             status='pending'
-        ).select_related('student').order_by('-created_at')
+        ).select_related('student')
+        
+        # Apply search filter
+        if search_query:
+            pending_payments = pending_payments.filter(
+                Q(student__first_name__icontains=search_query) |
+                Q(student__last_name__icontains=search_query) |
+                Q(student__university_id__icontains=search_query) |
+                Q(fee__fee_type__name__icontains=search_query) |
+                Q(payment_provider__name__icontains=search_query) |
+                Q(sender_name__icontains=search_query) |
+                Q(transaction_reference__icontains=search_query)
+            )
+        
+        # Order by creation date
+        pending_payments = pending_payments.order_by('-created_at')
+        
+        # Pagination
+        paginator = Paginator(pending_payments, 10)  # 10 payments per page
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
         
         context.update({
-            'pending_payments': pending_payments,
+            'pending_payments': page_obj,
+            'search_query': search_query,
+            'total_payments': paginator.count,
         })
         return context
 
@@ -313,7 +363,22 @@ def verify_payment(request, payment_id):
         payment = get_object_or_404(Payment, id=payment_id)
         
         if payment.status != 'pending':
-            return JsonResponse({'status': 'error', 'message': 'Payment is not pending verification'})
+            # Provide more specific error messages based on current status
+            if payment.status == 'verified':
+                return JsonResponse({
+                    'status': 'error', 
+                    'message': f'Payment #{payment_id} has already been verified by {payment.verified_by.get_full_name() if payment.verified_by else "another staff member"}.'
+                })
+            elif payment.status == 'rejected':
+                return JsonResponse({
+                    'status': 'error', 
+                    'message': f'Payment #{payment_id} has already been rejected by {payment.verified_by.get_full_name() if payment.verified_by else "another staff member"}.'
+                })
+            else:
+                return JsonResponse({
+                    'status': 'error', 
+                    'message': f'Payment #{payment_id} is not available for processing (current status: {payment.get_status_display()}).'
+                })
         
         # Verify the payment
         payment.verify_payment(request.user, "Verified by staff")
@@ -349,7 +414,22 @@ def reject_payment(request, payment_id):
         payment = get_object_or_404(Payment, id=payment_id)
         
         if payment.status != 'pending':
-            return JsonResponse({'status': 'error', 'message': 'Payment is not pending verification'})
+            # Provide more specific error messages based on current status
+            if payment.status == 'verified':
+                return JsonResponse({
+                    'status': 'error', 
+                    'message': f'Payment #{payment_id} has already been verified by {payment.verified_by.get_full_name() if payment.verified_by else "another staff member"}.'
+                })
+            elif payment.status == 'rejected':
+                return JsonResponse({
+                    'status': 'error', 
+                    'message': f'Payment #{payment_id} has already been rejected by {payment.verified_by.get_full_name() if payment.verified_by else "another staff member"}.'
+                })
+            else:
+                return JsonResponse({
+                    'status': 'error', 
+                    'message': f'Payment #{payment_id} is not available for processing (current status: {payment.get_status_display()}).'
+                })
         
         # Get rejection reason from request
         data = json.loads(request.body) if request.body else {}
@@ -412,14 +492,46 @@ class PendingPaymentsView(LoginRequiredMixin, TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        from financial.models import Payment
+        from financial.models import Payment, StudentFee
+        from datetime import datetime, timedelta
+        from decimal import Decimal
+        from django.utils import timezone
         
-        payments = Payment.objects.filter(
-            status='pending'
-        ).select_related('student', 'fee').order_by('-created_at')
+        # Get all pending fees (not payments)
+        pending_fees = StudentFee.objects.filter(
+            status__in=['pending', 'overdue', 'partial']
+        ).select_related('student', 'fee_type').order_by('-due_date')
+        
+        # Calculate statistics
+        total_pending = pending_fees.aggregate(
+            total=Sum('amount')
+        )['total'] or Decimal('0.00')
+        
+        # Count unique students with pending fees
+        student_count = pending_fees.values('student').distinct().count()
+        
+        # Calculate overdue and due soon counts
+        today = timezone.now().date()
+        due_soon_threshold = today + timedelta(days=7)  # Due within 7 days
+        
+        overdue_count = pending_fees.filter(due_date__lt=today).count()
+        due_soon_count = pending_fees.filter(
+            due_date__gte=today,
+            due_date__lte=due_soon_threshold
+        ).count()
+        
+        # Get fee types for filter dropdown
+        from financial.models import FeeType
+        fee_types = FeeType.objects.filter(is_active=True).order_by('name')
         
         context.update({
-            'payments': payments,
+            'pending_payments': pending_fees,
+            'payments': pending_fees,  # Keep for backward compatibility
+            'total_pending': total_pending,
+            'student_count': student_count,
+            'overdue_count': overdue_count,
+            'due_soon_count': due_soon_count,
+            'fee_types': fee_types,
         })
         return context
 
@@ -430,12 +542,85 @@ class FeeManagementView(LoginRequiredMixin, TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        from financial.models import StudentFee
+        from financial.models import StudentFee, Payment, FeeType
+        from accounts.models import User
+        from django.db.models import Sum, Count, Q
+        from django.core.paginator import Paginator
+        from decimal import Decimal
         
-        fees = StudentFee.objects.select_related('student').order_by('-due_date')
+        # Get search and filter parameters
+        search_query = self.request.GET.get('search', '')
+        category_filter = self.request.GET.get('category', '')
+        page_number = self.request.GET.get('page', 1)
+        
+        # Base queryset
+        fees_queryset = StudentFee.objects.select_related('student', 'fee_type').order_by('-due_date')
+        
+        # Apply search filter
+        if search_query:
+            fees_queryset = fees_queryset.filter(
+                Q(student__first_name__icontains=search_query) |
+                Q(student__last_name__icontains=search_query) |
+                Q(student__university_id__icontains=search_query) |
+                Q(fee_type__name__icontains=search_query) |
+                Q(description__icontains=search_query)
+            )
+        
+        # Apply category filter
+        if category_filter:
+            fees_queryset = fees_queryset.filter(fee_type__name__icontains=category_filter)
+        
+        # Pagination
+        paginator = Paginator(fees_queryset, 10)  # 10 fees per page
+        fees_page = paginator.get_page(page_number)
+        
+        # Calculate statistics
+        total_fees = StudentFee.objects.count()
+        active_fees = StudentFee.objects.filter(status__in=['pending', 'partial']).count()
+        
+        # Total revenue from verified payments
+        total_revenue = Payment.objects.filter(status='verified').aggregate(
+            total=Sum('amount')
+        )['total'] or Decimal('0.00')
+        
+        # Total enrolled students
+        enrolled_students = User.objects.filter(user_type='student').count()
+        
+        # Calculate fee category statistics
+        fee_categories = {
+            'tuition': StudentFee.objects.filter(fee_type__name__icontains='tuition').count(),
+            'library': StudentFee.objects.filter(fee_type__name__icontains='library').count(),
+            'lab': StudentFee.objects.filter(fee_type__name__icontains='lab').count(),
+            'sports': StudentFee.objects.filter(fee_type__name__icontains='sports').count(),
+            'other': StudentFee.objects.exclude(
+                Q(fee_type__name__icontains='tuition') |
+                Q(fee_type__name__icontains='library') |
+                Q(fee_type__name__icontains='lab') |
+                Q(fee_type__name__icontains='sports')
+            ).count(),
+        }
+        
+        # Get all fee types for category filter
+        fee_types = FeeType.objects.filter(is_active=True).order_by('name')
         
         context.update({
-            'fees': fees,
+            'fees': fees_page,
+            'total_fees': total_fees,
+            'active_fees': active_fees,
+            'total_revenue': total_revenue,
+            'enrolled_students': enrolled_students,
+            'tuition_count': fee_categories['tuition'],
+            'library_count': fee_categories['library'],
+            'lab_count': fee_categories['lab'],
+            'sports_count': fee_categories['sports'],
+            'other_count': fee_categories['other'],
+            'fee_types': fee_types,
+            'search_query': search_query,
+            'category_filter': category_filter,
+            'has_previous': fees_page.has_previous(),
+            'has_next': fees_page.has_next(),
+            'page_number': fees_page.number,
+            'total_pages': paginator.num_pages,
         })
         return context
 
@@ -443,6 +628,18 @@ class FeeManagementView(LoginRequiredMixin, TemplateView):
 class CreateFeeView(LoginRequiredMixin, TemplateView):
     """Create new fee"""
     template_name = 'staff_panel/create_fee.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from accounts.models import User
+        
+        # Get all students for the dropdown
+        students = User.objects.filter(user_type='student').order_by('first_name', 'last_name')
+        
+        context.update({
+            'students': students,
+        })
+        return context
     
     def post(self, request, *args, **kwargs):
         from financial.models import StudentFee, FeeType
@@ -481,6 +678,22 @@ class CreateFeeView(LoginRequiredMixin, TemplateView):
                             description=description,
                             created_by=request.user
                         )
+                elif apply_to == 'specific':
+                    selected_student_ids = request.POST.getlist('selected_students')
+                    if selected_student_ids:
+                        students = User.objects.filter(id__in=selected_student_ids, user_type='student')
+                        for student in students:
+                            StudentFee.objects.create(
+                                student=student,
+                                fee_type=fee_type,
+                                amount=amount_decimal,
+                                due_date=due_date,
+                                description=description,
+                                created_by=request.user
+                            )
+                    else:
+                        messages.error(request, 'Please select at least one student when applying to specific students.')
+                        return self.get(request, *args, **kwargs)
                 
                 # Log staff activity
                 StaffActivity.objects.create(
@@ -963,6 +1176,102 @@ class GenerateReportView(LoginRequiredMixin, TemplateView):
         else:
             messages.error(request, 'Please fill in all required fields.')
             return self.get(request, *args, **kwargs)
+
+
+# Document Management Views
+class DocumentManagementView(LoginRequiredMixin, TemplateView):
+    """Manage student documents"""
+    template_name = 'staff_panel/document_management.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from student_portal.models import StudentDocument
+        from accounts.models import User
+        
+        # Get all documents with related student info
+        documents = StudentDocument.objects.select_related(
+            'student', 'issued_by'
+        ).order_by('-issued_date')[:100]
+        
+        # Get all students for the upload form
+        students = User.objects.filter(
+            user_type='student'
+        ).order_by('first_name', 'last_name')
+        
+        context.update({
+            'documents': documents,
+            'students': students,
+        })
+        return context
+
+
+class UploadDocumentView(LoginRequiredMixin, TemplateView):
+    """Upload document to student"""
+    template_name = 'staff_panel/upload_document.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from accounts.models import User
+        from student_portal.models import StudentDocument
+        
+        # Get all students for selection
+        students = User.objects.filter(
+            user_type='student'
+        ).order_by('first_name', 'last_name')
+        
+        context.update({
+            'students': students,
+            'document_types': StudentDocument.DOCUMENT_TYPES,
+        })
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        from student_portal.models import StudentDocument
+        from accounts.models import User
+        from .models import StaffActivity
+        
+        try:
+            # Get form data
+            student_id = request.POST.get('student')
+            document_type = request.POST.get('document_type')
+            title = request.POST.get('title')
+            document_file = request.FILES.get('document_file')
+            
+            # Validate required fields
+            if not all([student_id, document_type, title, document_file]):
+                messages.error(request, 'Please fill in all required fields and select a file.')
+                return self.get(request, *args, **kwargs)
+            
+            # Get student
+            student = User.objects.get(id=student_id, user_type='student')
+            
+            # Create document
+            document = StudentDocument.objects.create(
+                student=student,
+                document_type=document_type,
+                title=title,
+                document_file=document_file,
+                issued_by=request.user,
+                is_official=True
+            )
+            
+            # Log staff activity
+            StaffActivity.objects.create(
+                staff_member=request.user,
+                activity_type='document_uploaded',
+                target_user=student,
+                description=f'Uploaded document: {title} for {student.get_full_name()}'
+            )
+            
+            messages.success(request, f'Document "{title}" uploaded successfully for {student.get_full_name()}!')
+            return redirect('staff_panel:document_management')
+            
+        except User.DoesNotExist:
+            messages.error(request, 'Selected student not found.')
+        except Exception as e:
+            messages.error(request, f'Error uploading document: {str(e)}')
+        
+        return self.get(request, *args, **kwargs)
 
 
 # System Settings Views

@@ -106,6 +106,13 @@ class StudentDocument(models.Model):
 class SupportTicket(models.Model):
     """Support tickets for student inquiries"""
     
+    CATEGORY_CHOICES = (
+        ('technical', 'Technical Support'),
+        ('academic', 'Academic Services'),
+        ('financial', 'Financial Services'),
+        ('general', 'General Inquiry'),
+    )
+    
     PRIORITY_CHOICES = (
         ('low', 'Low'),
         ('medium', 'Medium'),
@@ -123,6 +130,7 @@ class SupportTicket(models.Model):
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='support_tickets')
     subject = models.CharField(max_length=200)
     description = models.TextField()
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='general')
     priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='open')
     created_at = models.DateTimeField(auto_now_add=True)

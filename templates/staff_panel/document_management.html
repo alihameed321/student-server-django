@@ -1,0 +1,180 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Document Management - Staff Panel{% endblock %}
+
+{% block extra_css %}
+<!-- Tailwind CSS styling - no custom styles needed -->
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Page Heading -->
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-3xl font-bold text-gray-900">
+                <i class="fas fa-folder-open mr-3" style="color: #102A71;"></i>
+                Document Management
+            </h1>
+            <a href="{% url 'staff_panel:upload_document' %}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm">
+                <i class="fas fa-upload mr-2"></i>Upload Document
+            </a>
+        </div>
+
+        <!-- Quick Upload Section -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">
+                    <i class="fas fa-plus-circle mr-2 text-blue-600"></i>Quick Upload
+                </h2>
+            </div>
+            <div class="p-6">
+                <form method="post" action="{% url 'staff_panel:upload_document' %}" enctype="multipart/form-data" class="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50 hover:border-gray-400 hover:bg-gray-100 transition-all">
+                    {% csrf_token %}
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label for="student" class="block text-sm font-medium text-gray-700 mb-2">Select Student</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="student" name="student" required>
+                                <option value="">Choose student...</option>
+                                {% for student in students %}
+                                    <option value="{{ student.id }}">{{ student.get_full_name }} ({{ student.student_id }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="document_type" class="block text-sm font-medium text-gray-700 mb-2">Document Type</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="document_type" name="document_type" required>
+                                <option value="">Choose type...</option>
+                                <option value="enrollment_certificate">Enrollment Certificate</option>
+                                <option value="transcript">Transcript</option>
+                                <option value="grade_report">Grade Report</option>
+                                <option value="payment_receipt">Payment Receipt</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Document Title</label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="title" name="title" placeholder="Enter document title" required>
+                        </div>
+                        <div>
+                            <label for="document_file" class="block text-sm font-medium text-gray-700 mb-2">Document File</label>
+                            <input type="file" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" id="document_file" name="document_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
+                        </div>
+                    </div>
+                    <div class="text-center mt-6">
+                        <button type="submit" class="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors">
+                            <i class="fas fa-upload mr-2"></i>Upload Document
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Documents List -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">
+                    <i class="fas fa-list mr-2 text-blue-600"></i>Recent Documents
+                </h2>
+            </div>
+            <div class="p-6">
+                {% if documents %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200" id="documentsTable">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Issued Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Issued By</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for document in documents %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10">
+                                                <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center">
+                                                    <i class="fas fa-user text-white text-sm"></i>
+                                                </div>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">{{ document.student.get_full_name }}</div>
+                                                <div class="text-sm text-gray-500">{{ document.student.student_id }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            {{ document.get_document_type_display }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ document.title }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ document.issued_date|date:"M d, Y" }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {% if document.issued_by %}
+                                            {{ document.issued_by.get_full_name }}
+                                        {% else %}
+                                            <span class="text-gray-500">System</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        {% if document.is_official %}
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Official</span>
+                                        {% else %}
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <a href="{{ document.document_file.url }}" class="text-blue-600 hover:text-blue-900" target="_blank">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ document.document_file.url }}" class="text-green-600 hover:text-green-900" download>
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-12">
+                        <i class="fas fa-file-alt text-6xl text-gray-300 mb-4"></i>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No Documents Found</h3>
+                        <p class="text-gray-500 mb-4">Start by uploading documents for students.</p>
+                        <a href="{% url 'staff_panel:upload_document' %}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                            <i class="fas fa-upload mr-2"></i>Upload First Document
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Initialize DataTable
+    $('#documentsTable').DataTable({
+        "pageLength": 25,
+        "order": [[ 3, "desc" ]], // Sort by issued date descending
+        "columnDefs": [
+            { "orderable": false, "targets": [6] } // Disable sorting for Actions column
+        ]
+    });
+    
+    // Auto-hide success messages
+    setTimeout(function() {
+        $('.alert-success').fadeOut('slow');
+    }, 5000);
+});
+</script>
+{% endblock %}

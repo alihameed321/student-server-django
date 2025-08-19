@@ -93,6 +93,7 @@ def create_request(request):
             service_request = form.save(commit=False)
             service_request.student = request.user
             service_request.save()
+            
             messages.success(request, 'Request submitted successfully!')
             return redirect('student_portal:eservices_center')
         else:
@@ -180,12 +181,16 @@ def download_document(request, document_id):
     # Increment download count
     document.increment_download_count()
     
+    # Get the original filename with extension
+    import os
+    original_filename = os.path.basename(document.document_file.name)
+    
     # Return file response
     response = HttpResponse(
         document.document_file.read(), 
         content_type='application/octet-stream'
     )
-    response['Content-Disposition'] = f'attachment; filename="{document.title}"'
+    response['Content-Disposition'] = f'attachment; filename="{original_filename}"'
     
     return response
 

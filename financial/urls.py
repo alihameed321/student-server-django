@@ -7,6 +7,7 @@ urlpatterns = [
     # Financial Dashboard
     path('', views.FinancialDashboardView.as_view(), name='dashboard'),
     path('pay-fees/', views.PayFeesView.as_view(), name='pay_fees'),
+    path('payment-history/', views.PaymentHistoryView.as_view(), name='payment_history'),
     
     # Receipt Management
     path('receipt/<int:payment_id>/', views.view_receipt, name='view_receipt'),

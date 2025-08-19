@@ -127,7 +127,7 @@
             <!-- Sidebar -->
             <div class="space-y-6">
                 <!-- Actions -->
-                {% if service_request.status == 'pending' or service_request.status == 'in_review' %}
+                {% if service_request.status == 'pending' %}
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                     <div class="px-6 py-4 border-b border-gray-200">
                         <h2 class="text-lg font-semibold text-gray-900">Actions</h2>
@@ -141,6 +141,30 @@
                                 class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors">
                             <i class="fas fa-times mr-2"></i>Reject Request
                         </button>
+                    </div>
+                </div>
+                {% elif service_request.status == 'approved' %}
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold text-gray-900">Status</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center text-green-600">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            <span class="font-medium">Request has been approved</span>
+                        </div>
+                    </div>
+                </div>
+                {% elif service_request.status == 'rejected' %}
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold text-gray-900">Status</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center text-red-600">
+                            <i class="fas fa-times-circle mr-2"></i>
+                            <span class="font-medium">Request has been rejected</span>
+                        </div>
                     </div>
                 </div>
                 {% endif %}

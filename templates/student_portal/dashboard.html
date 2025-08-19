@@ -213,7 +213,7 @@
                                               'background-color': request.status === 'pending' ? '#F5C400' : request.status === 'in_review' ? '#102A71' : request.status === 'approved' ? '#102A71' : ''
                                           }"
                                           x-text="request.status"></span>
-                                    <a :href="'/student-portal/requests/' + request.id + '//'" class="hover:underline" style="color: #102A71; hover:color: #F5C400;">
+                                    <a :href="'/student-portal/requests/' + request.id + '/'" class="hover:underline" style="color: #102A71; hover:color: #F5C400;">
                                         <i class="fas fa-arrow-right"></i>
                                     </a>
                                 </div>

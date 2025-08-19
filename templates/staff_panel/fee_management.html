@@ -83,17 +83,30 @@
                         <div class="flex items-center justify-between mb-6">
                             <h2 class="text-xl font-semibold text-gray-900">Fee Structure</h2>
                             <div class="flex space-x-2">
-                                <select class="border border-gray-300 rounded-md px-3 py-1 text-sm">
-                                    <option value="">All Categories</option>
-                                    <option value="tuition">Tuition</option>
-                                    <option value="library">Library</option>
-                                    <option value="lab">Laboratory</option>
-                                    <option value="sports">Sports</option>
-                                    <option value="other">Other</option>
-                                </select>
-                                <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm transition-colors">
-                                    <i class="fas fa-filter"></i>
-                                </button>
+                                <!-- Search Form -->
+                                <form method="get" class="flex space-x-2">
+                                    <input type="text" 
+                                           name="search" 
+                                           value="{{ search_query }}" 
+                                           placeholder="Search fees, students, or descriptions..." 
+                                           class="border border-gray-300 rounded-md px-3 py-1 text-sm w-64">
+                                    <select name="category" class="border border-gray-300 rounded-md px-3 py-1 text-sm">
+                                        <option value="">All Categories</option>
+                                        {% for fee_type in fee_types %}
+                                            <option value="{{ fee_type.name }}" {% if category_filter == fee_type.name %}selected{% endif %}>
+                                                {{ fee_type.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm transition-colors">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                    {% if search_query or category_filter %}
+                                        <a href="{% url 'staff_panel:fee_management' %}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm transition-colors">
+                                            <i class="fas fa-times"></i> Clear
+                                        </a>
+                                    {% endif %}
+                                </form>
                             </div>
                         </div>
                         
@@ -104,47 +117,111 @@
                                         <div class="flex items-center justify-between">
                                             <div class="flex-1">
                                                 <div class="flex items-center space-x-3">
-                                                    <h3 class="text-lg font-medium text-gray-900">{{ fee.name }}</h3>
-                                                    {% if fee.is_active %}
-                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                            Active
-                                                        </span>
-                                                    {% else %}
-                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                                            Inactive
-                                                        </span>
-                                                    {% endif %}
-                                                </div>
-                                                <p class="text-sm text-gray-600 mt-1">{{ fee.description|default:"No description available" }}</p>
-                                                <div class="flex items-center space-x-4 mt-2 text-sm text-gray-500">
-                                                    <span><i class="fas fa-dollar-sign mr-1"></i>${{ fee.amount|floatformat:2 }}</span>
-                                                    <span><i class="fas fa-tag mr-1"></i>{{ fee.category|title }}</span>
-                                                    <span><i class="fas fa-calendar mr-1"></i>{{ fee.due_date|date:"M d, Y" }}</span>
-                                                </div>
+                                    <h3 class="text-lg font-medium text-gray-900">{{ fee.fee_type.name }}</h3>
+                                    {% if fee.status == 'paid' %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            Paid
+                                        </span>
+                                    {% elif fee.status == 'pending' %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            Pending
+                                        </span>
+                                    {% elif fee.status == 'overdue' %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            Overdue
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            {{ fee.get_status_display }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <p class="text-sm text-gray-600 mt-1">{{ fee.description|default:"No description available" }}</p>
+                                <div class="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                                    <span><i class="fas fa-dollar-sign mr-1"></i>${{ fee.amount|floatformat:2 }}</span>
+                                    <span><i class="fas fa-user mr-1"></i>{{ fee.student.get_full_name }}</span>
+                                    <span><i class="fas fa-calendar mr-1"></i>{{ fee.due_date|date:"M d, Y" }}</span>
+                                </div>
                                             </div>
                                             <div class="flex space-x-2">
-                                                <button onclick="editFee({{ fee.id }})" 
-                                                        class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs transition-colors">
-                                                    <i class="fas fa-edit mr-1"></i>Edit
-                                                </button>
-                                                <button onclick="toggleFeeStatus({{ fee.id }})" 
-                                                        class="{% if fee.is_active %}bg-yellow-600 hover:bg-yellow-700{% else %}bg-green-600 hover:bg-green-700{% endif %} text-white px-3 py-1 rounded text-xs transition-colors">
-                                                    <i class="fas fa-{% if fee.is_active %}pause{% else %}play{% endif %} mr-1"></i>{% if fee.is_active %}Deactivate{% else %}Activate{% endif %}
-                                                </button>
-                                                <button onclick="deleteFee({{ fee.id }})" 
-                                                        class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs transition-colors">
-                                                    <i class="fas fa-trash mr-1"></i>Delete
-                                                </button>
+                                                <a href="{% url 'staff_panel:edit_fee' fee.id %}" 
+                                   class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs transition-colors">
+                                    <i class="fas fa-edit mr-1"></i>Edit
+                                </a>
+                                {% if fee.status == 'pending' %}
+                                    <button onclick="markAsPaid({{ fee.id }})" 
+                                            class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition-colors">
+                                        <i class="fas fa-check mr-1"></i>Mark Paid
+                                    </button>
+                                {% endif %}
+                                <button onclick="deleteFee({{ fee.id }})" 
+                                        class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs transition-colors">
+                                    <i class="fas fa-trash mr-1"></i>Delete
+                                </button>
                                             </div>
                                         </div>
                                     </div>
                                 {% endfor %}
                             </div>
+                            
+                            <!-- Pagination -->
+                            {% if fees.paginator.num_pages > 1 %}
+                                <div class="flex items-center justify-between mt-6 pt-6 border-t border-gray-200">
+                                    <div class="text-sm text-gray-700">
+                                        Showing {{ fees.start_index }} to {{ fees.end_index }} of {{ fees.paginator.count }} fees
+                                    </div>
+                                    <div class="flex space-x-1">
+                                        {% if fees.has_previous %}
+                                            <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}" 
+                                               class="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 border border-gray-300 rounded-l-md hover:bg-gray-50">
+                                                First
+                                            </a>
+                                            <a href="?page={{ fees.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}" 
+                                               class="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 border-t border-b border-gray-300 hover:bg-gray-50">
+                                                Previous
+                                            </a>
+                                        {% endif %}
+                                        
+                                        {% for page_num in fees.paginator.page_range %}
+                                            {% if page_num == fees.number %}
+                                                <span class="px-3 py-2 text-sm bg-blue-600 text-white border border-blue-600">
+                                                    {{ page_num }}
+                                                </span>
+                                            {% elif page_num > fees.number|add:'-3' and page_num < fees.number|add:'3' %}
+                                                <a href="?page={{ page_num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}" 
+                                                   class="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 border-t border-b border-gray-300 hover:bg-gray-50">
+                                                    {{ page_num }}
+                                                </a>
+                                            {% endif %}
+                                        {% endfor %}
+                                        
+                                        {% if fees.has_next %}
+                                            <a href="?page={{ fees.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}" 
+                                               class="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 border-t border-b border-gray-300 hover:bg-gray-50">
+                                                Next
+                                            </a>
+                                            <a href="?page={{ fees.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}" 
+                                               class="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 border border-gray-300 rounded-r-md hover:bg-gray-50">
+                                                Last
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
                         {% else %}
                             <div class="text-center py-12">
                                 <i class="fas fa-money-bill-wave text-gray-400 text-4xl mb-4"></i>
-                                <h3 class="text-lg font-medium text-gray-900 mb-2">No fees configured</h3>
-                                <p class="text-gray-500 mb-4">Start by creating your first fee structure.</p>
+                                {% if search_query or category_filter %}
+                                    <h3 class="text-lg font-medium text-gray-900 mb-2">No fees found</h3>
+                                    <p class="text-gray-500 mb-4">No fees match your search criteria. Try adjusting your filters.</p>
+                                    <a href="{% url 'staff_panel:fee_management' %}" 
+                                       class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors mr-2">
+                                        <i class="fas fa-times mr-2"></i>Clear Filters
+                                    </a>
+                                {% else %}
+                                    <h3 class="text-lg font-medium text-gray-900 mb-2">No fees configured</h3>
+                                    <p class="text-gray-500 mb-4">Start by creating your first fee structure.</p>
+                                {% endif %}
                                 <a href="{% url 'staff_panel:create_fee' %}" 
                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
                                     <i class="fas fa-plus mr-2"></i>Create Fee

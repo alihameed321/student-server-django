@@ -37,6 +37,10 @@ urlpatterns = [
     path('reports/', views.ReportsView.as_view(), name='reports'),
     path('reports/generate/', views.GenerateReportView.as_view(), name='generate_report'),
     
+    # Document Management
+    path('documents/', views.DocumentManagementView.as_view(), name='document_management'),
+    path('documents/upload/', views.UploadDocumentView.as_view(), name='upload_document'),
+    
     # System Settings
     path('settings/', views.SystemSettingsView.as_view(), name='system_settings'),
     

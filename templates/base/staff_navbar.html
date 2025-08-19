@@ -1,4 +1,4 @@
-<nav class="bg-gray-800 shadow-lg fixed w-full top-0 z-40" x-data="{ mobileMenuOpen: false, profileDropdown: false, notificationDropdown: false }">
+<nav class="bg-gray-800 shadow-lg fixed w-full top-0 z-40" x-data="{ mobileMenuOpen: false, profileDropdown: false, notificationDropdown: false, pendingRequestsCount: {{ pending_requests|default:0 }}, pendingPaymentsCount: {{ pending_payments_count|default:0 }} }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <!-- Logo and Brand -->
@@ -22,6 +22,9 @@
                 </a>
                 <a href="{% url 'staff_panel:student_management' %}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
                     <i class="fas fa-users mr-1"></i> Students
+                </a>
+                <a href="{% url 'staff_panel:document_management' %}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                    <i class="fas fa-file-alt mr-1"></i> Documents
                 </a>
                 <a href="{% url 'staff_panel:announcement_management' %}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
                     <i class="fas fa-bullhorn mr-1"></i> Announcements
@@ -58,6 +61,9 @@
                         </a>
                         <a href="{% url 'staff_panel:create_fee' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             <i class="fas fa-plus mr-2 text-green-500"></i> Create Fee
+                        </a>
+                        <a href="{% url 'staff_panel:upload_document' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-upload mr-2 text-indigo-500"></i> Upload Document
                         </a>
                         <a href="{% url 'staff_panel:student_search' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             <i class="fas fa-search mr-2 text-purple-500"></i> Find Student
@@ -99,13 +105,13 @@
                             <a href="{% url 'staff_panel:request_management' %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100">
                                 <div class="flex items-center justify-between">
                                     <span><i class="fas fa-clipboard-list mr-2 text-blue-500"></i> Pending Requests</span>
-                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full" x-text="pendingCount"></span>
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full" x-text="pendingRequestsCount"></span>
                                 </div>
                             </a>
                             <a href="{% url 'staff_panel:pending_payments' %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100">
                                 <div class="flex items-center justify-between">
                                     <span><i class="fas fa-credit-card mr-2 text-green-500"></i> Payment Verifications</span>
-                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full" x-text="pendingCount"></span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full" x-text="pendingPaymentsCount"></span>
                                 </div>
                             </a>
                         </div>
@@ -191,6 +197,9 @@
             </a>
             <a href="{% url 'staff_panel:student_management' %}" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
                 <i class="fas fa-users mr-2"></i> Students
+            </a>
+            <a href="{% url 'staff_panel:document_management' %}" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                <i class="fas fa-file-alt mr-2"></i> Documents
             </a>
             <a href="{% url 'staff_panel:announcement_management' %}" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
                 <i class="fas fa-bullhorn mr-2"></i> Announcements

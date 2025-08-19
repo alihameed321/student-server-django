@@ -48,13 +48,15 @@
                 </div>
             {% endif %}
             
-            <!-- Fee Breakdown -->
+            <!-- Fee Breakdown - Display Only -->
             {% if fee_breakdown %}
             <div class="space-y-3">
                 {% for fee in fee_breakdown %}
                 <div class="flex justify-between items-center py-3 border-b border-gray-200">
                     <div class="flex items-center">
-                        <input type="checkbox" name="selected_fees" value="{{ fee.id }}" class="mr-3 fee-checkbox" data-amount="{{ fee.remaining }}">
+                        <div class="mr-3 w-4 h-4 bg-blue-100 rounded border border-blue-300 flex items-center justify-center">
+                            <i class="fas fa-dollar-sign text-blue-600 text-xs"></i>
+                        </div>
                         <div>
                             <span class="text-gray-900 font-medium">{{ fee.name }}</span>
                             {% if fee.is_overdue %}
@@ -80,10 +82,23 @@
                     <span class="text-lg font-bold" style="color: #102A71;">${{ outstanding_fees|floatformat:2 }}</span>
                 </div>
             </div>
+            {% else %}
+            <div class="text-center py-8">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                    <i class="fas fa-check-circle text-blue-600 text-3xl mb-3"></i>
+                    <h3 class="text-lg font-semibold text-blue-900 mb-2">No Outstanding Fees</h3>
+                    <p class="text-blue-700">You currently have no outstanding fees to pay. All your fees are up to date!</p>
+                    <a href="{% url 'financial:dashboard' %}" class="inline-flex items-center mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back to Financial Dashboard
+                    </a>
+                </div>
+            </div>
             {% endif %}
         </div>
         
         <!-- Payment Form -->
+        {% if fee_breakdown %}
         <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
             <h2 class="text-xl font-semibold text-gray-900 mb-6">
                 <i class="fas fa-lock mr-2" style="color: #102A71;"></i>
@@ -93,6 +108,38 @@
             <form method="post" class="space-y-6">
                 {% csrf_token %}
                 
+                <!-- Fee Selection -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Select Fees to Pay</label>
+                    <div class="space-y-3 max-h-60 overflow-y-auto border border-gray-200 rounded-lg p-4">
+                        {% for fee in fee_breakdown %}
+                        <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
+                            <div class="flex items-center">
+                                <input type="checkbox" name="selected_fees" value="{{ fee.id }}" class="mr-3 fee-checkbox" data-amount="{{ fee.remaining }}" id="fee_{{ fee.id }}">
+                                <label for="fee_{{ fee.id }}" class="cursor-pointer">
+                                    <span class="text-gray-900 font-medium">{{ fee.name }}</span>
+                                    {% if fee.is_overdue %}
+                                        <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i> Overdue
+                                        </span>
+                                    {% endif %}
+                                    <div class="text-sm text-gray-500">Due: {{ fee.due_date|date:"M d, Y" }}</div>
+                                </label>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm font-medium {% if fee.remaining > 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                                    ${{ fee.remaining|floatformat:2 }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="flex justify-between items-center mt-2">
+                        <p class="text-sm text-gray-500">Select the fees you want to pay</p>
+                        <button type="button" id="select-all-fees" class="text-sm text-blue-600 hover:text-blue-800">Select All Fees</button>
+                    </div>
+                </div>
+                
                 <!-- Payment Amount -->
                 <div>
                     <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">Payment Amount</label>
@@ -101,9 +148,8 @@
                         <input type="number" id="amount" name="amount" step="0.01" min="0" max="{{ outstanding_fees }}" value="{{ outstanding_fees|floatformat:2 }}" 
                                class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     </div>
-                    <div class="flex justify-between items-center mt-2">
+                    <div class="mt-2">
                         <p class="text-sm text-gray-500">You can pay the full amount or make a partial payment</p>
-                        <button type="button" id="select-all-fees" class="text-sm text-blue-600 hover:text-blue-800">Select All Fees</button>
                     </div>
                 </div>
                 
@@ -125,83 +171,42 @@
                                 <input type="radio" name="payment_method" value="{{ provider.id }}" class="sr-only provider-radio" {% if forloop.first %}checked{% endif %}>
                                 <div class="provider-content p-4 border-2 border-transparent hover:border-blue-200 transition-colors">
                                     <!-- Provider Header -->
-                                    <div class="flex items-center mb-3">
-                                        {% if provider.logo %}
-                                            <img src="{{ provider.logo.url }}" alt="{{ provider.name }}" class="w-12 h-12 object-contain mr-3">
-                                        {% else %}
-                                            {% if 'credit' in provider.name.lower or 'card' in provider.name.lower %}
-                                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                                                    <i class="fas fa-credit-card text-blue-600 text-xl"></i>
-                                                </div>
-                                            {% elif 'bank' in provider.name.lower or 'transfer' in provider.name.lower %}
-                                                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-3">
-                                                    <i class="fas fa-university text-green-600 text-xl"></i>
-                                                </div>
-                                            {% elif 'online' in provider.name.lower %}
-                                                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
-                                                    <i class="fas fa-laptop text-purple-600 text-xl"></i>
-                                                </div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            {% if provider.logo %}
+                                                <img src="{{ provider.logo.url }}" alt="{{ provider.name }}" class="w-12 h-12 object-contain mr-3">
                                             {% else %}
-                                                <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
-                                                    <i class="fas fa-money-bill text-gray-600 text-xl"></i>
-                                                </div>
+                                                {% if 'credit' in provider.name.lower or 'card' in provider.name.lower %}
+                                                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                                        <i class="fas fa-credit-card text-blue-600 text-xl"></i>
+                                                    </div>
+                                                {% elif 'bank' in provider.name.lower or 'transfer' in provider.name.lower %}
+                                                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                                        <i class="fas fa-university text-green-600 text-xl"></i>
+                                                    </div>
+                                                {% elif 'online' in provider.name.lower %}
+                                                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                                        <i class="fas fa-laptop text-purple-600 text-xl"></i>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                                                        <i class="fas fa-money-bill text-gray-600 text-xl"></i>
+                                                    </div>
+                                                {% endif %}
                                             {% endif %}
+                                            <div>
+                                                <h3 class="font-semibold text-gray-900">{{ provider.name }}</h3>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- University Account Number -->
+                                        {% if provider.university_account_number %}
+                                        <div class="text-right">
+                                            <p class="text-sm text-gray-600">Account Number</p>
+                                            <p class="font-medium text-gray-900">{{ provider.university_account_number }}</p>
+                                        </div>
                                         {% endif %}
-                                        <div>
-                                            <h3 class="font-semibold text-gray-900">{{ provider.name }}</h3>
-                                            {% if provider.description %}
-                                                <p class="text-sm text-gray-600">{{ provider.description }}</p>
-                                            {% endif %}
-                                        </div>
                                     </div>
-                                    
-                                    <!-- University Account Details -->
-                                    {% if provider.university_account_name or provider.university_account_number %}
-                                    <div class="bg-gray-50 rounded-lg p-3 text-sm">
-                                        <h4 class="font-medium text-gray-700 mb-2">University Account Details:</h4>
-                                        <div class="space-y-1">
-                                            {% if provider.university_account_name %}
-                                            <div class="flex justify-between">
-                                                <span class="text-gray-600">Account Name:</span>
-                                                <span class="font-medium">{{ provider.university_account_name }}</span>
-                                            </div>
-                                            {% endif %}
-                                            {% if provider.university_account_number %}
-                                            <div class="flex justify-between">
-                                                <span class="text-gray-600">Account Number:</span>
-                                                <span class="font-medium">{{ provider.university_account_number }}</span>
-                                            </div>
-                                            {% endif %}
-                                            {% if provider.university_phone %}
-                                            <div class="flex justify-between">
-                                                <span class="text-gray-600">Phone:</span>
-                                                <span class="font-medium">{{ provider.university_phone }}</span>
-                                            </div>
-                                            {% endif %}
-                                            {% if provider.additional_info %}
-                                            <div class="mt-2 pt-2 border-t border-gray-200">
-                                                <p class="text-gray-600">{{ provider.additional_info }}</p>
-                                            </div>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    {% else %}
-                                    <div class="bg-yellow-50 rounded-lg p-3 text-sm">
-                                        <p class="text-yellow-800">
-                                            <i class="fas fa-exclamation-triangle mr-1"></i>
-                                            Account details will be provided after selection
-                                        </p>
-                                    </div>
-                                    {% endif %}
-                                    
-                                    {% if provider.instructions %}
-                                    <div class="mt-3 p-3 bg-blue-50 rounded-lg">
-                                        <p class="text-sm text-blue-800">
-                                            <i class="fas fa-info-circle mr-1"></i>
-                                            {{ provider.instructions }}
-                                        </p>
-                                    </div>
-                                    {% endif %}
                                 </div>
                             </label>
                         </div>
@@ -298,6 +303,7 @@
                 </div>
             </form>
         </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
@@ -323,11 +329,21 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Add immediate debug logging
+        console.log('=== Page Loaded Debug ===');
+        console.log('DOMContentLoaded event fired');
+        
         const amountInput = document.getElementById('amount');
         const feeCheckboxes = document.querySelectorAll('.fee-checkbox');
         const selectAllBtn = document.getElementById('select-all-fees');
         const providerRadios = document.querySelectorAll('.provider-radio');
         const providerCards = document.querySelectorAll('.provider-card');
+        
+        console.log('Elements found:');
+        console.log('- Amount input:', amountInput ? 'Found' : 'Not found');
+        console.log('- Fee checkboxes:', feeCheckboxes.length);
+        console.log('- Provider radios:', providerRadios.length);
+        console.log('- Provider cards:', providerCards.length);
         
         // Handle provider selection visual feedback
         function updateProviderSelection() {
@@ -403,31 +419,106 @@
             }
         }
         
-        // Add event listeners to fee checkboxes
-        feeCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', updatePaymentAmount);
-        });
-        
-        // Select all fees button
-        if (selectAllBtn) {
-            selectAllBtn.addEventListener('click', function() {
-                const allChecked = Array.from(feeCheckboxes).every(cb => cb.checked);
-                
-                feeCheckboxes.forEach(checkbox => {
-                    checkbox.checked = !allChecked;
-                });
-                
-                updatePaymentAmount();
-                this.textContent = allChecked ? 'Select All Fees' : 'Deselect All';
+        // Add event listeners to fee checkboxes (only if they exist)
+        if (feeCheckboxes.length > 0) {
+            feeCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updatePaymentAmount);
             });
+            
+            // Select all fees button
+            if (selectAllBtn) {
+                selectAllBtn.addEventListener('click', function() {
+                    const allChecked = Array.from(feeCheckboxes).every(cb => cb.checked);
+                    
+                    feeCheckboxes.forEach(checkbox => {
+                        checkbox.checked = !allChecked;
+                    });
+                    
+                    updatePaymentAmount();
+                    this.textContent = allChecked ? 'Select All Fees' : 'Deselect All';
+                });
+            }
         }
         
-        // Form validation
-        const form = document.querySelector('form');
+        // Form validation - target the payment form specifically
+        const form = document.querySelector('form[method="post"]');
+        let submitButton = null;
         if (form) {
+            // Find all submit buttons in the form and check their text
+            const submitButtons = form.querySelectorAll('button[type="submit"]');
+            for (const button of submitButtons) {
+                if (button.textContent.trim().includes('Pay Securely')) {
+                    submitButton = button;
+                    break;
+                }
+            }
+            // Fallback to any submit button in the form if "Pay Securely" not found
+            if (!submitButton && submitButtons.length > 0) {
+                submitButton = submitButtons[0];
+            }
+        }
+        console.log('Form element found:', form ? 'YES' : 'NO');
+        console.log('Submit button found:', submitButton ? 'YES' : 'NO');
+        console.log('Submit button element:', submitButton);
+        console.log('Submit button type:', submitButton ? submitButton.type : 'N/A');
+        console.log('Submit button text:', submitButton ? submitButton.textContent.trim() : 'N/A');
+        
+        // Add click listener to submit button for debugging (using capture phase)
+        if (submitButton) {
+            console.log('Attaching click event listener to submit button');
+            submitButton.addEventListener('click', function(e) {
+                console.log('=== SUBMIT BUTTON CLICKED ===');
+                console.log('Event object:', e);
+                console.log('Event target:', e.target);
+                // Prevent default form submission to force our validation
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                
+                // Manually trigger form validation
+                const formEvent = new Event('submit', { cancelable: true });
+                form.dispatchEvent(formEvent);
+            }, true); // Use capture phase
+            console.log('Click event listener attached successfully');
+        } else {
+            console.log('ERROR: Submit button not found, cannot attach click listener');
+        }
+        
+        if (form) {
+            console.log('Adding submit event listener to form');
             form.addEventListener('submit', function(e) {
+                console.log('=== FORM SUBMIT EVENT TRIGGERED ===');
                 const amount = parseFloat(amountInput.value);
                 const maxAmount = parseFloat(amountInput.max);
+                
+                // Re-query fee checkboxes to ensure we have the current state
+                const currentFeeCheckboxes = document.querySelectorAll('.fee-checkbox');
+                
+                // Debug: Print selected fees information
+                console.log('=== Payment Form Debug Info ===');
+                console.log('Total fee checkboxes found:', currentFeeCheckboxes.length);
+                
+                if (currentFeeCheckboxes.length > 0) {
+                    const selectedFees = Array.from(currentFeeCheckboxes).filter(cb => cb.checked);
+                    console.log('Selected fees count:', selectedFees.length);
+                    console.log('Selected fee IDs:', selectedFees.map(cb => cb.value));
+                    console.log('Selected fee amounts:', selectedFees.map(cb => cb.dataset.amount));
+                    
+                    // Alert with selected fees info for user visibility
+                    if (selectedFees.length > 0) {
+                        const feeInfo = selectedFees.map(cb => `Fee ID: ${cb.value}, Amount: $${cb.dataset.amount}`).join('\n');
+                        alert(`Selected Fees:\n${feeInfo}\n\nTotal Amount: $${amount}`);
+                    }
+                    
+                    if (selectedFees.length === 0) {
+                        e.preventDefault();
+                        alert('Please select at least one fee to pay.');
+                        return;
+                    }
+                } else {
+                    console.log('No fee checkboxes found - allowing payment without fee selection');
+                    alert(`Payment without specific fees selected.\nAmount: $${amount}`);
+                }
                 
                 if (amount <= 0) {
                     e.preventDefault();

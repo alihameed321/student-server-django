@@ -20,12 +20,50 @@
             </div>
         </div>
 
+        <!-- Search and Filters -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+            <div class="p-6">
+                <form method="GET" class="flex flex-col sm:flex-row gap-4">
+                    <div class="flex-1">
+                        <div class="relative">
+                            <input type="text" 
+                                   name="search" 
+                                   value="{{ search_query }}" 
+                                   placeholder="Search by student name, ID, fee type, payment provider, sender name, transaction reference..."
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="submit" 
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                            <i class="fas fa-search mr-2"></i>Search
+                        </button>
+                        {% if search_query %}
+                            <a href="{% url 'staff_panel:payment_verification' %}" 
+                               class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                <i class="fas fa-times mr-2"></i>Clear
+                            </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <!-- Pending Payments -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-xl font-semibold text-gray-900">Pending Payments</h2>
-                    <span class="text-sm text-gray-500">{{ pending_payments|length }} payment{{ pending_payments|length|pluralize }} pending</span>
+                    <div class="text-sm text-gray-500">
+                        {% if search_query %}
+                            {{ total_payments }} result{{ total_payments|pluralize }} found
+                        {% else %}
+                            {{ total_payments }} payment{{ total_payments|pluralize }} pending
+                        {% endif %}
+                    </div>
                 </div>
                 
                 {% if pending_payments %}
@@ -72,7 +110,7 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ payment.fee.name|default:"General Payment" }}
+                                            {{ payment.fee.fee_type.name|default:"General Payment" }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                             ${{ payment.amount|floatformat:2 }}
@@ -109,8 +147,85 @@
                 {% else %}
                     <div class="text-center py-12">
                         <i class="fas fa-credit-card text-gray-400 text-4xl mb-4"></i>
-                        <h3 class="text-lg font-medium text-gray-900 mb-2">No pending payments</h3>
-                        <p class="text-gray-500">All payments have been processed.</p>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">
+                            {% if search_query %}
+                                No payments found
+                            {% else %}
+                                No pending payments
+                            {% endif %}
+                        </h3>
+                        <p class="text-gray-500">
+                            {% if search_query %}
+                                Try adjusting your search criteria.
+                            {% else %}
+                                All payments have been processed.
+                            {% endif %}
+                        </p>
+                    </div>
+                {% endif %}
+                
+                <!-- Pagination -->
+                {% if pending_payments.has_other_pages %}
+                    <div class="border-t border-gray-200 px-6 py-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1 flex justify-between sm:hidden">
+                                {% if pending_payments.has_previous %}
+                                    <a href="?{% if search_query %}search={{ search_query }}&{% endif %}page={{ pending_payments.previous_page_number }}" 
+                                       class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                        Previous
+                                    </a>
+                                {% endif %}
+                                {% if pending_payments.has_next %}
+                                    <a href="?{% if search_query %}search={{ search_query }}&{% endif %}page={{ pending_payments.next_page_number }}" 
+                                       class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                        Next
+                                    </a>
+                                {% endif %}
+                            </div>
+                            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-700">
+                                        Showing
+                                        <span class="font-medium">{{ pending_payments.start_index }}</span>
+                                        to
+                                        <span class="font-medium">{{ pending_payments.end_index }}</span>
+                                        of
+                                        <span class="font-medium">{{ total_payments }}</span>
+                                        results
+                                    </p>
+                                </div>
+                                <div>
+                                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                        {% if pending_payments.has_previous %}
+                                            <a href="?{% if search_query %}search={{ search_query }}&{% endif %}page={{ pending_payments.previous_page_number }}" 
+                                               class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                                <i class="fas fa-chevron-left"></i>
+                                            </a>
+                                        {% endif %}
+                                        
+                                        {% for num in pending_payments.paginator.page_range %}
+                                            {% if pending_payments.number == num %}
+                                                <span class="relative inline-flex items-center px-4 py-2 border border-blue-500 bg-blue-50 text-sm font-medium text-blue-600">
+                                                    {{ num }}
+                                                </span>
+                                            {% elif num > pending_payments.number|add:'-3' and num < pending_payments.number|add:'3' %}
+                                                <a href="?{% if search_query %}search={{ search_query }}&{% endif %}page={{ num }}" 
+                                                   class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                                    {{ num }}
+                                                </a>
+                                            {% endif %}
+                                        {% endfor %}
+                                        
+                                        {% if pending_payments.has_next %}
+                                            <a href="?{% if search_query %}search={{ search_query }}&{% endif %}page={{ pending_payments.next_page_number }}" 
+                                               class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                        {% endif %}
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 {% endif %}
             </div>
@@ -208,8 +323,16 @@ function verifyPayment(paymentId, buttonElement) {
                 setTimeout(() => row.remove(), 300);
             } else {
                 showNotification(data.message, 'error');
-                button.innerHTML = originalText;
-                button.disabled = false;
+                // If payment has already been processed, remove it from the table
+                if (data.message.includes('already been verified') || data.message.includes('already been rejected')) {
+                    const row = button.closest('tr');
+                    row.style.transition = 'opacity 0.3s';
+                    row.style.opacity = '0';
+                    setTimeout(() => row.remove(), 300);
+                } else {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }
             }
         })
         .catch(error => {
@@ -253,14 +376,33 @@ function confirmRejectPayment(buttonElement) {
             showNotification(data.message, 'success');
             closeRejectionModal();
             // Remove the row from the table
-            const row = document.querySelector(`button[onclick="rejectPayment(${currentPaymentId})"]`).closest('tr');
-            row.style.transition = 'opacity 0.3s';
-            row.style.opacity = '0';
-            setTimeout(() => row.remove(), 300);
+            const button = document.querySelector(`button[onclick="rejectPayment(${currentPaymentId})"]`);
+            if (button) {
+                const row = button.closest('tr');
+                if (row) {
+                    row.style.transition = 'opacity 0.3s';
+                    row.style.opacity = '0';
+                    setTimeout(() => row.remove(), 300);
+                }
+            }
         } else {
             showNotification(data.message, 'error');
-            button.innerHTML = originalText;
-            button.disabled = false;
+            // If payment has already been processed, remove it from the table and close modal
+            if (data.message.includes('already been verified') || data.message.includes('already been rejected')) {
+                closeRejectionModal();
+                const button = document.querySelector(`button[onclick="rejectPayment(${currentPaymentId})"]`);
+                if (button) {
+                    const row = button.closest('tr');
+                    if (row) {
+                        row.style.transition = 'opacity 0.3s';
+                        row.style.opacity = '0';
+                        setTimeout(() => row.remove(), 300);
+                    }
+                }
+            } else {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
         }
     })
     .catch(error => {
