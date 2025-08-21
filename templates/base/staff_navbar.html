@@ -4,7 +4,8 @@
             <!-- Logo and Brand -->
             <div class="flex items-center">
                 <a href="{% url 'staff_panel:dashboard' %}" class="flex items-center">
-                    <i class="fas fa-university text-white text-2xl mr-3"></i>
+                    {% load static %}
+                    <img src="{% static 'images/logo.png' %}" alt="University Logo" class="w-10 h-10 object-contain mr-3">
                     <span class="text-white text-xl font-bold hidden sm:block">Staff Panel</span>
                 </a>
             </div>

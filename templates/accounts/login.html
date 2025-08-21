@@ -7,6 +7,19 @@
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'university-blue': '#102A71',
+                        'university-gold': '#F5C400',
+                        'university-light-blue': '#1a3a8a'
+                    }
+                }
+            }
+        }
+    </script>
     
     <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -17,20 +30,58 @@
     <!-- Custom CSS -->
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    
+    <style>
+        /* Additional responsive and modern styles */
+        .login-container {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .logo-glow {
+            box-shadow: 0 0 20px rgba(245, 196, 0, 0.3);
+        }
+        
+        .input-focus:focus {
+            box-shadow: 0 0 0 3px rgba(16, 42, 113, 0.1);
+        }
+        
+        @media (max-width: 640px) {
+            .login-container {
+                margin: 1rem;
+            }
+        }
+        
+        /* Glassmorphism effect enhancement */
+        .glass-card {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+    </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center">
-    <div class="max-w-md w-full mx-4">
+<body class="bg-gradient-to-br from-university-blue via-university-light-blue to-slate-800 min-h-screen flex items-center justify-center p-4 sm:p-6">
+    <div class="max-w-md w-full mx-auto login-container">
         <!-- Logo and Title -->
-        <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
-                <i class="fas fa-university text-white text-2xl"></i>
+        <div class="text-center mb-8 sm:mb-10">
+            <div class="bg-white/10 backdrop-blur-sm rounded-full p-4 w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-6 shadow-lg logo-glow hover:scale-105 transition-transform duration-300">
+                <img src="{% static 'images/logo.png' %}" alt="University Logo" class="w-full h-full object-contain">
             </div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">My University Services</h1>
-            <p class="text-gray-600">Sign in to access your student portal</p>
+            <h1 class="text-2xl sm:text-3xl font-bold text-white mb-2 font-tajawal">My University Services</h1>
+            <p class="text-white/80 text-sm sm:text-base">Student Portal Login</p>
         </div>
         
         <!-- Login Form -->
-        <div class="bg-white rounded-2xl shadow-xl p-8" x-data="loginForm()">
+        <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 sm:p-8 border border-white/20 glass-card" x-data="loginForm()">
             <!-- Flash Messages -->
             {% if messages %}
                 <div class="mb-6 space-y-2">
@@ -50,39 +101,41 @@
                 </div>
             {% endif %}
             
+            <h2 class="text-xl sm:text-2xl font-bold text-university-blue mb-6 text-center font-tajawal">Welcome Back</h2>
+            
             <form method="post" @submit="handleSubmit" data-validate>
                 {% csrf_token %}
                 
                 <!-- Username Field -->
-                <div class="mb-6">
-                    <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-user mr-1"></i> Username or Student ID
+                <div class="mb-5">
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-2 font-tajawal">
+                        <i class="fas fa-user mr-2 text-university-blue"></i>Username / Student ID
                     </label>
                     <input type="text" 
-                           id="username" 
-                           name="username" 
-                           x-model="form.username"
-                           class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                           placeholder="Enter your username or student ID"
-                           required>
+                            id="username" 
+                            name="username" 
+                            x-model="form.username"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-university-blue focus:border-transparent transition-all duration-200 text-sm sm:text-base input-focus"
+                            placeholder="Enter your username or student ID"
+                            required>
                 </div>
                 
                 <!-- Password Field -->
-                <div class="mb-6">
-                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-lock mr-1"></i> Password
+                <div class="mb-5">
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2 font-tajawal">
+                        <i class="fas fa-lock mr-2 text-university-blue"></i>Password
                     </label>
                     <div class="relative">
-                        <input :type="showPassword ? 'text' : 'password'" 
-                               id="password" 
-                               name="password" 
-                               x-model="form.password"
-                               class="form-input w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                               placeholder="Enter your password"
-                               required>
+                        <input type="password" 
+                                id="password" 
+                                name="password" 
+                                x-model="form.password"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-university-blue focus:border-transparent transition-all duration-200 pr-12 text-sm sm:text-base input-focus"
+                                placeholder="Enter your password"
+                                required>
                         <button type="button" 
                                 @click="showPassword = !showPassword"
-                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                                class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-university-blue transition-colors">
                             <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
                         </button>
                     </div>
@@ -94,10 +147,10 @@
                         <input type="checkbox" 
                                name="remember_me" 
                                x-model="form.rememberMe"
-                               class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                        <span class="ml-2 text-sm text-gray-600">Remember me</span>
+                               class="rounded border-gray-300 text-university-blue shadow-sm focus:border-university-blue focus:ring focus:ring-university-blue focus:ring-opacity-50">
+                        <span class="ml-2 text-sm text-gray-600 font-tajawal">Remember me</span>
                     </label>
-                    <a href="{% url 'accounts:password_reset' %}" class="text-sm text-blue-600 hover:text-blue-800 transition-colors">
+                    <a href="{% url 'accounts:password_reset' %}" class="text-sm text-university-blue hover:text-university-gold transition-colors font-tajawal">
                         Forgot password?
                     </a>
                 </div>
@@ -105,42 +158,41 @@
                 <!-- Submit Button -->
                 <button type="submit" 
                         :disabled="loading"
-                        class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 btn-animate">
-                    <span x-show="!loading" class="flex items-center justify-center">
-                        <i class="fas fa-sign-in-alt mr-2"></i>
-                        Sign In
+                        class="w-full bg-gradient-to-r from-university-blue to-university-light-blue hover:from-university-light-blue hover:to-university-blue disabled:opacity-50 text-white font-medium py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-tajawal text-sm sm:text-base">
+                    <span x-show="!loading" class="flex items-center">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Sign In
                     </span>
-                    <span x-show="loading" class="flex items-center justify-center">
-                        <div class="spinner mr-2"></div>
+                    <span x-show="loading" class="flex items-center">
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
                         Signing in...
                     </span>
                 </button>
             </form>
             
-            <!-- Additional Links -->
-            <div class="mt-8 pt-6 border-t border-gray-200">
-                <div class="text-center">
-                    <p class="text-sm text-gray-600 mb-4">Need help accessing your account?</p>
-                    <div class="space-y-2">
-                        <a href="#" class="block text-sm text-blue-600 hover:text-blue-800 transition-colors">
-                            <i class="fas fa-question-circle mr-1"></i>
-                            Contact IT Support
-                        </a>
-                        <a href="#" class="block text-sm text-blue-600 hover:text-blue-800 transition-colors">
-                            <i class="fas fa-book mr-1"></i>
-                            User Guide
-                        </a>
-                    </div>
+            <!-- Additional Help Links -->
+            <div class="mt-6 text-center space-y-3">
+                <div class="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6">
+                    <a href="mailto:it-support@university.edu" class="flex items-center text-sm text-gray-600 hover:text-university-blue transition-colors font-tajawal">
+                        <i class="fas fa-envelope mr-2 text-university-gold"></i>
+                        IT Support
+                    </a>
+                    <a href="#" class="flex items-center text-sm text-gray-600 hover:text-university-blue transition-colors font-tajawal">
+                        <i class="fas fa-book mr-2 text-university-gold"></i>
+                        User Guide
+                    </a>
                 </div>
             </div>
         </div>
         
         <!-- Footer -->
         <div class="text-center mt-8">
-            <p class="text-sm text-gray-500">
-                &copy; 2024 My University Services. All rights reserved.
+            <p class="text-sm text-white/70 font-tajawal">
+                © 2024 My University. All rights reserved.
             </p>
-            <p class="text-xs text-gray-400 mt-1">
+            <p class="text-xs text-white/50 mt-1 font-tajawal">
                 Powered by Django & Tailwind CSS
             </p>
         </div>
