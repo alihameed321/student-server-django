@@ -1,6 +1,9 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import User, StudentProfile, StaffProfile
+from ..models import User, StudentProfile, StaffProfile
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -46,35 +49,48 @@ class LoginSerializer(serializers.Serializer):
         identifier = attrs.get('identifier')
         password = attrs.get('password')
         
+        logger.info(f"LoginSerializer validation - identifier: {identifier}")
+        
         if identifier and password:
             # Try to authenticate with username first
+            logger.info(f"Attempting username authentication for: {identifier}")
             user = authenticate(username=identifier, password=password)
             
             # If username authentication fails, try with email
             if not user:
+                logger.info(f"Username auth failed, trying email for: {identifier}")
                 try:
                     user_obj = User.objects.get(email=identifier)
+                    logger.info(f"Found user by email: {user_obj.username}")
                     user = authenticate(username=user_obj.username, password=password)
                 except User.DoesNotExist:
+                    logger.info(f"No user found with email: {identifier}")
                     pass
             
             # If email authentication fails, try with university_id
             if not user:
+                logger.info(f"Email auth failed, trying university_id for: {identifier}")
                 try:
                     user_obj = User.objects.get(university_id=identifier)
+                    logger.info(f"Found user by university_id: {user_obj.username}")
                     user = authenticate(username=user_obj.username, password=password)
                 except User.DoesNotExist:
+                    logger.info(f"No user found with university_id: {identifier}")
                     pass
             
             if not user:
+                logger.warning(f"Authentication failed for identifier: {identifier}")
                 raise serializers.ValidationError('Invalid credentials')
             
             if not user.is_active:
+                logger.warning(f"User account disabled for: {user.username}")
                 raise serializers.ValidationError('User account is disabled')
             
+            logger.info(f"Authentication successful for user: {user.username}")
             attrs['user'] = user
             return attrs
         else:
+            logger.warning("Missing identifier or password in request")
             raise serializers.ValidationError('Must include identifier and password')
 
 

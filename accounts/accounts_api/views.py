@@ -15,6 +15,8 @@ logger = logging.getLogger(__name__)
 def api_login(request):
     """API endpoint for mobile app login"""
     logger.info(f"Login attempt from IP: {request.META.get('REMOTE_ADDR')}")
+    logger.info(f"Request data: {request.data}")
+    logger.info(f"Request headers: {dict(request.headers)}")
     
     serializer = LoginSerializer(data=request.data)
     if serializer.is_valid():
@@ -30,15 +32,20 @@ def api_login(request):
         # Prepare user data
         user_serializer = UserDetailSerializer(user)
         
-        return Response({
+        response_data = {
             'success': True,
             'message': 'Login successful',
             'access_token': str(access_token),
             'refresh_token': str(refresh),
             'user': user_serializer.data
-        }, status=status.HTTP_200_OK)
+        }
+        
+        logger.info(f"Sending response: {response_data}")
+        
+        return Response(response_data, status=status.HTTP_200_OK)
     else:
         logger.warning(f"Failed login attempt from IP: {request.META.get('REMOTE_ADDR')}")
+        logger.warning(f"Serializer errors: {serializer.errors}")
         return Response({
             'success': False,
             'message': 'Invalid credentials',
