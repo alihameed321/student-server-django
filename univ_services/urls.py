@@ -27,6 +27,12 @@ urlpatterns = [
     path('staff/', include('staff_panel.urls')),
     path('financial/', include('financial.urls')),
     path('notifications/', include('notifications.urls')),
+    # API endpoints for mobile app
+    path('api/auth/', include('accounts.accounts_api.urls')),
+    path('api/student/', include('student_portal.student_api.urls')),
+    path('api/staff/', include('staff_panel.staff_api.urls')),
+    path('api/financial/', include('financial.financial_api.urls')),
+    path('api/notifications/', include('notifications.notifications_api.urls')),
     path('', RedirectView.as_view(url='/accounts/login/', permanent=False)),
 ]
 
