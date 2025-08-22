@@ -311,15 +311,13 @@ def view_receipt(request, payment_id):
 
 
 @login_required
-def download_receipt(request, payment_id):
-    """Download payment receipt as PDF"""
-    payment = get_object_or_404(Payment, id=payment_id, student=request.user, status='verified')
-    
+def generate_receipt_pdf(payment, user):
+    """Generate PDF receipt for a payment"""
     # Get or create receipt
     receipt, created = PaymentReceipt.objects.get_or_create(
         payment=payment,
         defaults={
-            'generated_by': request.user
+            'generated_by': user
         }
     )
     
@@ -383,6 +381,16 @@ def download_receipt(request, payment_id):
     # Build PDF
     doc.build(story)
     buffer.seek(0)
+    
+    return buffer, receipt
+
+
+def download_receipt(request, payment_id):
+    """Download payment receipt as PDF"""
+    payment = get_object_or_404(Payment, id=payment_id, student=request.user, status='verified')
+    
+    # Generate PDF using the helper function
+    buffer, receipt = generate_receipt_pdf(payment, request.user)
     
     # Return PDF response
     response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
