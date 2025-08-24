@@ -51,7 +51,7 @@ def financial_summary(request):
     # Count overdue fees
     overdue_count = student_fees.filter(
         due_date__lt=timezone.now().date(),
-        status__in=['unpaid', 'partially_paid']
+        status__in=['pending', 'partial', 'overdue']
     ).count()
     
     # Get recent transactions (last 10)
@@ -102,7 +102,7 @@ class StudentFeeListView(generics.ListAPIView):
         if overdue == 'true':
             queryset = queryset.filter(
                 due_date__lt=timezone.now().date(),
-                status__in=['unpaid', 'partially_paid']
+                status__in=['pending', 'partial', 'overdue']
             )
         
         return queryset
@@ -187,11 +187,14 @@ def create_payment(request):
     """
     Create a new payment for selected fees
     """
+    logger.info(f"Payment creation request from user {request.user.id}: {request.data}")
+    
     serializer = PaymentCreateSerializer(data=request.data)
     
     if serializer.is_valid():
         user = request.user
         validated_data = serializer.validated_data
+        logger.info(f"Validated data: {validated_data}")
         
         # Get payment provider
         payment_provider = get_object_or_404(
@@ -199,16 +202,32 @@ def create_payment(request):
             id=validated_data['payment_provider_id'], 
             is_active=True
         )
+        logger.info(f"Payment provider found: {payment_provider.name}")
         
         # Validate fees belong to the user and calculate total
         fee_ids = [fee_data['id'] for fee_data in validated_data['fees']]
+        logger.info(f"Requested fee IDs: {fee_ids}")
+        
+        # Check all fees for this user
+        all_user_fees = StudentFee.objects.filter(student=user)
+        logger.info(f"User {user.id} has {all_user_fees.count()} total fees")
+        
+        # Check specific requested fees
+        requested_fees = StudentFee.objects.filter(id__in=fee_ids, student=user)
+        logger.info(f"Found {requested_fees.count()} requested fees belonging to user")
+        
+        for fee in requested_fees:
+            logger.info(f"Fee {fee.id}: status={fee.status}, amount={fee.amount}, paid={fee.amount_paid}, remaining={fee.remaining_balance}")
+        
         student_fees = StudentFee.objects.filter(
             id__in=fee_ids,
             student=user,
-            status__in=['unpaid', 'partially_paid']
+            status__in=['pending', 'partial', 'overdue']
         )
+        logger.info(f"Found {student_fees.count()} valid fees with correct status")
         
         if len(student_fees) != len(fee_ids):
+            logger.error(f"Fee validation failed: requested {len(fee_ids)} fees, found {len(student_fees)} valid fees")
             return Response({
                 'error': 'Some fees are invalid or already paid'
             }, status=status.HTTP_400_BAD_REQUEST)
@@ -246,7 +265,7 @@ def create_payment(request):
                 payment_provider=payment_provider,
                 amount=payment_amount,
                 transaction_reference=validated_data['transaction_reference'],
-                payment_date=timezone.now().date(),
+                payment_date=timezone.now(),
                 sender_name=validated_data.get('sender_name', ''),
                 sender_phone=validated_data.get('sender_phone', ''),
                 transfer_notes=validated_data.get('transfer_notes', ''),
@@ -275,7 +294,7 @@ def outstanding_fees(request):
     
     outstanding_fees = StudentFee.objects.filter(
         student=user,
-        status__in=['unpaid', 'partially_paid']
+        status__in=['pending', 'partial', 'overdue']
     ).select_related('fee_type').order_by('due_date')
     
     serializer = StudentFeeSerializer(outstanding_fees, many=True)
