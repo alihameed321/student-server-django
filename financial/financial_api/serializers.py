@@ -142,6 +142,90 @@ class FinancialSummarySerializer(serializers.Serializer):
         ]
 
 
+class EnhancedStudentFeeSerializer(StudentFeeSerializer):
+    """Enhanced serializer for student fees with additional mobile-friendly fields"""
+    days_until_due = serializers.SerializerMethodField()
+    payment_urgency = serializers.SerializerMethodField()
+    fee_category = serializers.CharField(source='fee_type.name', read_only=True)
+    
+    class Meta(StudentFeeSerializer.Meta):
+        fields = StudentFeeSerializer.Meta.fields + [
+            'days_until_due', 'payment_urgency', 'fee_category'
+        ]
+    
+    def get_days_until_due(self, obj):
+        """Calculate days until due date"""
+        if not obj.due_date:
+            return None
+        today = timezone.now().date()
+        delta = obj.due_date - today
+        return delta.days
+    
+    def get_payment_urgency(self, obj):
+        """Determine payment urgency level"""
+        if not obj.due_date:
+            return 'normal'
+        
+        days_until_due = self.get_days_until_due(obj)
+        if days_until_due is None:
+            return 'normal'
+        
+        if days_until_due < 0:
+            return 'overdue'
+        elif days_until_due <= 7:
+            return 'urgent'
+        elif days_until_due <= 30:
+            return 'moderate'
+        else:
+            return 'normal'
+
+
+class MobilePaymentSerializer(PaymentSerializer):
+    """Mobile-optimized payment serializer with simplified fields"""
+    fee_name = serializers.CharField(source='fee.fee_type.name', read_only=True)
+    payment_provider_name = serializers.CharField(source='payment_provider.name', read_only=True)
+    formatted_amount = serializers.SerializerMethodField()
+    payment_status_color = serializers.SerializerMethodField()
+    
+    class Meta(PaymentSerializer.Meta):
+        fields = [
+            'id', 'fee_name', 'payment_provider_name', 'amount', 'formatted_amount',
+            'transaction_reference', 'payment_date', 'status', 'status_display',
+            'payment_status_color', 'verified_at', 'can_view_receipt'
+        ]
+    
+    def get_formatted_amount(self, obj):
+        """Format amount for mobile display"""
+        return f"${obj.amount:,.2f}"
+    
+    def get_payment_status_color(self, obj):
+        """Get color code for payment status"""
+        status_colors = {
+            'pending': '#FFA500',  # Orange
+            'verified': '#28A745',  # Green
+            'rejected': '#DC3545',  # Red
+            'cancelled': '#6C757D'  # Gray
+        }
+        return status_colors.get(obj.status, '#6C757D')
+
+
+class PaymentStatisticsSerializer(serializers.Serializer):
+    """Serializer for payment statistics data"""
+    success = serializers.BooleanField(default=True)
+    summary = serializers.DictField()
+    payment_counts = serializers.DictField()
+    payment_amounts = serializers.DictField()
+    current_year = serializers.DictField()
+    monthly_summary = serializers.ListField()
+    provider_usage = serializers.ListField()
+    
+    class Meta:
+        fields = [
+            'success', 'summary', 'payment_counts', 'payment_amounts',
+            'current_year', 'monthly_summary', 'provider_usage'
+        ]
+
+
 class FinancialReportSerializer(serializers.ModelSerializer):
     """Serializer for financial reports"""
     generated_by_name = serializers.CharField(source='generated_by.get_full_name', read_only=True)

@@ -213,7 +213,7 @@ class PaymentProviderAdmin(admin.ModelAdmin):
     get_status_badge.admin_order_field = 'is_active'
     
     def get_payments_count(self, obj):
-        return obj.payment_set.count()
+        return obj.payments.count()
     get_payments_count.short_description = 'Total Payments'
 
 
