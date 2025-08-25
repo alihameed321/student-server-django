@@ -166,7 +166,8 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20
+    'PAGE_SIZE': 20,
+    'EXCEPTION_HANDLER': 'student_portal.student_api.exceptions.custom_exception_handler',
 }
 
 # JWT Configuration
