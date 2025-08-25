@@ -233,16 +233,25 @@ def cancel_service_request(request, request_id):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsStudentUser])
 def service_request_types(request):
     """
     Get available service request types
     """
-    types = [
-        {'value': choice[0], 'label': choice[1]} 
-        for choice in ServiceRequest.REQUEST_TYPE_CHOICES
-    ]
-    return Response({'request_types': types})
+    try:
+        validate_student_access(request.user)
+        
+        types = [
+            {'value': choice[0], 'label': choice[1]} 
+            for choice in ServiceRequest.REQUEST_TYPES
+        ]
+        return Response(types, status=status.HTTP_200_OK)
+    except Exception as e:
+        logger.error(f"Error fetching service request types: {str(e)}")
+        return Response(
+            {'success': False, 'error': {'code': 500, 'message': 'Internal server error', 'details': {'detail': 'An unexpected error occurred. Please try again later.'}}},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 
 # Student Documents API Views
@@ -618,7 +627,7 @@ def student_dashboard(request):
             
             new_documents = StudentDocument.objects.filter(
                 student=user,
-                created_at__gte=timezone.now() - timedelta(days=7)
+                issued_date__gte=timezone.now() - timedelta(days=7)
             ).count()
             
         except Exception as e:
@@ -638,7 +647,7 @@ def student_dashboard(request):
             
             recent_documents = StudentDocument.objects.filter(
                 student=user
-            ).select_related('student').order_by('-created_at')[:5]
+            ).select_related('student').order_by('-issued_date')[:5]
             
         except Exception as e:
             logger.error(f"Error fetching recent activities: {str(e)}")

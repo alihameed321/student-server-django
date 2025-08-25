@@ -60,6 +60,7 @@ class ServiceRequestDetailSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     priority_display = serializers.CharField(source='get_priority_display', read_only=True)
     status_icon = serializers.CharField(read_only=True)
+    student = serializers.CharField(source='student.university_id', read_only=True)
     processed_by = StudentBasicSerializer(read_only=True)
     documents = RequestDocumentSerializer(many=True, read_only=True)
     can_cancel = serializers.SerializerMethodField()
@@ -67,7 +68,7 @@ class ServiceRequestDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = ServiceRequest
         fields = [
-            'id', 'request_type', 'request_type_display', 'title', 'description',
+            'id', 'student', 'request_type', 'request_type_display', 'title', 'description',
             'status', 'status_display', 'status_icon', 'priority', 'priority_display',
             'created_at', 'updated_at', 'processed_by', 'rejection_reason',
             'additional_info_request', 'documents', 'can_cancel'
