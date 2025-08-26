@@ -113,6 +113,8 @@ class StaffActivity(models.Model):
         ('payment_rejected', 'Payment Rejected'),
         ('document_uploaded', 'Document Uploaded'),
         ('announcement_created', 'Announcement Created'),
+        ('notification_created', 'Notification Created'),
+        ('report_generated', 'Report Generated'),
         ('fee_created', 'Fee Created'),
         ('user_created', 'User Created'),
         ('user_modified', 'User Modified'),

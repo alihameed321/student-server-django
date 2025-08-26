@@ -1,0 +1,311 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Create Notification - Staff Panel{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.tailwindcss.com"></script>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-900">Create Notification</h1>
+        <nav class="flex" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="{% url 'staff_panel:dashboard' %}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <svg class="w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                        </svg>
+                        <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">Create Notification</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Form Section -->
+        <div class="lg:col-span-2">
+            <div class="bg-white shadow-sm rounded-lg border border-gray-200">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-medium text-gray-900">Notification Details</h2>
+                </div>
+                <form method="post" id="notificationForm" class="p-6 space-y-6">
+                    {% csrf_token %}
+                    
+                    <!-- Basic Information -->
+                    <div class="space-y-4">
+                        <div>
+                            <label for="title" class="block text-sm font-medium text-gray-700 mb-1">
+                                Title <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="title" name="title" required maxlength="200">
+                            <p class="mt-1 text-sm text-gray-500">Enter a clear, descriptive title for the notification</p>
+                        </div>
+                        
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-700 mb-1">
+                                Message <span class="text-red-500">*</span>
+                            </label>
+                            <textarea class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="message" name="message" rows="4" required></textarea>
+                            <p class="mt-1 text-sm text-gray-500">Write the main content of your notification</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Type and Priority -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="notification_type" class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="notification_type" name="notification_type">
+                                {% for value, label in notification_types %}
+                                    <option value="{{ value }}">{{ label|title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="priority" class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="priority" name="priority">
+                                {% for value, label in priority_levels %}
+                                    <option value="{{ value }}">{{ label|title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Button (Optional) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="action_text" class="block text-sm font-medium text-gray-700 mb-1">Action Button Text</label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="action_text" name="action_text" maxlength="50">
+                            <p class="mt-1 text-sm text-gray-500">Optional: Text for action button (e.g., "View Details")</p>
+                        </div>
+                        <div>
+                            <label for="action_url" class="block text-sm font-medium text-gray-700 mb-1">Action URL</label>
+                            <input type="url" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="action_url" name="action_url">
+                            <p class="mt-1 text-sm text-gray-500">Optional: URL to redirect when action button is clicked</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Expiry Date -->
+                    <div>
+                        <label for="expires_at" class="block text-sm font-medium text-gray-700 mb-1">Expires At</label>
+                        <input type="datetime-local" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="expires_at" name="expires_at">
+                        <p class="mt-1 text-sm text-gray-500">Optional: When this notification should expire and be automatically hidden</p>
+                    </div>
+                    
+                    <!-- Recipients -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                            Recipients <span class="text-red-500">*</span>
+                        </label>
+                        <div class="space-y-4">
+                            <!-- Quick Select Buttons -->
+                            <div class="flex flex-wrap gap-2">
+                                <button type="button" class="px-3 py-2 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded-md hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" data-target="all_users">All Users</button>
+                                <button type="button" class="px-3 py-2 text-sm font-medium text-green-700 bg-green-100 border border-green-300 rounded-md hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" data-target="all_students">All Students</button>
+                                <button type="button" class="px-3 py-2 text-sm font-medium text-purple-700 bg-purple-100 border border-purple-300 rounded-md hover:bg-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2" data-target="all_staff">All Staff</button>
+                                <button type="button" class="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2" data-target="clear">Clear All</button>
+                            </div>
+                            
+                            <!-- Individual Users -->
+                            <div class="border border-gray-200 rounded-md p-4">
+                                <h4 class="text-sm font-medium text-gray-900 mb-3">Individual Users</h4>
+                                <div class="max-h-64 overflow-y-auto space-y-2" id="userCheckboxes">
+                                    {% for user in users %}
+                                        <div class="flex items-center">
+                                            <input type="checkbox" id="user_{{ user.id }}" name="recipients" value="{{ user.id }}" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                            <label for="user_{{ user.id }}" class="ml-3 text-sm text-gray-700">
+                                                {{ user.get_full_name }} 
+                                                <span class="text-gray-500">({{ user.get_user_type_display }})</span>
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <p class="mt-2 text-sm text-gray-500">Select individual users or use quick select buttons for groups</p>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+                        <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" onclick="resetForm()">Reset</button>
+                        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Create Notification</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Preview Section -->
+        <div class="lg:col-span-1">
+            <div class="bg-white shadow-sm rounded-lg border border-gray-200 sticky top-6">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                        <h3 class="text-lg font-medium text-gray-900">Live Preview</h3>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4" id="previewCard">
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" id="previewTypeBadge">Info</span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" id="previewPriorityBadge">Medium</span>
+                        </div>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-2" id="previewTitle">Notification Title</h4>
+                        <p class="text-gray-700 mb-3" id="previewMessage">Your notification message will appear here...</p>
+                        <div id="previewAction" class="hidden mb-3">
+                            <button class="inline-flex items-center px-3 py-2 border border-blue-300 shadow-sm text-sm leading-4 font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" id="previewActionBtn">Action</button>
+                        </div>
+                        <div class="text-xs text-gray-500 hidden" id="previewExpiry">Expires: <span id="previewExpiryDate"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Type and priority color mappings
+    const typeColors = {
+        'info': { bg: '#dbeafe', text: '#1e40af', border: '#3b82f6' },
+        'warning': { bg: '#fef3c7', text: '#92400e', border: '#f59e0b' },
+        'success': { bg: '#d1fae5', text: '#065f46', border: '#10b981' },
+        'error': { bg: '#fee2e2', text: '#991b1b', border: '#ef4444' },
+        'announcement': { bg: '#ede9fe', text: '#5b21b6', border: '#8b5cf6' }
+    };
+    
+    const priorityColors = {
+        'low': { bg: '#f3f4f6', text: '#374151' },
+        'medium': { bg: '#dbeafe', text: '#1e40af' },
+        'high': { bg: '#fef3c7', text: '#92400e' },
+        'urgent': { bg: '#fee2e2', text: '#991b1b' }
+    };
+    
+    // Update preview in real-time
+    function updatePreview() {
+        const title = document.getElementById('title').value || 'Notification Title';
+        const message = document.getElementById('message').value || 'Your notification message will appear here...';
+        const type = document.getElementById('notification_type').value;
+        const priority = document.getElementById('priority').value;
+        const actionText = document.getElementById('action_text').value;
+        const actionUrl = document.getElementById('action_url').value;
+        const expiresAt = document.getElementById('expires_at').value;
+        
+        // Update preview content
+        document.getElementById('previewTitle').textContent = title;
+        document.getElementById('previewMessage').textContent = message;
+        
+        // Update type badge
+        const typeBadge = document.getElementById('previewTypeBadge');
+        typeBadge.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+        const typeColor = typeColors[type];
+        typeBadge.style.backgroundColor = typeColor.bg;
+        typeBadge.style.color = typeColor.text;
+        
+        // Update priority badge
+        const priorityBadge = document.getElementById('previewPriorityBadge');
+        priorityBadge.textContent = priority.charAt(0).toUpperCase() + priority.slice(1);
+        const priorityColor = priorityColors[priority];
+        priorityBadge.style.backgroundColor = priorityColor.bg;
+        priorityBadge.style.color = priorityColor.text;
+        
+        // Update card border
+        document.getElementById('previewCard').style.borderLeftColor = typeColor.border;
+        
+        // Update action button
+        const actionDiv = document.getElementById('previewAction');
+        const actionBtn = document.getElementById('previewActionBtn');
+        if (actionText && actionUrl) {
+            actionBtn.textContent = actionText;
+            actionDiv.classList.remove('hidden');
+        } else {
+            actionDiv.classList.add('hidden');
+        }
+        
+        // Update expiry
+        const expiryDiv = document.getElementById('previewExpiry');
+        const expiryDate = document.getElementById('previewExpiryDate');
+        if (expiresAt) {
+            const date = new Date(expiresAt);
+            expiryDate.textContent = date.toLocaleString();
+            expiryDiv.classList.remove('hidden');
+        } else {
+            expiryDiv.classList.add('hidden');
+        }
+    }
+    
+    // Quick select functionality
+    document.querySelectorAll('button[data-target]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const target = this.dataset.target;
+            const checkboxes = document.querySelectorAll('input[name="recipients"]');
+            
+            // Remove active styling from all buttons
+            document.querySelectorAll('button[data-target]').forEach(b => {
+                b.classList.remove('ring-2', 'ring-offset-2');
+            });
+            
+            if (target === 'all_users') {
+                checkboxes.forEach(cb => cb.checked = true);
+                this.classList.add('ring-2', 'ring-offset-2');
+            } else if (target === 'all_students') {
+                checkboxes.forEach(cb => {
+                    const label = cb.nextElementSibling.textContent;
+                    cb.checked = label.includes('(Student)');
+                });
+                this.classList.add('ring-2', 'ring-offset-2');
+            } else if (target === 'all_staff') {
+                checkboxes.forEach(cb => {
+                    const label = cb.nextElementSibling.textContent;
+                    cb.checked = label.includes('(Staff)') || label.includes('(Admin)');
+                });
+                this.classList.add('ring-2', 'ring-offset-2');
+            } else if (target === 'clear') {
+                checkboxes.forEach(cb => cb.checked = false);
+            }
+        });
+    });
+    
+    // Form validation
+    document.getElementById('notificationForm').addEventListener('submit', function(e) {
+        const recipients = document.querySelectorAll('input[name="recipients"]:checked');
+        if (recipients.length === 0) {
+            e.preventDefault();
+            alert('Please select at least one recipient.');
+            return false;
+        }
+    });
+    
+    // Reset form function
+    function resetForm() {
+        document.getElementById('notificationForm').reset();
+        document.querySelectorAll('button[data-target]').forEach(b => {
+            b.classList.remove('ring-2', 'ring-offset-2');
+        });
+        updatePreview();
+    }
+    
+    // Initialize preview and event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add event listeners for real-time preview
+        ['title', 'message', 'notification_type', 'priority', 'action_text', 'action_url', 'expires_at'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updatePreview);
+        });
+        
+        // Initial preview update
+        updatePreview();
+    });
+</script>
+{% endblock %}

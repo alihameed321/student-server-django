@@ -1050,7 +1050,7 @@ class CreateAnnouncementView(LoginRequiredMixin, TemplateView):
         
         if title and content:
             # Map priority to is_urgent field
-            is_urgent = priority in ['high', 'critical']
+            is_urgent = priority in ['high', 'urgent']
             
             announcement = Announcement.objects.create(
                 title=title,
@@ -1161,7 +1161,7 @@ class GenerateReportView(LoginRequiredMixin, TemplateView):
                 # Log staff activity
                 StaffActivity.objects.create(
                     staff_member=request.user,
-                    action='generated_report',
+                    activity_type='report_generated',
                     description=f'Generated {report_type} report from {date_from} to {date_to}'
                 )
                 
@@ -1330,3 +1330,105 @@ def get_recent_activities(request):
         })
     
     return JsonResponse({'activities': data})
+
+
+# Notification Management Views
+class NotificationCreateView(LoginRequiredMixin, TemplateView):
+    """Create notifications for users"""
+    template_name = 'staff_panel/create_notification.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from notifications.models import Notification
+        from accounts.models import User
+        
+        # Get all users for recipient selection
+        users = User.objects.filter(
+            is_active=True
+        ).order_by('user_type', 'first_name', 'last_name')
+        
+        context.update({
+            'users': users,
+            'notification_types': Notification.NOTIFICATION_TYPES,
+            'priority_levels': Notification.PRIORITY_LEVELS,
+        })
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        from notifications.models import Notification
+        from accounts.models import User
+        from .models import StaffActivity
+        from django.utils import timezone
+        from datetime import datetime
+        
+        try:
+            # Get form data
+            recipient_ids = request.POST.getlist('recipients')
+            title = request.POST.get('title', '').strip()
+            message = request.POST.get('message', '').strip()
+            notification_type = request.POST.get('notification_type', 'info')
+            priority = request.POST.get('priority', 'medium')
+            action_url = request.POST.get('action_url', '').strip()
+            action_text = request.POST.get('action_text', '').strip()
+            expires_at = request.POST.get('expires_at', '').strip()
+            
+            # Validate required fields
+            if not all([recipient_ids, title, message]):
+                messages.error(request, 'Please fill in all required fields.')
+                return self.get(request, *args, **kwargs)
+            
+            # Parse expiry date if provided
+            expiry_date = None
+            if expires_at:
+                try:
+                    expiry_date = datetime.strptime(expires_at, '%Y-%m-%dT%H:%M')
+                    expiry_date = timezone.make_aware(expiry_date)
+                except ValueError:
+                    messages.error(request, 'Invalid expiry date format.')
+                    return self.get(request, *args, **kwargs)
+            
+            # Get recipients
+            if 'all_users' in recipient_ids:
+                recipients = User.objects.filter(is_active=True)
+            elif 'all_students' in recipient_ids:
+                recipients = User.objects.filter(user_type='student', is_active=True)
+            elif 'all_staff' in recipient_ids:
+                recipients = User.objects.filter(user_type__in=['staff', 'admin'], is_active=True)
+            else:
+                recipients = User.objects.filter(id__in=recipient_ids, is_active=True)
+            
+            if not recipients.exists():
+                messages.error(request, 'No valid recipients selected.')
+                return self.get(request, *args, **kwargs)
+            
+            # Create notifications
+            notifications_created = 0
+            for recipient in recipients:
+                notification = Notification.objects.create(
+                    recipient=recipient,
+                    title=title,
+                    message=message,
+                    notification_type=notification_type,
+                    priority=priority,
+                    action_url=action_url if action_url else '',
+                    action_text=action_text if action_text else '',
+                    expires_at=expiry_date
+                )
+                notifications_created += 1
+            
+            # Log staff activity
+            StaffActivity.objects.create(
+                staff_member=request.user,
+                activity_type='notification_created',
+                description=f'Created notification "{title}" for {notifications_created} recipients'
+            )
+            
+            messages.success(
+                request, 
+                f'Notification "{title}" created successfully for {notifications_created} recipients!'
+            )
+            return redirect('staff_panel:notification_create')
+            
+        except Exception as e:
+            messages.error(request, f'Error creating notification: {str(e)}')
+            return self.get(request, *args, **kwargs)

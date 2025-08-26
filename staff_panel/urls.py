@@ -33,6 +33,9 @@ urlpatterns = [
     path('announcements/', views.AnnouncementManagementView.as_view(), name='announcement_management'),
     path('announcements/create/', views.CreateAnnouncementView.as_view(), name='create_announcement'),
     
+    # Notification Management
+    path('notifications/create/', views.NotificationCreateView.as_view(), name='notification_create'),
+    
     # Reports
     path('reports/', views.ReportsView.as_view(), name='reports'),
     path('reports/generate/', views.GenerateReportView.as_view(), name='generate_report'),
