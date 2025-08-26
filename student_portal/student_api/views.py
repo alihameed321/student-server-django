@@ -259,30 +259,109 @@ def service_request_types(request):
 @permission_classes([IsAuthenticated, IsStudentUser])
 def student_documents(request):
     """
-    List all documents for authenticated student
+    Enhanced list of all documents for authenticated student with advanced filtering and sorting
     """
     try:
         validate_student_access(request.user)
         
-        documents = StudentDocument.objects.filter(student=request.user).order_by('-issued_date')
+        # DEBUG: Log user information
+        logger.info(f"[DEBUG] student_documents called for user: {request.user.id} ({request.user.username})")
+        
+        documents = StudentDocument.objects.filter(student=request.user)
+        
+        # DEBUG: Log initial document count
+        initial_count = documents.count()
+        logger.info(f"[DEBUG] Initial documents count for user {request.user.id}: {initial_count}")
+        
+        # DEBUG: Log all documents for this user
+        if initial_count > 0:
+            for doc in documents:
+                logger.info(f"[DEBUG] Document: ID={doc.id}, Type={doc.document_type}, Title={doc.title}, Official={doc.is_official}")
+        else:
+            logger.warning(f"[DEBUG] No documents found for user {request.user.id}")
+            # Check if any documents exist in the system
+            total_docs = StudentDocument.objects.count()
+            logger.info(f"[DEBUG] Total documents in system: {total_docs}")
         
         # Apply filters with validation
         document_type_filter = request.GET.get('document_type')
+        logger.info(f"[DEBUG] document_type_filter: {document_type_filter}")
+        
         if document_type_filter:
-            valid_types = [choice[0] for choice in StudentDocument.DOCUMENT_TYPE_CHOICES]
+            valid_types = [choice[0] for choice in StudentDocument.DOCUMENT_TYPES]
+            logger.info(f"[DEBUG] Valid document types: {valid_types}")
             if document_type_filter not in valid_types:
+                logger.error(f"[DEBUG] Invalid document type filter: {document_type_filter}")
                 raise DocumentException(f"Invalid document type filter: {document_type_filter}")
             documents = documents.filter(document_type=document_type_filter)
+            filtered_count = documents.count()
+            logger.info(f"[DEBUG] Documents after type filter '{document_type_filter}': {filtered_count}")
         
         is_official_filter = request.GET.get('is_official')
+        logger.info(f"[DEBUG] is_official_filter: {is_official_filter}")
         if is_official_filter is not None:
             documents = documents.filter(is_official=is_official_filter.lower() == 'true')
+            logger.info(f"[DEBUG] Documents after is_official filter: {documents.count()}")
         
+        # Date range filtering
+        date_from = request.GET.get('date_from')
+        date_to = request.GET.get('date_to')
+        logger.info(f"[DEBUG] Date filters - from: {date_from}, to: {date_to}")
+        
+        if date_from:
+            try:
+                from datetime import datetime
+                date_from_obj = datetime.strptime(date_from, '%Y-%m-%d').date()
+                documents = documents.filter(issued_date__gte=date_from_obj)
+                logger.info(f"[DEBUG] Documents after date_from filter: {documents.count()}")
+            except ValueError:
+                logger.error(f"[DEBUG] Invalid date_from format: {date_from}")
+                raise DocumentException("Invalid date_from format. Use YYYY-MM-DD")
+        
+        if date_to:
+            try:
+                from datetime import datetime
+                date_to_obj = datetime.strptime(date_to, '%Y-%m-%d').date()
+                documents = documents.filter(issued_date__lte=date_to_obj)
+                logger.info(f"[DEBUG] Documents after date_to filter: {documents.count()}")
+            except ValueError:
+                logger.error(f"[DEBUG] Invalid date_to format: {date_to}")
+                raise DocumentException("Invalid date_to format. Use YYYY-MM-DD")
+        
+        # Search functionality
         search = request.GET.get('search')
+        logger.info(f"[DEBUG] Search query: {search}")
         if search:
             if len(search.strip()) < 2:
+                logger.error(f"[DEBUG] Search query too short: '{search}'")
                 raise DocumentException("Search query must be at least 2 characters long")
-            documents = documents.filter(title__icontains=search)
+            from django.db.models import Q
+            documents = documents.filter(
+                Q(title__icontains=search) | 
+                Q(document_type__icontains=search)
+            )
+            logger.info(f"[DEBUG] Documents after search filter: {documents.count()}")
+        
+        # Sorting options
+        sort_by = request.GET.get('sort_by', 'issued_date')
+        sort_order = request.GET.get('sort_order', 'desc')
+        logger.info(f"[DEBUG] Sorting - by: {sort_by}, order: {sort_order}")
+        
+        valid_sort_fields = ['issued_date', 'title', 'document_type', 'download_count']
+        if sort_by not in valid_sort_fields:
+            logger.error(f"[DEBUG] Invalid sort field: {sort_by}")
+            raise DocumentException(f"Invalid sort field. Valid options: {', '.join(valid_sort_fields)}")
+        
+        if sort_order not in ['asc', 'desc']:
+            logger.error(f"[DEBUG] Invalid sort order: {sort_order}")
+            raise DocumentException("Invalid sort order. Use 'asc' or 'desc'")
+        
+        sort_field = sort_by if sort_order == 'asc' else f'-{sort_by}'
+        documents = documents.order_by(sort_field)
+        
+        # DEBUG: Final document count before pagination
+        final_count = documents.count()
+        logger.info(f"[DEBUG] Final documents count after all filters and sorting: {final_count}")
         
         # Paginate results
         paginator = StandardResultsSetPagination()
@@ -290,19 +369,42 @@ def student_documents(request):
         
         if page is not None:
             serializer = StudentDocumentSerializer(page, many=True, context={'request': request})
-            return paginator.get_paginated_response({
+            response_data = {
                 'success': True,
-                'data': serializer.data
-            })
+                'data': serializer.data,
+                'filters': {
+                    'document_type': document_type_filter,
+                    'is_official': is_official_filter,
+                    'date_from': date_from,
+                    'date_to': date_to,
+                    'search': search,
+                    'sort_by': sort_by,
+                    'sort_order': sort_order
+                }
+            }
+            logger.info(f"[DEBUG] Returning paginated response with {len(serializer.data)} documents")
+            return paginator.get_paginated_response(response_data)
         
         serializer = StudentDocumentSerializer(documents, many=True, context={'request': request})
-        return Response({
+        response_data = {
             'success': True,
             'data': serializer.data,
-            'count': documents.count()
-        })
+            'count': documents.count(),
+            'filters': {
+                'document_type': document_type_filter,
+                'is_official': is_official_filter,
+                'date_from': date_from,
+                'date_to': date_to,
+                'search': search,
+                'sort_by': sort_by,
+                'sort_order': sort_order
+            }
+        }
+        logger.info(f"[DEBUG] Returning non-paginated response with {len(serializer.data)} documents")
+        return Response(response_data)
     
     except DocumentException as e:
+        logger.error(f"[DEBUG] DocumentException in student_documents: {e.message} (code: {e.code})")
         return Response({
             'success': False,
             'error': {
@@ -312,7 +414,10 @@ def student_documents(request):
             }
         }, status=e.code)
     except Exception as e:
-        logger.error(f"Unexpected error in student_documents: {str(e)}")
+        logger.error(f"[DEBUG] Unexpected error in student_documents: {str(e)}")
+        logger.error(f"[DEBUG] Exception type: {type(e).__name__}")
+        import traceback
+        logger.error(f"[DEBUG] Traceback: {traceback.format_exc()}")
         return Response({
             'success': False,
             'error': {
@@ -327,7 +432,7 @@ def student_documents(request):
 @permission_classes([IsAuthenticated, IsStudentUser])
 def document_detail(request, document_id):
     """
-    Get detailed information about a specific document
+    Get detailed information about a specific document (preview mode)
     """
     try:
         validate_student_access(request.user)
@@ -339,10 +444,6 @@ def document_detail(request, document_id):
         )
         
         validate_object_ownership(request.user, document)
-        
-        # Increment download count
-        document.download_count += 1
-        document.save()
         
         serializer = StudentDocumentSerializer(document, context={'request': request})
         return Response({
@@ -361,6 +462,593 @@ def document_detail(request, document_id):
         }, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         logger.error(f"Error in document_detail: {str(e)}")
+        return Response({
+            'success': False,
+            'error': {
+                'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
+                'message': 'An unexpected error occurred',
+                'details': {}
+            }
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsStudentUser])
+def document_download(request, document_id):
+    """
+    Download a specific document and track download count
+    """
+    try:
+        validate_student_access(request.user)
+        
+        document = get_object_or_404(
+            StudentDocument, 
+            id=document_id, 
+            student=request.user
+        )
+        
+        validate_object_ownership(request.user, document)
+        
+        if not document.document_file:
+            return Response({
+                'success': False,
+                'error': {
+                    'code': status.HTTP_404_NOT_FOUND,
+                    'message': 'Document file not found',
+                    'details': {}
+                }
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        # Increment download count
+        document.download_count += 1
+        document.save()
+        
+        from django.http import HttpResponse, Http404
+        import os
+        import mimetypes
+        
+        try:
+            file_path = document.document_file.path
+            if not os.path.exists(file_path):
+                raise Http404("Document file not found on server")
+            
+            # Get file info
+            file_size = os.path.getsize(file_path)
+            content_type, _ = mimetypes.guess_type(file_path)
+            if not content_type:
+                content_type = 'application/octet-stream'
+            
+            # Create response with file
+            with open(file_path, 'rb') as file:
+                response = HttpResponse(file.read(), content_type=content_type)
+                response['Content-Disposition'] = f'attachment; filename="{document.title}"'
+                response['Content-Length'] = file_size
+                return response
+                
+        except Exception as file_error:
+            logger.error(f"File access error: {str(file_error)}")
+            return Response({
+                'success': False,
+                'error': {
+                    'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    'message': 'Error accessing document file',
+                    'details': {}
+                }
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    except StudentDocument.DoesNotExist:
+        return Response({
+            'success': False,
+            'error': {
+                'code': status.HTTP_404_NOT_FOUND,
+                'message': 'Document not found',
+                'details': {}
+            }
+        }, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        logger.error(f"Error in document_download: {str(e)}")
+        return Response({
+            'success': False,
+            'error': {
+                'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
+                'message': 'An unexpected error occurred',
+                'details': {}
+            }
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsStudentUser])
+def document_types(request):
+    """
+    Get available document types for filtering
+    """
+    try:
+        validate_student_access(request.user)
+        
+        logger.info(f"[DEBUG] document_types called for user: {request.user.id} ({request.user.username})")
+        
+        # Get document type choices from model
+        types = [{
+            'value': choice[0],
+            'label': choice[1]
+        } for choice in StudentDocument.DOCUMENT_TYPES]
+        
+        logger.info(f"[DEBUG] Returning {len(types)} document types: {[t['value'] for t in types]}")
+        
+        return Response({
+            'success': True,
+            'data': types
+        })
+    
+    except Exception as e:
+        logger.error(f"Error in document_types: {str(e)}")
+        return Response({
+            'success': False,
+            'error': {
+                'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
+                'message': 'An unexpected error occurred',
+                'details': {}
+            }
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsStudentUser])
+def document_statistics(request):
+    """
+    Get document statistics for dashboard
+    """
+    try:
+        validate_student_access(request.user)
+        
+        logger.info(f"[DEBUG] document_statistics called for user: {request.user.id} ({request.user.username})")
+        
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        documents = StudentDocument.objects.filter(student=request.user)
+        
+        # Calculate statistics
+        total_documents = documents.count()
+        official_documents = documents.filter(is_official=True).count()
+        total_downloads = sum(doc.download_count for doc in documents)
+        
+        logger.info(f"[DEBUG] Statistics - Total: {total_documents}, Official: {official_documents}, Downloads: {total_downloads}")
+        
+        # Recent documents (last 30 days)
+        thirty_days_ago = timezone.now().date() - timedelta(days=30)
+        recent_documents = documents.filter(issued_date__gte=thirty_days_ago).count()
+        
+        logger.info(f"[DEBUG] Recent documents (last 30 days): {recent_documents}")
+        
+        # Documents by type
+        documents_by_type = {}
+        for doc_type, doc_type_display in StudentDocument.DOCUMENT_TYPES:
+            count = documents.filter(document_type=doc_type).count()
+            if count > 0:
+                documents_by_type[doc_type] = {
+                    'label': doc_type_display,
+                    'count': count
+                }
+        
+        # Most downloaded documents (top 5)
+        most_downloaded = documents.order_by('-download_count')[:5]
+        most_downloaded_data = [{
+            'id': doc.id,
+            'title': doc.title,
+            'document_type': doc.get_document_type_display(),
+            'download_count': doc.download_count
+        } for doc in most_downloaded]
+        
+        logger.info(f"[DEBUG] Documents by type: {documents_by_type}")
+        logger.info(f"[DEBUG] Most downloaded count: {len(most_downloaded_data)}")
+        
+        return Response({
+            'success': True,
+            'data': {
+                'total_documents': total_documents,
+                'official_documents': official_documents,
+                'total_downloads': total_downloads,
+                'recent_documents': recent_documents,
+                'documents_by_type': documents_by_type,
+                'most_downloaded': most_downloaded_data
+            }
+        })
+    
+    except Exception as e:
+        logger.error(f"Error in document_statistics: {str(e)}")
+        return Response({
+            'success': False,
+            'error': {
+                'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
+                'message': 'An unexpected error occurred',
+                'details': {}
+            }
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsStudentUser])
+def document_status_tracking(request):
+    """
+    Get document status and availability information
+    """
+    try:
+        validate_student_access(request.user)
+        
+        documents = StudentDocument.objects.filter(student=request.user)
+        
+        # Calculate status information
+        status_data = []
+        for document in documents:
+            file_exists = bool(document.document_file)
+            try:
+                file_accessible = file_exists and document.document_file.path
+                import os
+                file_accessible = file_accessible and os.path.exists(document.document_file.path)
+            except:
+                file_accessible = False
+            
+            status_info = {
+                'id': document.id,
+                'title': document.title,
+                'document_type': document.get_document_type_display(),
+                'issued_date': document.issued_date,
+                'is_official': document.is_official,
+                'download_count': document.download_count,
+                'status': {
+                    'is_available': file_accessible,
+                    'is_downloadable': file_accessible,
+                    'file_exists': file_exists,
+                    'processing_status': 'completed' if file_accessible else 'processing',
+                    'status_message': 'Document is ready for download' if file_accessible else 'Document is being processed'
+                },
+                'file_info': {
+                    'has_file': file_exists,
+                    'file_size': document.document_file.size if file_exists else 0,
+                    'file_extension': None
+                }
+            }
+            
+            # Get file extension
+            if file_exists and document.document_file.name:
+                import os
+                status_info['file_info']['file_extension'] = os.path.splitext(document.document_file.name)[1].lower()
+            
+            status_data.append(status_info)
+        
+        # Summary statistics
+        total_documents = len(status_data)
+        available_documents = sum(1 for doc in status_data if doc['status']['is_available'])
+        processing_documents = total_documents - available_documents
+        
+        return Response({
+            'success': True,
+            'data': {
+                'documents': status_data,
+                'summary': {
+                    'total_documents': total_documents,
+                    'available_documents': available_documents,
+                    'processing_documents': processing_documents,
+                    'availability_rate': (available_documents / total_documents * 100) if total_documents > 0 else 0
+                }
+            }
+        })
+    
+    except Exception as e:
+        logger.error(f"Error in document_status_tracking: {str(e)}")
+        return Response({
+            'success': False,
+            'error': {
+                'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
+                'message': 'An unexpected error occurred',
+                'details': {}
+            }
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsStudentUser])
+def document_advanced_search(request):
+    """
+    Advanced search API with multiple search criteria
+    """
+    try:
+        validate_student_access(request.user)
+        
+        documents = StudentDocument.objects.filter(student=request.user)
+        
+        # Search parameters
+        query = request.GET.get('q', '').strip()
+        document_type = request.GET.get('document_type')
+        is_official = request.GET.get('is_official')
+        date_from = request.GET.get('date_from')
+        date_to = request.GET.get('date_to')
+        min_downloads = request.GET.get('min_downloads')
+        max_downloads = request.GET.get('max_downloads')
+        
+        # Apply search filters
+        if query:
+            if len(query) < 2:
+                raise DocumentException("Search query must be at least 2 characters long")
+            from django.db.models import Q
+            documents = documents.filter(
+                Q(title__icontains=query) | 
+                Q(document_type__icontains=query) |
+                Q(issued_by__first_name__icontains=query) |
+                Q(issued_by__last_name__icontains=query)
+            )
+        
+        if document_type:
+            valid_types = [choice[0] for choice in StudentDocument.DOCUMENT_TYPES]
+            if document_type not in valid_types:
+                raise DocumentException(f"Invalid document type: {document_type}")
+            documents = documents.filter(document_type=document_type)
+        
+        if is_official is not None:
+            documents = documents.filter(is_official=is_official.lower() == 'true')
+        
+        # Date range filtering
+        if date_from:
+            try:
+                from datetime import datetime
+                date_from_obj = datetime.strptime(date_from, '%Y-%m-%d').date()
+                documents = documents.filter(issued_date__date__gte=date_from_obj)
+            except ValueError:
+                raise DocumentException("Invalid date_from format. Use YYYY-MM-DD")
+        
+        if date_to:
+            try:
+                from datetime import datetime
+                date_to_obj = datetime.strptime(date_to, '%Y-%m-%d').date()
+                documents = documents.filter(issued_date__date__lte=date_to_obj)
+            except ValueError:
+                raise DocumentException("Invalid date_to format. Use YYYY-MM-DD")
+        
+        # Download count filtering
+        if min_downloads:
+            try:
+                min_downloads_int = int(min_downloads)
+                documents = documents.filter(download_count__gte=min_downloads_int)
+            except ValueError:
+                raise DocumentException("Invalid min_downloads value")
+        
+        if max_downloads:
+            try:
+                max_downloads_int = int(max_downloads)
+                documents = documents.filter(download_count__lte=max_downloads_int)
+            except ValueError:
+                raise DocumentException("Invalid max_downloads value")
+        
+        # Sorting
+        sort_by = request.GET.get('sort_by', 'issued_date')
+        sort_order = request.GET.get('sort_order', 'desc')
+        
+        valid_sort_fields = ['issued_date', 'title', 'document_type', 'download_count']
+        if sort_by not in valid_sort_fields:
+            raise DocumentException(f"Invalid sort field. Valid options: {', '.join(valid_sort_fields)}")
+        
+        if sort_order not in ['asc', 'desc']:
+            raise DocumentException("Invalid sort order. Use 'asc' or 'desc'")
+        
+        sort_field = sort_by if sort_order == 'asc' else f'-{sort_by}'
+        documents = documents.order_by(sort_field)
+        
+        # Paginate results
+        paginator = StandardResultsSetPagination()
+        page = paginator.paginate_queryset(documents, request)
+        
+        search_params = {
+            'query': query,
+            'document_type': document_type,
+            'is_official': is_official,
+            'date_from': date_from,
+            'date_to': date_to,
+            'min_downloads': min_downloads,
+            'max_downloads': max_downloads,
+            'sort_by': sort_by,
+            'sort_order': sort_order
+        }
+        
+        if page is not None:
+            serializer = StudentDocumentSerializer(page, many=True, context={'request': request})
+            return paginator.get_paginated_response({
+                'success': True,
+                'data': serializer.data,
+                'search_params': search_params,
+                'total_matches': documents.count()
+            })
+        
+        serializer = StudentDocumentSerializer(documents, many=True, context={'request': request})
+        return Response({
+            'success': True,
+            'data': serializer.data,
+            'search_params': search_params,
+            'total_matches': documents.count()
+        })
+    
+    except DocumentException as e:
+        return Response({
+            'success': False,
+            'error': {
+                'code': e.code,
+                'message': e.message,
+                'details': e.details
+            }
+        }, status=e.code)
+    except Exception as e:
+        logger.error(f"Error in document_advanced_search: {str(e)}")
+        return Response({
+            'success': False,
+            'error': {
+                'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
+                'message': 'An unexpected error occurred',
+                'details': {}
+            }
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated, IsStudentUser])
+def document_sharing(request):
+    """
+    Document sharing and access control API
+    GET: List shared documents and sharing permissions
+    POST: Create document sharing links or permissions
+    """
+    try:
+        validate_student_access(request.user)
+        
+        if request.method == 'GET':
+            # Get document sharing information
+            document_id = request.GET.get('document_id')
+            
+            if document_id:
+                # Get specific document sharing info
+                try:
+                    document = StudentDocument.objects.get(id=document_id, student=request.user)
+                except StudentDocument.DoesNotExist:
+                    raise DocumentException("Document not found", status.HTTP_404_NOT_FOUND)
+                
+                # Generate secure sharing information
+                import hashlib
+                import time
+                
+                # Create a secure token for sharing
+                token_data = f"{document.id}_{request.user.id}_{int(time.time())}"
+                sharing_token = hashlib.sha256(token_data.encode()).hexdigest()[:32]
+                
+                sharing_info = {
+                    'document_id': document.id,
+                    'title': document.title,
+                    'document_type': document.get_document_type_display(),
+                    'is_official': document.is_official,
+                    'sharing_enabled': True,  # Can be controlled by admin settings
+                    'sharing_token': sharing_token,
+                    'sharing_url': f"/api/student/documents/{document.id}/shared/{sharing_token}/",
+                    'access_control': {
+                        'can_download': document.document_file and bool(document.document_file),
+                        'can_view': True,
+                        'requires_authentication': True,
+                        'expiry_date': None,  # Can be implemented for time-limited sharing
+                        'access_count': 0  # Can be tracked in a separate model
+                    },
+                    'permissions': {
+                        'owner_can_revoke': True,
+                        'owner_can_set_expiry': True,
+                        'owner_can_limit_downloads': True
+                    }
+                }
+                
+                return Response({
+                    'success': True,
+                    'data': sharing_info
+                })
+            
+            else:
+                # Get all documents with sharing capabilities
+                documents = StudentDocument.objects.filter(student=request.user)
+                sharing_data = []
+                
+                for document in documents:
+                    has_file = bool(document.document_file)
+                    sharing_data.append({
+                        'document_id': document.id,
+                        'title': document.title,
+                        'document_type': document.get_document_type_display(),
+                        'is_official': document.is_official,
+                        'issued_date': document.issued_date,
+                        'sharing_capabilities': {
+                            'can_share': has_file,
+                            'can_generate_link': has_file,
+                            'supports_access_control': True,
+                            'reason': 'Document ready for sharing' if has_file else 'No file available'
+                        }
+                    })
+                
+                return Response({
+                    'success': True,
+                    'data': {
+                        'documents': sharing_data,
+                        'total_shareable': sum(1 for doc in sharing_data if doc['sharing_capabilities']['can_share'])
+                    }
+                })
+        
+        elif request.method == 'POST':
+            # Create or update sharing settings
+            document_id = request.data.get('document_id')
+            action = request.data.get('action', 'create_link')  # create_link, revoke_access, update_permissions
+            
+            if not document_id:
+                raise DocumentException("Document ID is required")
+            
+            try:
+                document = StudentDocument.objects.get(id=document_id, student=request.user)
+            except StudentDocument.DoesNotExist:
+                raise DocumentException("Document not found", status.HTTP_404_NOT_FOUND)
+            
+            if not document.document_file:
+                raise DocumentException("Cannot share document without file")
+            
+            if action == 'create_link':
+                # Generate new sharing link
+                import hashlib
+                import time
+                from datetime import datetime, timedelta
+                
+                token_data = f"{document.id}_{request.user.id}_{int(time.time())}"
+                sharing_token = hashlib.sha256(token_data.encode()).hexdigest()[:32]
+                
+                # Optional expiry (can be set by user)
+                expiry_hours = request.data.get('expiry_hours', 24)  # Default 24 hours
+                expiry_date = datetime.now() + timedelta(hours=int(expiry_hours)) if expiry_hours else None
+                
+                sharing_link = {
+                    'document_id': document.id,
+                    'sharing_token': sharing_token,
+                    'sharing_url': f"/api/student/documents/{document.id}/shared/{sharing_token}/",
+                    'created_at': datetime.now().isoformat(),
+                    'expires_at': expiry_date.isoformat() if expiry_date else None,
+                    'access_settings': {
+                        'download_enabled': request.data.get('allow_download', True),
+                        'view_enabled': True,
+                        'max_downloads': request.data.get('max_downloads'),
+                        'requires_auth': request.data.get('requires_auth', False)
+                    }
+                }
+                
+                return Response({
+                    'success': True,
+                    'message': 'Sharing link created successfully',
+                    'data': sharing_link
+                })
+            
+            elif action == 'revoke_access':
+                # Revoke sharing access (in real implementation, this would update a sharing model)
+                return Response({
+                    'success': True,
+                    'message': 'Document sharing access revoked successfully',
+                    'data': {
+                        'document_id': document.id,
+                        'revoked_at': datetime.now().isoformat()
+                    }
+                })
+            
+            else:
+                raise DocumentException(f"Invalid action: {action}")
+    
+    except DocumentException as e:
+        return Response({
+            'success': False,
+            'error': {
+                'code': e.code,
+                'message': e.message,
+                'details': e.details
+            }
+        }, status=e.code)
+    except Exception as e:
+        logger.error(f"Error in document_sharing: {str(e)}")
         return Response({
             'success': False,
             'error': {

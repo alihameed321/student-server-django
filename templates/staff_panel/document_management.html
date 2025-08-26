@@ -131,12 +131,18 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex space-x-2">
-                                            <a href="{{ document.document_file.url }}" class="text-blue-600 hover:text-blue-900" target="_blank">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ document.document_file.url }}" class="text-green-600 hover:text-green-900" download>
-                                                <i class="fas fa-download"></i>
-                                            </a>
+                                            {% if document.document_file %}
+                                                <a href="{{ document.document_file.url }}" class="text-blue-600 hover:text-blue-900" target="_blank" title="View Document">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ document.document_file.url }}" class="text-green-600 hover:text-green-900" download title="Download Document">
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                            {% else %}
+                                                <span class="text-gray-400" title="No file available">
+                                                    <i class="fas fa-file-slash"></i>
+                                                </span>
+                                            {% endif %}
                                         </div>
                                     </td>
                                 </tr>

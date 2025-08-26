@@ -101,31 +101,95 @@ class ServiceRequestCreateSerializer(serializers.ModelSerializer):
 
 
 class StudentDocumentSerializer(serializers.ModelSerializer):
-    """Serializer for student documents"""
+    """Enhanced serializer for student documents with mobile app optimizations"""
     document_type_display = serializers.CharField(source='get_document_type_display', read_only=True)
     file_size = serializers.SerializerMethodField()
+    file_size_formatted = serializers.SerializerMethodField()
     download_url = serializers.SerializerMethodField()
+    preview_url = serializers.SerializerMethodField()
     issued_by_name = serializers.CharField(source='issued_by.get_full_name', read_only=True)
+    issued_date_formatted = serializers.SerializerMethodField()
+    file_extension = serializers.SerializerMethodField()
+    is_downloadable = serializers.SerializerMethodField()
+    status_badge = serializers.SerializerMethodField()
     
     class Meta:
         model = StudentDocument
         fields = [
             'id', 'document_type', 'document_type_display', 'title',
-            'issued_date', 'issued_by_name', 'is_official', 'download_count',
-            'file_size', 'download_url'
+            'issued_date', 'issued_date_formatted', 'issued_by_name', 'is_official', 
+            'download_count', 'file_size', 'file_size_formatted', 'download_url', 
+            'preview_url', 'file_extension', 'is_downloadable', 'status_badge'
         ]
     
     def get_file_size(self, obj):
         try:
-            return obj.document_file.size
+            return obj.document_file.size if obj.document_file else 0
         except:
             return 0
     
+    def get_file_size_formatted(self, obj):
+        try:
+            if not obj.document_file:
+                return "N/A"
+            size = obj.document_file.size
+            if size < 1024:
+                return f"{size} B"
+            elif size < 1024 * 1024:
+                return f"{size / 1024:.1f} KB"
+            else:
+                return f"{size / (1024 * 1024):.1f} MB"
+        except:
+            return "N/A"
+    
     def get_download_url(self, obj):
         request = self.context.get('request')
-        if obj.document_file and request:
-            return request.build_absolute_uri(obj.document_file.url)
+        if request:
+            from django.urls import reverse
+            return request.build_absolute_uri(
+                reverse('student_api:document_download', kwargs={'document_id': obj.id})
+            )
         return None
+    
+    def get_preview_url(self, obj):
+        request = self.context.get('request')
+        if request:
+            from django.urls import reverse
+            return request.build_absolute_uri(
+                reverse('student_api:document_detail', kwargs={'document_id': obj.id})
+            )
+        return None
+    
+    def get_issued_date_formatted(self, obj):
+        if obj.issued_date:
+            return obj.issued_date.strftime('%B %d, %Y')
+        return None
+    
+    def get_file_extension(self, obj):
+        try:
+            if obj.document_file and obj.document_file.name:
+                import os
+                return os.path.splitext(obj.document_file.name)[1].lower()
+        except:
+            pass
+        return None
+    
+    def get_is_downloadable(self, obj):
+        return bool(obj.document_file)
+    
+    def get_status_badge(self, obj):
+        if obj.is_official:
+            return {
+                'text': 'Official',
+                'color': '#28a745',
+                'background': '#d4edda'
+            }
+        else:
+            return {
+                'text': 'Unofficial',
+                'color': '#6c757d',
+                'background': '#e2e3e5'
+            }
 
 
 class TicketResponseSerializer(serializers.ModelSerializer):

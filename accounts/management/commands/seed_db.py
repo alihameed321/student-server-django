@@ -630,14 +630,13 @@ class Command(BaseCommand):
         documents_created = 0
         staff_users = User.objects.filter(user_type='staff')
         
-        # Document types for students
+        # Document types for students (must match StudentDocument.DOCUMENT_TYPES)
         document_types = [
             ('transcript', 'Official Transcript'),
             ('enrollment_certificate', 'Enrollment Certificate'),
             ('graduation_certificate', 'Graduation Certificate'),
-            ('student_id', 'Student ID Card'),
-            ('academic_record', 'Academic Record'),
-            ('degree_certificate', 'Degree Certificate')
+            ('payment_receipt', 'Payment Receipt'),
+            ('other', 'Other Document')
         ]
         
         for student in student_users:
