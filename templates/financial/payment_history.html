@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Payment History - Financial Portal{% endblock %}
+{% block title %}سجل المدفوعات - البوابة المالية{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-8">
@@ -10,17 +10,17 @@
         <div class="mb-8">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">Payment History</h1>
-                    <p class="mt-2 text-gray-600">View all your payment transactions and their status</p>
+                    <h1 class="text-3xl font-bold text-gray-900">سجل المدفوعات</h1>
+                    <p class="mt-2 text-gray-600">عرض جميع معاملات الدفع الخاصة بك وحالتها</p>
                 </div>
                 <div class="flex space-x-3">
                     <a href="{% url 'financial:pay_fees' %}" 
                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        <i class="fas fa-credit-card mr-2"></i>Make Payment
+                        <i class="fas fa-credit-card ml-2"></i>إجراء دفعة
                     </a>
                     <a href="{% url 'financial:dashboard' %}" 
                        class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
-                        <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                        <i class="fas fa-arrow-left ml-2"></i>العودة للوحة التحكم
                     </a>
                 </div>
             </div>
@@ -34,7 +34,7 @@
                         <i class="fas fa-list text-blue-600 text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Total Payments</p>
+                        <p class="text-sm font-medium text-gray-600">إجمالي المدفوعات</p>
                         <p class="text-2xl font-bold text-gray-900">{{ total_payments }}</p>
                     </div>
                 </div>
@@ -46,7 +46,7 @@
                         <i class="fas fa-check-circle text-green-600 text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Verified</p>
+                        <p class="text-sm font-medium text-gray-600">مُتحقق منها</p>
                         <p class="text-2xl font-bold text-green-600">{{ verified_payments }}</p>
                     </div>
                 </div>
@@ -58,7 +58,7 @@
                         <i class="fas fa-clock text-yellow-600 text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Pending</p>
+                        <p class="text-sm font-medium text-gray-600">قيد الانتظار</p>
                         <p class="text-2xl font-bold text-yellow-600">{{ pending_payments }}</p>
                     </div>
                 </div>
@@ -70,7 +70,7 @@
                         <i class="fas fa-times-circle text-red-600 text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Rejected</p>
+                        <p class="text-sm font-medium text-gray-600">مرفوضة</p>
                         <p class="text-2xl font-bold text-red-600">{{ rejected_payments }}</p>
                     </div>
                 </div>
@@ -80,8 +80,8 @@
         <!-- Payment History Table -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-900">All Payments</h2>
-                <p class="text-sm text-gray-500 mt-1">Complete history of your payment transactions</p>
+                <h2 class="text-xl font-semibold text-gray-900">جميع المدفوعات</h2>
+                <p class="text-sm text-gray-500 mt-1">السجل الكامل لمعاملات الدفع الخاصة بك</p>
             </div>
             
             {% if payments %}
@@ -90,22 +90,22 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Payment Details
+                                    تفاصيل الدفع
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Amount
+                                    المبلغ
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Payment Method
+                                    طريقة الدفع
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status
+                                    الحالة
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Date Submitted
+                                    تاريخ التقديم
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Actions
+                                    الإجراءات
                                 </th>
                             </tr>
                         </thead>
@@ -115,7 +115,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div>
                                             <div class="text-sm font-medium text-gray-900">{{ payment.description }}</div>
-                                            <div class="text-sm text-gray-500">Ref: {{ payment.transaction_reference|default:"N/A" }}</div>
+                                            <div class="text-sm text-gray-500">المرجع: {{ payment.transaction_reference|default:"غير متوفر" }}</div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
@@ -129,15 +129,15 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         {% if payment.status == 'verified' %}
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                <i class="fas fa-check mr-1"></i> {{ payment.status_display }}
+                                                <i class="fas fa-check ml-1"></i> {{ payment.status_display }}
                                             </span>
                                         {% elif payment.status == 'pending' %}
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                <i class="fas fa-clock mr-1"></i> {{ payment.status_display }}
+                                                <i class="fas fa-clock ml-1"></i> {{ payment.status_display }}
                                             </span>
                                         {% elif payment.status == 'rejected' %}
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                                <i class="fas fa-times mr-1"></i> {{ payment.status_display }}
+                                                <i class="fas fa-times ml-1"></i> {{ payment.status_display }}
                                             </span>
                                         {% endif %}
                                     </td>
@@ -149,12 +149,12 @@
                                             {% if payment.can_view_receipt %}
                                                 <a href="{% url 'financial:view_receipt' payment.id %}" 
                                                    class="text-blue-600 hover:text-blue-900">
-                                                    <i class="fas fa-receipt mr-1"></i>Receipt
+                                                    <i class="fas fa-receipt ml-1"></i>الإيصال
                                                 </a>
                                             {% endif %}
                                             <button onclick="viewPaymentDetails({{ payment.id }})" 
                                                     class="text-gray-600 hover:text-gray-900">
-                                                <i class="fas fa-eye mr-1"></i>Details
+                                                <i class="fas fa-eye ml-1"></i>التفاصيل
                                             </button>
                                         </div>
                                     </td>
@@ -166,11 +166,11 @@
             {% else %}
                 <div class="text-center py-12">
                     <i class="fas fa-credit-card text-gray-400 text-4xl mb-4"></i>
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">No Payment History</h3>
-                    <p class="text-gray-500 mb-4">You haven't made any payments yet.</p>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">لا يوجد سجل مدفوعات</h3>
+                    <p class="text-gray-500 mb-4">لم تقم بأي مدفوعات بعد.</p>
                     <a href="{% url 'financial:pay_fees' %}" 
                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        <i class="fas fa-credit-card mr-2"></i>Make Your First Payment
+                        <i class="fas fa-credit-card ml-2"></i>قم بأول دفعة
                     </a>
                 </div>
             {% endif %}
@@ -184,7 +184,7 @@
         <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Payment Details</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">تفاصيل الدفع</h3>
                     <button onclick="closeModal('paymentDetailsModal')" class="text-gray-400 hover:text-gray-600">
                         <i class="fas fa-times"></i>
                     </button>

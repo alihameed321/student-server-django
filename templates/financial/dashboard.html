@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Financial Dashboard - My University Services{% endblock %}
+{% block title %}لوحة التحكم المالية - خدمات الجامعة{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-8">
@@ -12,13 +12,13 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900">
-                            <i class="fas fa-chart-line mr-3" style="color: #102A71;"></i>
-                            Financial Dashboard
+                            <i class="fas fa-chart-line ml-3" style="color: #102A71;"></i>
+                            لوحة التحكم المالية
                         </h1>
-                        <p class="text-gray-600 mt-2">Manage your university fees and payments</p>
+                        <p class="text-gray-600 mt-2">إدارة رسومك الجامعية ومدفوعاتك</p>
                     </div>
                     <div class="text-right">
-                        <div class="text-sm text-gray-500 mb-1">Academic Year</div>
+                        <div class="text-sm text-gray-500 mb-1">السنة الأكاديمية</div>
                         <div class="text-lg font-semibold text-gray-900">2024-2025</div>
                     </div>
                 </div>
@@ -31,7 +31,7 @@
             <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-gray-600">Total Fees</p>
+                        <p class="text-sm font-medium text-gray-600">إجمالي الرسوم</p>
                         <p class="text-2xl font-bold text-gray-900">${{ total_fees|floatformat:2 }}</p>
                     </div>
                     <div class="bg-blue-100 rounded-full p-3">
@@ -44,7 +44,7 @@
             <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-gray-600">Pending Payments</p>
+                        <p class="text-sm font-medium text-gray-600">المدفوعات المعلقة</p>
                         <p class="text-2xl font-bold text-red-600">${{ pending_payments|floatformat:2 }}</p>
                     </div>
                     <div class="bg-red-100 rounded-full p-3">
@@ -57,7 +57,7 @@
             <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-gray-600">Paid This Semester</p>
+                        <p class="text-sm font-medium text-gray-600">المدفوع هذا الفصل</p>
                         <p class="text-2xl font-bold text-green-600">${{ paid_this_semester|floatformat:2 }}</p>
                     </div>
                     <div class="bg-green-100 rounded-full p-3">
@@ -70,7 +70,7 @@
             <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-gray-600">Overdue Fees</p>
+                        <p class="text-sm font-medium text-gray-600">الرسوم المتأخرة</p>
                         <p class="text-2xl font-bold {% if overdue_count > 0 %}text-red-600{% else %}text-gray-900{% endif %}">{{ overdue_count }}</p>
                     </div>
                     <div class="{% if overdue_count > 0 %}bg-red-100{% else %}bg-gray-100{% endif %} rounded-full p-3">
@@ -86,13 +86,13 @@
             <div class="flex items-center">
                 <i class="fas fa-exclamation-triangle text-red-600 mr-3"></i>
                 <div>
-                    <h3 class="text-red-800 font-semibold">Attention: Overdue Payments</h3>
+                    <h3 class="text-red-800 font-semibold">تنبيه: مدفوعات متأخرة</h3>
                     <p class="text-red-700 text-sm mt-1">
-                        You have {{ overdue_count }} overdue fee{{ overdue_count|pluralize }}. Please make a payment as soon as possible to avoid late fees.
+                        لديك {{ overdue_count }} رسوم متأخرة. يرجى الدفع في أقرب وقت ممكن لتجنب الرسوم الإضافية.
                     </p>
                 </div>
                 <a href="{% url 'financial:pay_fees' %}" class="ml-auto bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
-                    Pay Now
+                    ادفع الآن
                 </a>
             </div>
         </div>
@@ -103,19 +103,19 @@
         <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-8">
             <h2 class="text-xl font-semibold text-gray-900 mb-6">
                 <i class="fas fa-list-alt mr-2" style="color: #102A71;"></i>
-                Fee Breakdown - Academic Year 2024-2025
+                تفصيل الرسوم - السنة الأكاديمية 2024-2025
             </h2>
             
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead>
                         <tr class="border-b border-gray-200">
-                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Fee Type</th>
-                            <th class="text-right py-3 px-4 font-semibold text-gray-700">Amount</th>
-                            <th class="text-right py-3 px-4 font-semibold text-gray-700">Paid</th>
-                            <th class="text-right py-3 px-4 font-semibold text-gray-700">Remaining</th>
-                            <th class="text-center py-3 px-4 font-semibold text-gray-700">Status</th>
-                            <th class="text-center py-3 px-4 font-semibold text-gray-700">Due Date</th>
+                            <th class="text-right py-3 px-4 font-semibold text-gray-700">نوع الرسوم</th>
+                            <th class="text-right py-3 px-4 font-semibold text-gray-700">المبلغ</th>
+                            <th class="text-right py-3 px-4 font-semibold text-gray-700">المدفوع</th>
+                            <th class="text-right py-3 px-4 font-semibold text-gray-700">المتبقي</th>
+                            <th class="text-center py-3 px-4 font-semibold text-gray-700">الحالة</th>
+                            <th class="text-center py-3 px-4 font-semibold text-gray-700">تاريخ الاستحقاق</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -130,19 +130,19 @@
                             <td class="py-3 px-4 text-center">
                                 {% if fee.status == 'paid' %}
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                        <i class="fas fa-check mr-1"></i> Paid
+                                        <i class="fas fa-check ml-1"></i> مدفوع
                                     </span>
                                 {% elif fee.status == 'partial' %}
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                        <i class="fas fa-clock mr-1"></i> Partial
+                                        <i class="fas fa-clock ml-1"></i> جزئي
                                     </span>
                                 {% elif fee.status == 'overdue' %}
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                        <i class="fas fa-exclamation-triangle mr-1"></i> Overdue
+                                        <i class="fas fa-exclamation-triangle ml-1"></i> متأخر
                                     </span>
                                 {% else %}
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                        <i class="fas fa-clock mr-1"></i> Pending
+                                        <i class="fas fa-clock ml-1"></i> معلق
                                     </span>
                                 {% endif %}
                             </td>
@@ -163,7 +163,7 @@
             <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                 <h2 class="text-xl font-semibold text-gray-900 mb-6">
                     <i class="fas fa-history mr-2" style="color: #102A71;"></i>
-                    Recent Transactions
+                    المعاملات الأخيرة
                 </h2>
                 
                 {% if recent_transactions %}
@@ -183,7 +183,7 @@
                                     <span class="text-sm font-semibold text-green-600">${{ transaction.amount }}</span>
                                     <a href="{% url 'financial:view_receipt' transaction.payment_id %}" class="text-blue-600 hover:text-blue-800 text-xs">
                                         <i class="fas fa-receipt mr-1"></i>
-                                        View Receipt
+                                        عرض الإيصال
                                     </a>
                                 </div>
                             </div>
@@ -192,7 +192,7 @@
                 {% else %}
                     <div class="text-center py-8 text-gray-500">
                         <i class="fas fa-receipt text-3xl mb-3"></i>
-                        <p>No recent transactions</p>
+                        <p>لا توجد معاملات حديثة</p>
                     </div>
                 {% endif %}
             </div>
@@ -201,38 +201,38 @@
             <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                 <h2 class="text-xl font-semibold text-gray-900 mb-6">
                     <i class="fas fa-bolt mr-2" style="color: #F5C400;"></i>
-                    Quick Actions
+                    الإجراءات السريعة
                 </h2>
                 
                 <div class="space-y-4">
                     <a href="{% url 'financial:pay_fees' %}" class="block w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center py-3 px-4 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200">
                         <i class="fas fa-credit-card mr-2"></i>
-                        Pay Fees
+                        دفع الرسوم
                     </a>
                     
                     <a href="{% url 'financial:payment_history' %}" class="block w-full bg-gray-100 text-gray-700 text-center py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors">
                         <i class="fas fa-history mr-2"></i>
-                        Payment History
+                        سجل المدفوعات
                     </a>
                     
                     <a href="#" onclick="downloadStatement()" class="block w-full bg-gray-100 text-gray-700 text-center py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors">
                         <i class="fas fa-download mr-2"></i>
-                        Download Statement
+                        تحميل كشف الحساب
                     </a>
                     
                     <a href="#" onclick="showPaymentSchedule()" class="block w-full bg-gray-100 text-gray-700 text-center py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors">
                         <i class="fas fa-calendar-alt mr-2"></i>
-                        Payment Schedule
+                        جدول المدفوعات
                     </a>
                     
                     <a href="#" onclick="showFinancialAidInfo()" class="block w-full bg-gray-100 text-gray-700 text-center py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors">
                         <i class="fas fa-question-circle mr-2"></i>
-                        Financial Aid Info
+                        معلومات المساعدة المالية
                     </a>
                     
                     <a href="{% url 'student_portal:my_requests' %}" class="block w-full bg-gray-100 text-gray-700 text-center py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors">
                         <i class="fas fa-headset mr-2"></i>
-                        Financial Support
+                        الدعم المالي
                     </a>
                 </div>
             </div>
@@ -246,7 +246,7 @@
         <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-96 overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Payment Schedule</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">جدول المدفوعات</h3>
                     <button onclick="closeModal('paymentScheduleModal')" class="text-gray-400 hover:text-gray-600">
                         <i class="fas fa-times"></i>
                     </button>
@@ -256,12 +256,12 @@
                     <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                         <div>
                             <div class="font-medium text-gray-900">{{ fee.name }}</div>
-                            <div class="text-sm text-gray-500">Due: {{ fee.due_date|date:"F d, Y" }}</div>
+                            <div class="text-sm text-gray-500">الاستحقاق: {{ fee.due_date|date:"F d, Y" }}</div>
                         </div>
                         <div class="text-right">
                             <div class="font-semibold text-gray-900">${{ fee.remaining|floatformat:2 }}</div>
                             <div class="text-sm {% if fee.is_overdue %}text-red-600{% else %}text-gray-500{% endif %}">
-                                {% if fee.is_overdue %}Overdue{% else %}Upcoming{% endif %}
+                                {% if fee.is_overdue %}متأخر{% else %}قادم{% endif %}
                             </div>
                         </div>
                     </div>
@@ -278,31 +278,31 @@
         <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Financial Aid Information</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">معلومات المساعدة المالية</h3>
                     <button onclick="closeModal('financialAidModal')" class="text-gray-400 hover:text-gray-600">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
                 <div class="space-y-4">
                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <h4 class="font-semibold text-blue-900 mb-2">Available Financial Aid Options</h4>
+                        <h4 class="font-semibold text-blue-900 mb-2">خيارات المساعدة المالية المتاحة</h4>
                         <ul class="text-blue-800 text-sm space-y-1">
-                            <li>• Merit-based scholarships</li>
-                            <li>• Need-based financial aid</li>
-                            <li>• Student loans</li>
-                            <li>• Work-study programs</li>
+                            <li>• منح دراسية قائمة على الجدارة</li>
+                            <li>• مساعدة مالية قائمة على الحاجة</li>
+                            <li>• قروض طلابية</li>
+                            <li>• برامج العمل والدراسة</li>
                         </ul>
                     </div>
                     <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                        <h4 class="font-semibold text-green-900 mb-2">How to Apply</h4>
+                        <h4 class="font-semibold text-green-900 mb-2">كيفية التقديم</h4>
                         <p class="text-green-800 text-sm">
-                            Contact the Financial Aid Office at financialaid@university.edu or visit Room 101 in the Administration Building.
+                            اتصل بمكتب المساعدة المالية على financialaid@university.edu أو قم بزيارة الغرفة 101 في مبنى الإدارة.
                         </p>
                     </div>
                     <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                        <h4 class="font-semibold text-yellow-900 mb-2">Important Deadlines</h4>
+                        <h4 class="font-semibold text-yellow-900 mb-2">المواعيد النهائية المهمة</h4>
                         <p class="text-yellow-800 text-sm">
-                            Financial aid applications must be submitted by March 1st for the following academic year.
+                            يجب تقديم طلبات المساعدة المالية بحلول 1 مارس للسنة الأكاديمية التالية.
                         </p>
                     </div>
                 </div>

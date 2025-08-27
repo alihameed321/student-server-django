@@ -152,21 +152,21 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                         </svg>
-                        <h3 class="text-lg font-medium text-gray-900">Live Preview</h3>
+                        <h3 class="text-lg font-medium text-gray-900">معاينة مباشرة</h3>
                     </div>
                 </div>
                 <div class="p-6">
                     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4" id="previewCard">
                         <div class="flex flex-wrap gap-2 mb-3">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" id="previewTypeBadge">Info</span>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" id="previewPriorityBadge">Medium</span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" id="previewTypeBadge">معلومات</span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" id="previewPriorityBadge">متوسط</span>
                         </div>
-                        <h4 class="text-lg font-semibold text-gray-900 mb-2" id="previewTitle">Notification Title</h4>
-                        <p class="text-gray-700 mb-3" id="previewMessage">Your notification message will appear here...</p>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-2" id="previewTitle">عنوان الإشعار</h4>
+                        <p class="text-gray-700 mb-3" id="previewMessage">ستظهر رسالة الإشعار هنا...</p>
                         <div id="previewAction" class="hidden mb-3">
-                            <button class="inline-flex items-center px-3 py-2 border border-blue-300 shadow-sm text-sm leading-4 font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" id="previewActionBtn">Action</button>
+                            <button class="inline-flex items-center px-3 py-2 border border-blue-300 shadow-sm text-sm leading-4 font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" id="previewActionBtn">إجراء</button>
                         </div>
-                        <div class="text-xs text-gray-500 hidden" id="previewExpiry">Expires: <span id="previewExpiryDate"></span></div>
+                        <div class="text-xs text-gray-500 hidden" id="previewExpiry">ينتهي في: <span id="previewExpiryDate"></span></div>
                     </div>
                 </div>
             </div>
@@ -195,8 +195,8 @@
     
     // Update preview in real-time
     function updatePreview() {
-        const title = document.getElementById('title').value || 'Notification Title';
-        const message = document.getElementById('message').value || 'Your notification message will appear here...';
+        const title = document.getElementById('title').value || 'عنوان الإشعار';
+        const message = document.getElementById('message').value || 'ستظهر رسالة الإشعار هنا...';
         const type = document.getElementById('notification_type').value;
         const priority = document.getElementById('priority').value;
         const actionText = document.getElementById('action_text').value;

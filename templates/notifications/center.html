@@ -39,7 +39,7 @@
                         <i class="fas fa-envelope text-blue-600"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Total Notifications</p>
+                        <p class="text-sm font-medium text-gray-600">إجمالي الإشعارات</p>
                         <p class="text-2xl font-bold text-gray-900">{{ notifications|length }}</p>
                     </div>
                 </div>
@@ -51,7 +51,7 @@
                         <i class="fas fa-exclamation-circle text-yellow-600"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Unread</p>
+                        <p class="text-sm font-medium text-gray-600">غير مقروء</p>
                         <p class="text-2xl font-bold text-gray-900">{{ unread_count }}</p>
                     </div>
                 </div>
@@ -63,7 +63,7 @@
                         <i class="fas fa-check-circle text-green-600"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Read</p>
+                        <p class="text-sm font-medium text-gray-600">مقروء</p>
                         <p class="text-2xl font-bold text-gray-900">{{ read_count }}</p>
                     </div>
                 </div>
@@ -77,7 +77,7 @@
                     <div class="flex flex-wrap items-center gap-4">
                         <div class="flex items-center space-x-2">
                             <i class="fas fa-filter text-gray-500"></i>
-                            <span class="text-sm font-medium text-gray-700">Filter notifications:</span>
+                            <span class="text-sm font-medium text-gray-700">تصفية الإشعارات:</span>
                         </div>
                         <div class="flex flex-wrap gap-2">
                             <button onclick="filterNotifications('all')" id="filter-all" class="px-4 py-2 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-medium font-tajawal">
@@ -139,11 +139,11 @@
                                             {% if notification.priority == 'urgent' %}
                                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                                     <i class="fas fa-exclamation-triangle mr-1"></i>
-                                                    Urgent
+                                                    عاجل
                                                 </span>
                                             {% elif notification.priority == 'high' %}
                                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                                                    High Priority
+                                                    أولوية عالية
                                                 </span>
                                             {% endif %}
                                             {% if not notification.is_read %}
@@ -160,12 +160,12 @@
                                         <div class="flex items-center space-x-4 text-sm text-gray-500">
                                             <span>
                                                 <i class="fas fa-clock mr-1"></i>
-                                                {{ notification.created_at|timesince }} ago
+                                                منذ {{ notification.created_at|timesince }}
                                             </span>
                                             {% if notification.expires_at %}
                                                 <span>
                                                     <i class="fas fa-hourglass-end mr-1"></i>
-                                                    Expires {{ notification.expires_at|date:"M d, Y" }}
+                                                    ينتهي في {{ notification.expires_at|date:"M d, Y" }}
                                                 </span>
                                             {% endif %}
                                         </div>
@@ -173,14 +173,14 @@
                                         <div class="flex items-center space-x-2">
                                             {% if notification.action_url %}
                                                 <a href="{{ notification.action_url }}" class="inline-flex items-center px-3 py-1 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
-                                                    {{ notification.action_text|default:"View Details" }}
+                                                    {{ notification.action_text|default:"عرض التفاصيل" }}
                                                     <i class="fas fa-arrow-right ml-1"></i>
                                                 </a>
                                             {% endif %}
                                             {% if not notification.is_read %}
                                                 <button onclick="markAsRead({{ notification.id }})" class="inline-flex items-center px-3 py-1 text-sm font-medium text-gray-600 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                                                     <i class="fas fa-check mr-1"></i>
-                                                    Mark as Read
+                                                    تحديد كمقروء
                                                 </button>
                                             {% endif %}
                                         </div>
@@ -212,7 +212,7 @@
         <div class="mt-8 text-center">
             <button class="inline-flex items-center px-6 py-3 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors">
                 <i class="fas fa-chevron-down mr-2"></i>
-                Load More Notifications
+                تحميل المزيد من الإشعارات
             </button>
         </div>
         {% endif %}
