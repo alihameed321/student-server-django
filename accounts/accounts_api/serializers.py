@@ -80,18 +80,18 @@ class LoginSerializer(serializers.Serializer):
             
             if not user:
                 logger.warning(f"Authentication failed for identifier: {identifier}")
-                raise serializers.ValidationError('Invalid credentials')
+                raise serializers.ValidationError('بيانات الاعتماد غير صحيحة')
             
             if not user.is_active:
                 logger.warning(f"User account disabled for: {user.username}")
-                raise serializers.ValidationError('User account is disabled')
+                raise serializers.ValidationError('حساب المستخدم معطل')
             
             logger.info(f"Authentication successful for user: {user.username}")
             attrs['user'] = user
             return attrs
         else:
             logger.warning("Missing identifier or password in request")
-            raise serializers.ValidationError('Must include identifier and password')
+            raise serializers.ValidationError('يجب تضمين المعرف وكلمة المرور')
 
 
 class UserDetailSerializer(serializers.ModelSerializer):

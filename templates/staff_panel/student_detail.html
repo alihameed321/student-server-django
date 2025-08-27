@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Student Details - {{ student.get_full_name }} - Staff Panel{% endblock %}
+{% block title %}تفاصيل الطالب - {{ student.get_full_name }} - لوحة الموظفين{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-8">
@@ -15,22 +15,22 @@
                         <i class="fas fa-arrow-left text-xl"></i>
                     </a>
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-900">Student Details</h1>
-                        <p class="mt-2 text-gray-600">Complete information for {{ student.get_full_name }}</p>
+                        <h1 class="text-3xl font-bold text-gray-900">تفاصيل الطالب</h1>
+                        <p class="mt-2 text-gray-600">معلومات كاملة عن {{ student.get_full_name }}</p>
                     </div>
                 </div>
                 <div class="flex space-x-3">
                     <button onclick="editStudent()" 
                             class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        <i class="fas fa-edit mr-2"></i>Edit Student
+                        <i class="fas fa-edit mr-2"></i>تعديل الطالب
                     </button>
                     <button onclick="confirmDelete({{ student.id }}, '{{ student.get_full_name }}')" 
                             class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        <i class="fas fa-trash mr-2"></i>Delete Student
+                        <i class="fas fa-trash mr-2"></i>حذف الطالب
                     </button>
                     <button onclick="printProfile()" 
                             class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        <i class="fas fa-print mr-2"></i>Print
+                        <i class="fas fa-print mr-2"></i>طباعة
                     </button>
                 </div>
             </div>
@@ -54,11 +54,11 @@
                         <div class="mt-4">
                             {% if student.is_active %}
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                    <i class="fas fa-check-circle mr-1"></i>Active
+                                    <i class="fas fa-check-circle mr-1"></i>نشط
                                 </span>
                             {% else %}
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-                                    <i class="fas fa-times-circle mr-1"></i>Inactive
+                                    <i class="fas fa-times-circle mr-1"></i>غير نشط
                                 </span>
                             {% endif %}
                         </div>
@@ -71,42 +71,42 @@
                         </div>
                         <div class="flex items-center">
                             <i class="fas fa-phone text-gray-400 w-5"></i>
-                            <span class="ml-3 text-sm text-gray-900">{{ student.phone_number|default:"Not provided" }}</span>
+                            <span class="ml-3 text-sm text-gray-900">{{ student.phone_number|default:"غير متوفر" }}</span>
                         </div>
                         <div class="flex items-center">
                             <i class="fas fa-calendar text-gray-400 w-5"></i>
-                            <span class="ml-3 text-sm text-gray-900">Joined {{ student.date_joined|date:"M d, Y" }}</span>
+                            <span class="ml-3 text-sm text-gray-900">انضم في {{ student.date_joined|date:"M d, Y" }}</span>
                         </div>
                         <div class="flex items-center">
                             <i class="fas fa-graduation-cap text-gray-400 w-5"></i>
-                            <span class="ml-3 text-sm text-gray-900">{{ student.program|default:"Program not specified" }}</span>
+                            <span class="ml-3 text-sm text-gray-900">{{ student.program|default:"البرنامج غير محدد" }}</span>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Quick Actions -->
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">إجراءات سريعة</h3>
                     <div class="space-y-3">
                         <button onclick="sendMessage()" 
                                 class="flex items-center w-full p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
                             <i class="fas fa-envelope text-blue-600 mr-3"></i>
-                            <span class="text-blue-700 font-medium">Send Message</span>
+                            <span class="text-blue-700 font-medium">إرسال رسالة</span>
                         </button>
                         <button onclick="viewPayments()" 
                                 class="flex items-center w-full p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
                             <i class="fas fa-dollar-sign text-green-600 mr-3"></i>
-                            <span class="text-green-700 font-medium">View Payments</span>
+                            <span class="text-green-700 font-medium">عرض المدفوعات</span>
                         </button>
                         <button onclick="viewRequests()" 
                                 class="flex items-center w-full p-3 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors">
                             <i class="fas fa-file-alt text-yellow-600 mr-3"></i>
-                            <span class="text-yellow-700 font-medium">View Requests</span>
+                            <span class="text-yellow-700 font-medium">عرض الطلبات</span>
                         </button>
                         <button onclick="generateReport()" 
                                 class="flex items-center w-full p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors">
                             <i class="fas fa-chart-bar text-purple-600 mr-3"></i>
-                            <span class="text-purple-700 font-medium">Generate Report</span>
+                            <span class="text-purple-700 font-medium">إنشاء تقرير</span>
                         </button>
                     </div>
                 </div>
@@ -120,19 +120,19 @@
                         <nav class="-mb-px flex space-x-8 px-6" aria-label="Tabs">
                             <button onclick="showTab('overview')" 
                                     class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm active">
-                                Overview
+                                نظرة عامة
                             </button>
                             <button onclick="showTab('academic')" 
                                     class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
-                                Academic
+                                أكاديمي
                             </button>
                             <button onclick="showTab('financial')" 
                                     class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
-                                Financial
+                                مالي
                             </button>
                             <button onclick="showTab('requests')" 
                                     class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
-                                Requests
+                                الطلبات
                             </button>
                         </nav>
                     </div>
@@ -141,55 +141,55 @@
                     <div class="p-6">
                         <!-- Overview Tab -->
                         <div id="overview-tab" class="tab-content">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Student Overview</h3>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">نظرة عامة على الطالب</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <h4 class="text-sm font-medium text-gray-700 mb-3">Personal Information</h4>
+                                    <h4 class="text-sm font-medium text-gray-700 mb-3">المعلومات الشخصية</h4>
                                     <div class="space-y-2 text-sm">
                                         <div class="flex justify-between">
-                                            <span class="text-gray-600">Full Name:</span>
+                                            <span class="text-gray-600">الاسم الكامل:</span>
                                             <span class="text-gray-900">{{ student.get_full_name }}</span>
                                         </div>
                                         <div class="flex justify-between">
-                                            <span class="text-gray-600">Student ID:</span>
+                                            <span class="text-gray-600">رقم الطالب:</span>
                                             <span class="text-gray-900">{{ student.university_id }}</span>
                                         </div>
                                         <div class="flex justify-between">
-                                            <span class="text-gray-600">Email:</span>
+                                            <span class="text-gray-600">البريد الإلكتروني:</span>
                                             <span class="text-gray-900">{{ student.email }}</span>
                                         </div>
                                         <div class="flex justify-between">
-                                            <span class="text-gray-600">Phone:</span>
-                                            <span class="text-gray-900">{{ student.phone_number|default:"Not provided" }}</span>
+                                            <span class="text-gray-600">الهاتف:</span>
+                                            <span class="text-gray-900">{{ student.phone_number|default:"غير متوفر" }}</span>
                                         </div>
                                         <div class="flex justify-between">
-                                            <span class="text-gray-600">Date of Birth:</span>
-                                            <span class="text-gray-900">{{ student.date_of_birth|date:"M d, Y"|default:"Not provided" }}</span>
+                                            <span class="text-gray-600">تاريخ الميلاد:</span>
+                                            <span class="text-gray-900">{{ student.date_of_birth|date:"M d, Y"|default:"غير متوفر" }}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div>
-                                    <h4 class="text-sm font-medium text-gray-700 mb-3">Academic Information</h4>
+                                    <h4 class="text-sm font-medium text-gray-700 mb-3">المعلومات الأكاديمية</h4>
                                     <div class="space-y-2 text-sm">
                                         <div class="flex justify-between">
-                                            <span class="text-gray-600">Program:</span>
-                                            <span class="text-gray-900">{{ student.program|default:"Not specified" }}</span>
+                                            <span class="text-gray-600">البرنامج:</span>
+                                            <span class="text-gray-900">{{ student.program|default:"غير محدد" }}</span>
                                         </div>
                                         <div class="flex justify-between">
-                                            <span class="text-gray-600">Year:</span>
-                                            <span class="text-gray-900">{{ student.year|default:"Not specified" }}</span>
+                                            <span class="text-gray-600">السنة:</span>
+                                            <span class="text-gray-900">{{ student.year|default:"غير محدد" }}</span>
                                         </div>
                                         <div class="flex justify-between">
-                                            <span class="text-gray-600">GPA:</span>
-                                            <span class="text-gray-900">{{ student.gpa|default:"Not available" }}</span>
+                                            <span class="text-gray-600">المعدل التراكمي:</span>
+                                            <span class="text-gray-900">{{ student.gpa|default:"غير متوفر" }}</span>
                                         </div>
                                         <div class="flex justify-between">
-                                            <span class="text-gray-600">Enrollment Date:</span>
+                                            <span class="text-gray-600">تاريخ التسجيل:</span>
                                             <span class="text-gray-900">{{ student.date_joined|date:"M d, Y" }}</span>
                                         </div>
                                         <div class="flex justify-between">
-                                            <span class="text-gray-600">Status:</span>
-                                            <span class="text-gray-900">{% if student.is_active %}Active{% else %}Inactive{% endif %}</span>
+                                            <span class="text-gray-600">الحالة:</span>
+                                            <span class="text-gray-900">{% if student.is_active %}نشط{% else %}غير نشط{% endif %}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -198,28 +198,28 @@
                         
                         <!-- Academic Tab -->
                         <div id="academic-tab" class="tab-content hidden">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Academic Records</h3>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">السجلات الأكاديمية</h3>
                             <div class="text-center py-8">
                                 <i class="fas fa-graduation-cap text-gray-400 text-4xl mb-4"></i>
-                                <p class="text-gray-500">Academic records will be displayed here.</p>
+                                <p class="text-gray-500">سيتم عرض السجلات الأكاديمية هنا.</p>
                             </div>
                         </div>
                         
                         <!-- Financial Tab -->
                         <div id="financial-tab" class="tab-content hidden">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Financial Records</h3>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">السجلات المالية</h3>
                             <div class="text-center py-8">
                                 <i class="fas fa-dollar-sign text-gray-400 text-4xl mb-4"></i>
-                                <p class="text-gray-500">Financial records will be displayed here.</p>
+                                <p class="text-gray-500">سيتم عرض السجلات المالية هنا.</p>
                             </div>
                         </div>
                         
                         <!-- Requests Tab -->
                         <div id="requests-tab" class="tab-content hidden">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Student Requests</h3>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">طلبات الطالب</h3>
                             <div class="text-center py-8">
                                 <i class="fas fa-file-alt text-gray-400 text-4xl mb-4"></i>
-                                <p class="text-gray-500">Student requests will be displayed here.</p>
+                                <p class="text-gray-500">سيتم عرض طلبات الطالب هنا.</p>
                             </div>
                         </div>
                     </div>
@@ -260,23 +260,23 @@ function printProfile() {
 }
 
 function sendMessage() {
-    alert('Message functionality will be implemented soon.');
+    alert('سيتم تنفيذ وظيفة الرسائل قريباً.');
 }
 
 function viewPayments() {
-    alert('Payment history will be displayed here.');
+    alert('سيتم عرض تاريخ المدفوعات هنا.');
 }
 
 function viewRequests() {
-    alert('Student requests will be displayed here.');
+    alert('سيتم عرض طلبات الطالب هنا.');
 }
 
 function generateReport() {
-    alert('Student report generation will be available soon.');
+    alert('سيكون إنشاء تقرير الطالب متاحاً قريباً.');
 }
 
 function confirmDelete(studentId, studentName) {
-    if (confirm(`Are you sure you want to delete student "${studentName}"? This action cannot be undone.`)) {
+    if (confirm(`هل أنت متأكد من حذف ${studentName}؟ لا يمكن التراجع عن هذا الإجراء.`)) {
         const form = document.getElementById('deleteForm');
         form.action = `/staff/students/${studentId}/delete/`;
         form.submit();

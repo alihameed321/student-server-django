@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Edit Profile - My University Services{% endblock %}
+{% block title %}تعديل الملف الشخصي - خدمات الجامعة{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-8">
@@ -12,14 +12,14 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900">
-                            <i class="fas fa-user-edit mr-3" style="color: #102A71;"></i>
-                            Edit Profile
+                            <i class="fas fa-user-edit ml-3" style="color: #102A71;"></i>
+                            تعديل الملف الشخصي
                         </h1>
-                        <p class="text-gray-600 mt-2">Update your personal information and preferences</p>
+                        <p class="text-gray-600 mt-2">تحديث معلوماتك الشخصية وتفضيلاتك</p>
                     </div>
                     <a href="{% url 'accounts:profile' %}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        Back to Profile
+                        <i class="fas fa-arrow-right ml-2"></i>
+                        العودة للملف الشخصي
                     </a>
                 </div>
             </div>
@@ -33,8 +33,8 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-100">
                 <div class="p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-6">
-                        <i class="fas fa-camera mr-2" style="color: #102A71;"></i>
-                        Profile Picture
+                        <i class="fas fa-camera ml-2" style="color: #102A71;"></i>
+                        صورة الملف الشخصي
                     </h3>
                     
                     <div class="flex items-center space-x-6">
@@ -59,19 +59,19 @@
                                     {{ form.profile_picture }}
                                 {% endif %}
                             </div>
-                            <p class="text-sm text-gray-500 mb-2">Upload a new profile picture. Recommended size: 400x400 pixels.</p>
-                            <p class="text-xs text-gray-400">Supported formats: JPG, PNG, GIF (max 5MB)</p>
+                            <p class="text-sm text-gray-500 mb-2">رفع صورة ملف شخصي جديدة. الحجم المُوصى به: 400x400 بكسل.</p>
+                            <p class="text-xs text-gray-400">الصيغ المدعومة: JPG, PNG, GIF (حد أقصى 5 ميجابايت)</p>
                             
                             <div class="mt-4 flex space-x-3">
                                 <button type="button" onclick="document.getElementById('id_profile_picture').click()" 
                                         class="inline-flex items-center px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm">
-                                    <i class="fas fa-upload mr-1"></i>
-                                    Choose File
+                                    <i class="fas fa-upload ml-1"></i>
+                                    اختيار ملف
                                 </button>
                                 <button type="button" onclick="removeProfilePicture()" 
                                         class="inline-flex items-center px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm">
-                                    <i class="fas fa-trash mr-1"></i>
-                                    Remove
+                                    <i class="fas fa-trash ml-1"></i>
+                                    إزالة
                                 </button>
                             </div>
                         </div>
@@ -83,21 +83,21 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-100">
                 <div class="p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-6">
-                        <i class="fas fa-user-circle mr-2" style="color: #102A71;"></i>
-                        Personal Information
+                        <i class="fas fa-user-circle ml-2" style="color: #102A71;"></i>
+                        المعلومات الشخصية
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- First Name -->
                         <div>
                             <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                First Name *
+                                الاسم الأول *
                             </label>
                             {{ form.first_name }}
                             {% if form.first_name.errors %}
                                 <div class="mt-1 text-sm text-red-600">
                                     {% for error in form.first_name.errors %}
-                                        <p><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                        <p><i class="fas fa-exclamation-circle ml-1"></i>{{ error }}</p>
                                     {% endfor %}
                                 </div>
                             {% endif %}
@@ -106,7 +106,7 @@
                         <!-- Last Name -->
                         <div>
                             <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                Last Name *
+                                اسم العائلة *
                             </label>
                             {{ form.last_name }}
                             {% if form.last_name.errors %}
@@ -121,7 +121,7 @@
                         <!-- Email -->
                         <div>
                             <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                Email Address *
+                                عنوان البريد الإلكتروني *
                             </label>
                             {{ form.email }}
                             {% if form.email.errors %}
@@ -136,14 +136,14 @@
                         <!-- Phone Number -->
                         <div>
                             <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                Phone Number
+                                رقم الهاتف
                             </label>
                             {% if form.phone_number %}
                                 {{ form.phone_number }}
                                 {% if form.phone_number.errors %}
                                     <div class="mt-1 text-sm text-red-600">
                                         {% for error in form.phone_number.errors %}
-                                            <p><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                            <p><i class="fas fa-exclamation-circle ml-1"></i>{{ error }}</p>
                                         {% endfor %}
                                     </div>
                                 {% endif %}
@@ -153,14 +153,14 @@
                         <!-- Date of Birth -->
                         <div>
                             <label for="{{ form.date_of_birth.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                Date of Birth
+                                تاريخ الميلاد
                             </label>
                             {% if form.date_of_birth %}
                                 {{ form.date_of_birth }}
                                 {% if form.date_of_birth.errors %}
                                     <div class="mt-1 text-sm text-red-600">
                                         {% for error in form.date_of_birth.errors %}
-                                            <p><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                            <p><i class="fas fa-exclamation-circle ml-1"></i>{{ error }}</p>
                                         {% endfor %}
                                     </div>
                                 {% endif %}
@@ -170,11 +170,11 @@
                         <!-- University ID (Read-only) -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                University ID
+                                الرقم الجامعي
                             </label>
                             <input type="text" value="{{ user.university_id }}" readonly 
                                    class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-600 cursor-not-allowed">
-                            <p class="text-xs text-gray-500 mt-1">University ID cannot be changed</p>
+                            <p class="text-xs text-gray-500 mt-1">لا يمكن تغيير الرقم الجامعي</p>
                         </div>
                     </div>
                 </div>
@@ -184,22 +184,22 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-100">
                 <div class="p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-6">
-                        <i class="fas fa-graduation-cap mr-2" style="color: #F5C400;"></i>
-                        Academic Information
+                        <i class="fas fa-graduation-cap ml-2" style="color: #F5C400;"></i>
+                        المعلومات الأكاديمية
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Major/Program -->
                         <div>
                             <label for="{{ form.major.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                Major/Program
+                                التخصص/البرنامج
                             </label>
                             {% if form.major %}
                                 {{ form.major }}
                                 {% if form.major.errors %}
                                     <div class="mt-1 text-sm text-red-600">
                                         {% for error in form.major.errors %}
-                                            <p><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                            <p><i class="fas fa-exclamation-circle ml-1"></i>{{ error }}</p>
                                         {% endfor %}
                                     </div>
                                 {% endif %}
@@ -209,14 +209,14 @@
                         <!-- Department -->
                         <div>
                             <label for="{{ form.department.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                Department
+                                القسم
                             </label>
                             {% if form.department %}
                                 {{ form.department }}
                                 {% if form.department.errors %}
                                     <div class="mt-1 text-sm text-red-600">
                                         {% for error in form.department.errors %}
-                                            <p><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                            <p><i class="fas fa-exclamation-circle ml-1"></i>{{ error }}</p>
                                         {% endfor %}
                                     </div>
                                 {% endif %}
@@ -226,7 +226,7 @@
                         <!-- Academic Level -->
                         <div>
                             <label for="{{ form.academic_level.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                Academic Level
+                                المستوى الأكاديمي
                             </label>
                             {% if form.academic_level %}
                                 {{ form.academic_level }}
@@ -243,7 +243,7 @@
                         <!-- Enrollment Year -->
                         <div>
                             <label for="{{ form.enrollment_year.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                Enrollment Year
+                                سنة التسجيل
                             </label>
                             {% if form.enrollment_year %}
                                 {{ form.enrollment_year }}
@@ -265,19 +265,19 @@
                 <div class="p-6">
                     <div class="flex items-center justify-between">
                         <div class="text-sm text-gray-500">
-                            <i class="fas fa-info-circle mr-1"></i>
-                            Fields marked with * are required
+                            <i class="fas fa-info-circle ml-1"></i>
+                            الحقول المميزة بـ * مطلوبة
                         </div>
                         <div class="flex space-x-4">
                             <a href="{% url 'accounts:profile' %}" 
                                class="inline-flex items-center px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                                <i class="fas fa-times mr-2"></i>
-                                Cancel
+                                <i class="fas fa-times ml-2"></i>
+                                إلغاء
                             </a>
                             <button type="submit" 
                                     class="inline-flex items-center px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                                <i class="fas fa-save mr-2"></i>
-                                Save Changes
+                                <i class="fas fa-save ml-2"></i>
+                                حفظ التغييرات
                             </button>
                         </div>
                     </div>

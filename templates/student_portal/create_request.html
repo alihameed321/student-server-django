@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Create Service Request - University Services{% endblock %}
+{% block title %}إنشاء طلب خدمة - خدمات الجامعة{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-8">
@@ -12,14 +12,14 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-2xl font-bold text-gray-900">
-                            <i class="fas fa-plus-circle mr-3" style="color: #102A71;"></i>
-                            Create Service Request
+                            <i class="fas fa-plus-circle ml-3" style="color: #102A71;"></i>
+                            إنشاء طلب خدمة
                         </h1>
-                        <p class="text-gray-600">Submit a new academic service request</p>
+                        <p class="text-gray-600">تقديم طلب خدمة أكاديمية جديد</p>
                     </div>
                     <a href="{% url 'student_portal:eservices_center' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        Back to E-Services
+                        <i class="fas fa-arrow-right ml-2"></i>
+                        العودة للخدمات الإلكترونية
                     </a>
                 </div>
             </div>
@@ -28,8 +28,8 @@
         <!-- Form -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-900">Request Details</h2>
-                <p class="text-sm text-gray-600">Please fill out all required fields</p>
+                <h2 class="text-lg font-semibold text-gray-900">تفاصيل الطلب</h2>
+                <p class="text-sm text-gray-600">يرجى ملء جميع الحقول المطلوبة</p>
             </div>
             
             <div class="p-6">
@@ -39,7 +39,7 @@
                     <!-- Request Type -->
                     <div>
                         <label for="{{ form.request_type.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                            {{ form.request_type.label }}
+                            نوع الطلب
                             {% if form.request_type.field.required %}<span class="text-red-500">*</span>{% endif %}
                         </label>
                         {{ form.request_type }}
@@ -51,7 +51,7 @@
                     <!-- Title -->
                     <div>
                         <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                            {{ form.title.label }}
+                            العنوان
                             {% if form.title.field.required %}<span class="text-red-500">*</span>{% endif %}
                         </label>
                         {{ form.title }}
@@ -63,7 +63,7 @@
                     <!-- Description -->
                     <div>
                         <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                            {{ form.description.label }}
+                            الوصف
                             {% if form.description.field.required %}<span class="text-red-500">*</span>{% endif %}
                         </label>
                         {{ form.description }}
@@ -76,7 +76,7 @@
                     {% if form.priority %}
                     <div>
                         <label for="{{ form.priority.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                            {{ form.priority.label }}
+                            الأولوية
                             {% if form.priority.field.required %}<span class="text-red-500">*</span>{% endif %}
                         </label>
                         {{ form.priority }}
@@ -93,11 +93,11 @@
                     <div class="pt-6 border-t border-gray-200">
                         <div class="flex justify-end space-x-3">
                             <a href="{% url 'student_portal:eservices_center' %}" class="inline-flex items-center px-6 py-3 text-gray-700 font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                                Cancel
+                                إلغاء
                             </a>
                             <button type="submit" class="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
-                                <i class="fas fa-paper-plane mr-2"></i>
-                                Submit Request
+                                <i class="fas fa-paper-plane ml-2"></i>
+                                تقديم الطلب
                             </button>
                         </div>
                     </div>
@@ -113,13 +113,13 @@
                         <i class="fas fa-info-circle text-blue-500 text-xl"></i>
                     </div>
                     <div class="ml-3">
-                        <h3 class="text-sm font-medium text-blue-800">Need Help?</h3>
+                        <h3 class="text-sm font-medium text-blue-800">تحتاج مساعدة؟</h3>
                         <div class="mt-2 text-sm text-blue-700">
-                            <p>If you're unsure about which request type to choose or need assistance, please:</p>
+                            <p>إذا كنت غير متأكد من نوع الطلب المناسب أو تحتاج مساعدة، يرجى:</p>
                             <ul class="list-disc list-inside mt-2 space-y-1">
-                                <li>Contact the Student Services Office at ext. 1234</li>
-                                <li>Visit our <a href="{% url 'student_portal:support' %}" class="underline hover:text-blue-800">Support Center</a></li>
-                                <li>Email us at services@university.edu</li>
+                                <li>الاتصال بمكتب خدمات الطلاب على الرقم الداخلي 1234</li>
+                                <li>زيارة <a href="{% url 'student_portal:support' %}" class="underline hover:text-blue-800">مركز الدعم</a></li>
+                                <li>مراسلتنا على services@university.edu</li>
                             </ul>
                         </div>
                     </div>

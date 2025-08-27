@@ -130,7 +130,7 @@ def approve_request(request, request_id):
         
         # Check if request can be approved
         if service_request.status not in ['pending', 'in_review']:
-            return JsonResponse({'status': 'error', 'message': 'Request cannot be approved in its current status'})
+            return JsonResponse({'status': 'error', 'message': 'لا يمكن الموافقة على الطلب في حالته الحالية'})
         
         service_request.status = 'approved'
         service_request.processed_by = request.user
@@ -145,11 +145,11 @@ def approve_request(request, request_id):
             target_user=service_request.student
         )
         
-        messages.success(request, f'Request #{request_id} has been approved successfully.')
-        return JsonResponse({'status': 'success', 'message': 'Request approved'})
+        messages.success(request, f'تم الموافقة على الطلب #{request_id} بنجاح.')
+        return JsonResponse({'status': 'success', 'message': 'تم الموافقة على الطلب'})
         
     except Exception as e:
-        return JsonResponse({'status': 'error', 'message': f'Error approving request: {str(e)}'})
+        return JsonResponse({'status': 'error', 'message': f'خطأ في الموافقة على الطلب: {str(e)}'})
 
 
 @login_required
@@ -163,7 +163,7 @@ def reject_request(request, request_id):
         
         # Check if request can be rejected
         if service_request.status not in ['pending', 'in_review']:
-            return JsonResponse({'status': 'error', 'message': 'Request cannot be rejected in its current status'})
+            return JsonResponse({'status': 'error', 'message': 'لا يمكن رفض الطلب في حالته الحالية'})
         
         service_request.status = 'rejected'
         service_request.processed_by = request.user
@@ -178,11 +178,11 @@ def reject_request(request, request_id):
             target_user=service_request.student
         )
         
-        messages.success(request, f'Request #{request_id} has been rejected.')
-        return JsonResponse({'status': 'success', 'message': 'Request rejected'})
+        messages.success(request, f'تم رفض الطلب #{request_id}.')
+        return JsonResponse({'status': 'success', 'message': 'تم رفض الطلب'})
         
     except Exception as e:
-        return JsonResponse({'status': 'error', 'message': f'Error rejecting request: {str(e)}'})
+        return JsonResponse({'status': 'error', 'message': f'خطأ في رفض الطلب: {str(e)}'})
 
 
 # Financial Management Views
@@ -354,7 +354,7 @@ class PaymentVerificationView(LoginRequiredMixin, TemplateView):
 def verify_payment(request, payment_id):
     """Verify a payment via AJAX"""
     if request.method != 'POST':
-        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+        return JsonResponse({'status': 'error', 'message': 'طريقة طلب غير صحيحة'})
     
     try:
         from financial.models import Payment
@@ -367,17 +367,17 @@ def verify_payment(request, payment_id):
             if payment.status == 'verified':
                 return JsonResponse({
                     'status': 'error', 
-                    'message': f'Payment #{payment_id} has already been verified by {payment.verified_by.get_full_name() if payment.verified_by else "another staff member"}.'
+                    'message': f'تم التحقق من الدفعة #{payment_id} بالفعل من قبل {payment.verified_by.get_full_name() if payment.verified_by else "موظف آخر"}.'
                 })
             elif payment.status == 'rejected':
                 return JsonResponse({
                     'status': 'error', 
-                    'message': f'Payment #{payment_id} has already been rejected by {payment.verified_by.get_full_name() if payment.verified_by else "another staff member"}.'
+                    'message': f'تم رفض الدفعة #{payment_id} بالفعل من قبل {payment.verified_by.get_full_name() if payment.verified_by else "موظف آخر"}.'
                 })
             else:
                 return JsonResponse({
                     'status': 'error', 
-                    'message': f'Payment #{payment_id} is not available for processing (current status: {payment.get_status_display()}).'
+                    'message': f'الدفعة #{payment_id} غير متاحة للمعالجة (الحالة الحالية: {payment.get_status_display()}).'
                 })
         
         # Verify the payment
@@ -393,18 +393,18 @@ def verify_payment(request, payment_id):
         
         return JsonResponse({
             'status': 'success', 
-            'message': f'Payment #{payment_id} verified successfully'
+            'message': f'تم التحقق من الدفعة #{payment_id} بنجاح'
         })
         
     except Exception as e:
-        return JsonResponse({'status': 'error', 'message': f'Error verifying payment: {str(e)}'})
+        return JsonResponse({'status': 'error', 'message': f'خطأ في التحقق من الدفعة: {str(e)}'})
 
 
 @login_required
 def reject_payment(request, payment_id):
     """Reject a payment via AJAX"""
     if request.method != 'POST':
-        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+        return JsonResponse({'status': 'error', 'message': 'طريقة طلب غير صحيحة'})
     
     try:
         from financial.models import Payment
@@ -418,17 +418,17 @@ def reject_payment(request, payment_id):
             if payment.status == 'verified':
                 return JsonResponse({
                     'status': 'error', 
-                    'message': f'Payment #{payment_id} has already been verified by {payment.verified_by.get_full_name() if payment.verified_by else "another staff member"}.'
+                    'message': f'تم التحقق من الدفعة #{payment_id} بالفعل من قبل {payment.verified_by.get_full_name() if payment.verified_by else "موظف آخر"}.'
                 })
             elif payment.status == 'rejected':
                 return JsonResponse({
                     'status': 'error', 
-                    'message': f'Payment #{payment_id} has already been rejected by {payment.verified_by.get_full_name() if payment.verified_by else "another staff member"}.'
+                    'message': f'تم رفض الدفعة #{payment_id} بالفعل من قبل {payment.verified_by.get_full_name() if payment.verified_by else "موظف آخر"}.'
                 })
             else:
                 return JsonResponse({
                     'status': 'error', 
-                    'message': f'Payment #{payment_id} is not available for processing (current status: {payment.get_status_display()}).'
+                    'message': f'الدفعة #{payment_id} غير متاحة للمعالجة (الحالة الحالية: {payment.get_status_display()}).'
                 })
         
         # Get rejection reason from request
@@ -448,11 +448,11 @@ def reject_payment(request, payment_id):
         
         return JsonResponse({
             'status': 'success', 
-            'message': f'Payment #{payment_id} rejected successfully'
+            'message': f'تم رفض الدفعة #{payment_id} بنجاح'
         })
         
     except Exception as e:
-        return JsonResponse({'status': 'error', 'message': f'Error rejecting payment: {str(e)}'})
+        return JsonResponse({'status': 'error', 'message': f'خطأ في رفض الدفعة: {str(e)}'})
 
 
 @login_required
@@ -483,7 +483,7 @@ def get_payment_details(request, payment_id):
         })
         
     except Exception as e:
-        return JsonResponse({'status': 'error', 'message': f'Error fetching payment details: {str(e)}'})
+        return JsonResponse({'status': 'error', 'message': f'خطأ في جلب تفاصيل الدفعة: {str(e)}'})
 
 
 class PendingPaymentsView(LoginRequiredMixin, TemplateView):
@@ -692,7 +692,7 @@ class CreateFeeView(LoginRequiredMixin, TemplateView):
                                 created_by=request.user
                             )
                     else:
-                        messages.error(request, 'Please select at least one student when applying to specific students.')
+                        messages.error(request, 'يرجى اختيار طالب واحد على الأقل عند التطبيق على طلاب محددين.')
                         return self.get(request, *args, **kwargs)
                 
                 # Log staff activity
@@ -702,14 +702,14 @@ class CreateFeeView(LoginRequiredMixin, TemplateView):
                     description=f'Created fee: {fee_name} - ${amount}'
                 )
                 
-                messages.success(request, 'Fee created successfully!')
+                messages.success(request, 'تم إنشاء الرسوم بنجاح!')
                 return redirect('staff_panel:fee_management')
                 
             except Exception as e:
-                messages.error(request, f'Error creating fee: {str(e)}')
+                messages.error(request, f'خطأ في إنشاء الرسوم: {str(e)}')
                 return self.get(request, *args, **kwargs)
         else:
-            messages.error(request, 'Please fill in all required fields.')
+            messages.error(request, 'يرجى ملء جميع الحقول المطلوبة.')
             return self.get(request, *args, **kwargs)
 
 
@@ -726,7 +726,7 @@ class EditFeeView(LoginRequiredMixin, TemplateView):
             fee = StudentFee.objects.get(id=fee_id)
             context['fee'] = fee
         except StudentFee.DoesNotExist:
-            messages.error(self.request, 'Fee not found.')
+            messages.error(self.request, 'لم يتم العثور على الرسوم.')
         
         return context
     
@@ -754,14 +754,14 @@ class EditFeeView(LoginRequiredMixin, TemplateView):
                 target_user=fee.student
             )
             
-            messages.success(request, 'Fee updated successfully!')
+            messages.success(request, 'تم تحديث الرسوم بنجاح!')
             return redirect('staff_panel:fee_management')
             
         except StudentFee.DoesNotExist:
-            messages.error(request, 'Fee not found.')
+            messages.error(request, 'لم يتم العثور على الرسوم.')
             return redirect('staff_panel:fee_management')
         except Exception as e:
-            messages.error(request, f'Error updating fee: {str(e)}')
+            messages.error(request, f'خطأ في تحديث الرسوم: {str(e)}')
             return self.get(request, *args, **kwargs)
 
 
@@ -840,11 +840,11 @@ class AddStudentView(LoginRequiredMixin, TemplateView):
             try:
                 # Check if university ID or email already exists
                 if User.objects.filter(university_id=university_id).exists():
-                    messages.error(request, 'A student with this University ID already exists.')
+                    messages.error(request, 'يوجد طالب بهذا الرقم الجامعي بالفعل.')
                     return self.get(request, *args, **kwargs)
                     
                 if User.objects.filter(email=email).exists():
-                    messages.error(request, 'A user with this email already exists.')
+                    messages.error(request, 'يوجد مستخدم بهذا البريد الإلكتروني بالفعل.')
                     return self.get(request, *args, **kwargs)
                 
                 # Generate username and password
@@ -886,14 +886,14 @@ class AddStudentView(LoginRequiredMixin, TemplateView):
                     description=f'Created new student: {student.get_full_name()} ({university_id})'
                 )
                 
-                messages.success(request, f'Student {student.get_full_name()} created successfully! Temporary password: {password}')
+                messages.success(request, f'تم إنشاء الطالب {student.get_full_name()} بنجاح! كلمة المرور المؤقتة: {password}')
                 return redirect('staff_panel:student_detail', student_id=student.id)
                 
             except Exception as e:
-                messages.error(request, f'Error creating student: {str(e)}')
+                messages.error(request, f'خطأ في إنشاء الطالب: {str(e)}')
                 return self.get(request, *args, **kwargs)
         else:
-            messages.error(request, 'Please fill in all required fields.')
+            messages.error(request, 'يرجى ملء جميع الحقول المطلوبة.')
             return self.get(request, *args, **kwargs)
 
 
@@ -924,10 +924,10 @@ class DeleteStudentView(LoginRequiredMixin, View):
             # Delete the student (this will cascade to StudentProfile)
             student.delete()
             
-            messages.success(request, f'Student {student_name} has been deleted successfully.')
+            messages.success(request, f'تم حذف الطالب {student_name} بنجاح.')
             
         except Exception as e:
-            messages.error(request, f'Error deleting student: {str(e)}')
+            messages.error(request, f'خطأ في حذف الطالب: {str(e)}')
             
         return redirect('staff_panel:student_management')
     
@@ -1012,7 +1012,7 @@ class EditStudentView(LoginRequiredMixin, TemplateView):
             description=f'Updated student information for {student.get_full_name()}'
         )
         
-        messages.success(request, f'Student {student.get_full_name()} updated successfully.')
+        messages.success(request, f'تم تحديث الطالب {student.get_full_name()} بنجاح.')
         return redirect('staff_panel:student_detail', student_id=student.id)
 
 
@@ -1070,10 +1070,10 @@ class CreateAnnouncementView(LoginRequiredMixin, TemplateView):
                 description=f'Created announcement: {title}'
             )
             
-            messages.success(request, 'Announcement created successfully!')
+            messages.success(request, 'تم إنشاء الإعلان بنجاح!')
             return redirect('staff_panel:announcement_management')
         else:
-            messages.error(request, 'Please fill in all required fields.')
+            messages.error(request, 'يرجى ملء جميع الحقول المطلوبة.')
             return self.get(request, *args, **kwargs)
 
 
@@ -1171,10 +1171,10 @@ class GenerateReportView(LoginRequiredMixin, TemplateView):
                 return response
                 
             except Exception as e:
-                messages.error(request, f'Error generating report: {str(e)}')
+                messages.error(request, f'خطأ في إنشاء التقرير: {str(e)}')
                 return self.get(request, *args, **kwargs)
         else:
-            messages.error(request, 'Please fill in all required fields.')
+            messages.error(request, 'يرجى ملء جميع الحقول المطلوبة.')
             return self.get(request, *args, **kwargs)
 
 
@@ -1239,7 +1239,7 @@ class UploadDocumentView(LoginRequiredMixin, TemplateView):
             
             # Validate required fields
             if not all([student_id, document_type, title, document_file]):
-                messages.error(request, 'Please fill in all required fields and select a file.')
+                messages.error(request, 'يرجى ملء جميع الحقول المطلوبة واختيار ملف.')
                 return self.get(request, *args, **kwargs)
             
             # Get student
@@ -1263,13 +1263,13 @@ class UploadDocumentView(LoginRequiredMixin, TemplateView):
                 description=f'Uploaded document: {title} for {student.get_full_name()}'
             )
             
-            messages.success(request, f'Document "{title}" uploaded successfully for {student.get_full_name()}!')
+            messages.success(request, f'تم رفع المستند "{title}" بنجاح للطالب {student.get_full_name()}!')
             return redirect('staff_panel:document_management')
             
         except User.DoesNotExist:
-            messages.error(request, 'Selected student not found.')
+            messages.error(request, 'لم يتم العثور على الطالب المحدد.')
         except Exception as e:
-            messages.error(request, f'Error uploading document: {str(e)}')
+            messages.error(request, f'خطأ في رفع المستند: {str(e)}')
         
         return self.get(request, *args, **kwargs)
 
@@ -1374,7 +1374,7 @@ class NotificationCreateView(LoginRequiredMixin, TemplateView):
             
             # Validate required fields
             if not all([recipient_ids, title, message]):
-                messages.error(request, 'Please fill in all required fields.')
+                messages.error(request, 'يرجى ملء جميع الحقول المطلوبة.')
                 return self.get(request, *args, **kwargs)
             
             # Parse expiry date if provided
@@ -1384,7 +1384,7 @@ class NotificationCreateView(LoginRequiredMixin, TemplateView):
                     expiry_date = datetime.strptime(expires_at, '%Y-%m-%dT%H:%M')
                     expiry_date = timezone.make_aware(expiry_date)
                 except ValueError:
-                    messages.error(request, 'Invalid expiry date format.')
+                    messages.error(request, 'تنسيق تاريخ انتهاء الصلاحية غير صحيح.')
                     return self.get(request, *args, **kwargs)
             
             # Get recipients
@@ -1398,7 +1398,7 @@ class NotificationCreateView(LoginRequiredMixin, TemplateView):
                 recipients = User.objects.filter(id__in=recipient_ids, is_active=True)
             
             if not recipients.exists():
-                messages.error(request, 'No valid recipients selected.')
+                messages.error(request, 'لم يتم اختيار مستلمين صحيحين.')
                 return self.get(request, *args, **kwargs)
             
             # Create notifications
@@ -1425,10 +1425,10 @@ class NotificationCreateView(LoginRequiredMixin, TemplateView):
             
             messages.success(
                 request, 
-                f'Notification "{title}" created successfully for {notifications_created} recipients!'
+                f'تم إنشاء الإشعار "{title}" بنجاح لـ {notifications_created} مستلم!'
             )
             return redirect('staff_panel:notification_create')
             
         except Exception as e:
-            messages.error(request, f'Error creating notification: {str(e)}')
+            messages.error(request, f'خطأ في إنشاء الإشعار: {str(e)}')
             return self.get(request, *args, **kwargs)

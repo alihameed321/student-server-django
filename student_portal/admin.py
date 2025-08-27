@@ -17,7 +17,7 @@ class ServiceRequestAdmin(admin.ModelAdmin):
     
     def get_student_info(self, obj):
         return f"{obj.student.university_id} - {obj.student.get_full_name()}"
-    get_student_info.short_description = 'Student'
+    get_student_info.short_description = 'الطالب'
     get_student_info.admin_order_field = 'student__university_id'
     
     def get_status_badge(self, obj):
@@ -35,19 +35,19 @@ class ServiceRequestAdmin(admin.ModelAdmin):
             color,
             obj.get_status_display()
         )
-    get_status_badge.short_description = 'Status'
+    get_status_badge.short_description = 'الحالة'
     get_status_badge.admin_order_field = 'status'
     
     fieldsets = (
-        ('Request Information', {
+        ('معلومات الطلب', {
             'fields': ('student', 'request_type', 'title', 'description'),
             'classes': ('wide',)
         }),
-        ('Status & Processing', {
+        ('الحالة والمعالجة', {
             'fields': ('status', 'priority', 'processed_by', 'rejection_reason', 'additional_info_request'),
             'classes': ('wide',)
         }),
-        ('Timestamps', {
+        ('الطوابع الزمنية', {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
@@ -90,19 +90,19 @@ class StudentDocumentAdmin(admin.ModelAdmin):
     date_hierarchy = 'issued_date'
     
     fieldsets = (
-        ('Document Information', {
+        ('معلومات الوثيقة', {
             'fields': ('student', 'document_type', 'title', 'document_file'),
             'classes': ('wide',)
         }),
-        ('Status & Verification', {
+        ('الحالة والتحقق', {
             'fields': ('is_official', 'issued_by'),
             'classes': ('wide',)
         }),
-        ('Statistics', {
+        ('الإحصائيات', {
             'fields': ('download_count',),
             'classes': ('collapse',)
         }),
-        ('Metadata', {
+        ('البيانات الوصفية', {
             'fields': ('issued_date',),
             'classes': ('collapse',)
         }),
@@ -123,7 +123,7 @@ class StudentDocumentAdmin(admin.ModelAdmin):
         return format_html(
             '<span style="background-color: #6c757d; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px;">UNOFFICIAL</span>'
         )
-    get_official_badge.short_description = 'Official'
+    get_official_badge.short_description = 'رسمي'
     get_official_badge.admin_order_field = 'is_official'
 
 
@@ -138,15 +138,15 @@ class SupportTicketAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_at'
     
     fieldsets = (
-        ('Ticket Information', {
+        ('معلومات التذكرة', {
             'fields': ('student', 'subject', 'description', 'category'),
             'classes': ('wide',)
         }),
-        ('Status & Priority', {
+        ('الحالة والأولوية', {
             'fields': ('status', 'priority', 'assigned_to', 'resolution'),
             'classes': ('wide',)
         }),
-        ('Timestamps', {
+        ('الطوابع الزمنية', {
             'fields': ('created_at', 'updated_at', 'resolved_at'),
             'classes': ('collapse',)
         }),
@@ -188,7 +188,7 @@ class SupportTicketAdmin(admin.ModelAdmin):
             color,
             obj.get_priority_display().upper()
         )
-    get_priority_badge.short_description = 'Priority'
+    get_priority_badge.short_description = 'الأولوية'
     get_priority_badge.admin_order_field = 'priority'
 
 

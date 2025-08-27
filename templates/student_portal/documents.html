@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}My Documents - My University Services{% endblock %}
+{% block title %}وثائقي - خدمات جامعتي{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-8">
@@ -12,19 +12,19 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900 mb-2">
-                            <i class="fas fa-folder-open mr-3" style="color: #102A71;"></i>
-                            My Documents
+                            <i class="fas fa-folder-open ml-3" style="color: #102A71;"></i>
+                            وثائقي
                         </h1>
-                        <p class="text-gray-600">Access and download your official university documents</p>
+                        <p class="text-gray-600">الوصول إلى وتحميل الوثائق الرسمية للجامعة</p>
                     </div>
                     <div class="flex space-x-3">
                         <button onclick="refreshDocuments()" class="inline-flex items-center px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                            <i class="fas fa-sync-alt mr-2"></i>
-                            Refresh
+                            <i class="fas fa-sync-alt ml-2"></i>
+                            تحديث
                         </button>
                         <a href="{% url 'student_portal:create_request' %}" class="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
-                            <i class="fas fa-plus mr-2"></i>
-                            Request Document
+                            <i class="fas fa-plus ml-2"></i>
+                            طلب وثيقة
                         </a>
                     </div>
                 </div>
@@ -40,8 +40,8 @@
                         <i class="fas fa-certificate text-2xl" style="color: #102A71;"></i>
                     </div>
                     <div class="ml-4">
-                        <h3 class="text-lg font-semibold text-gray-900">Certificates</h3>
-                        <p class="text-sm text-gray-600">Official university certificates</p>
+                        <h3 class="text-lg font-semibold text-gray-900">الشهادات</h3>
+                        <p class="text-sm text-gray-600">الشهادات الرسمية للجامعة</p>
                     </div>
                 </div>
                 <div class="space-y-2">
@@ -61,7 +61,7 @@
                             </div>
                         {% endif %}
                     {% empty %}
-                        <p class="text-sm text-gray-500 text-center py-4">No certificates available</p>
+                        <p class="text-sm text-gray-500 text-center py-4">لا توجد شهادات متاحة</p>
                     {% endfor %}
                 </div>
             </div>
@@ -73,8 +73,8 @@
                         <i class="fas fa-file-alt text-2xl" style="color: #102A71;"></i>
                     </div>
                     <div class="ml-4">
-                        <h3 class="text-lg font-semibold text-gray-900">Academic Records</h3>
-                        <p class="text-sm text-gray-600">Transcripts and grade reports</p>
+                        <h3 class="text-lg font-semibold text-gray-900">السجلات الأكاديمية</h3>
+                        <p class="text-sm text-gray-600">كشوف الدرجات والتقارير الأكاديمية</p>
                     </div>
                 </div>
                 <div class="space-y-2">
@@ -94,7 +94,7 @@
                             </div>
                         {% endif %}
                     {% empty %}
-                        <p class="text-sm text-gray-500 text-center py-4">No academic records available</p>
+                        <p class="text-sm text-gray-500 text-center py-4">لا توجد سجلات أكاديمية متاحة</p>
                     {% endfor %}
                 </div>
             </div>
@@ -106,8 +106,8 @@
                         <i class="fas fa-folder text-2xl" style="color: #102A71;"></i>
                     </div>
                     <div class="ml-4">
-                        <h3 class="text-lg font-semibold text-gray-900">Other Documents</h3>
-                        <p class="text-sm text-gray-600">Additional university documents</p>
+                        <h3 class="text-lg font-semibold text-gray-900">وثائق أخرى</h3>
+                        <p class="text-sm text-gray-600">وثائق جامعية إضافية</p>
                     </div>
                 </div>
                 <div class="space-y-2">
@@ -127,7 +127,7 @@
                             </div>
                         {% endif %}
                     {% empty %}
-                        <p class="text-sm text-gray-500 text-center py-4">No other documents available</p>
+                        <p class="text-sm text-gray-500 text-center py-4">لا توجد وثائق أخرى متاحة</p>
                     {% endfor %}
                 </div>
             </div>
@@ -136,8 +136,8 @@
         <!-- All Documents Table -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100">
             <div class="p-6 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-900">All Documents</h2>
-                <p class="text-gray-600 mt-1">Complete list of your university documents</p>
+                <h2 class="text-xl font-semibold text-gray-900">جميع الوثائق</h2>
+                <p class="text-gray-600 mt-1">قائمة كاملة بوثائقك الجامعية</p>
             </div>
             
             {% if documents %}
@@ -146,19 +146,19 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Document
+                                    الوثيقة
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Type
+                                    النوع
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Issued Date
+                                    تاريخ الإصدار
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status
+                                    الحالة
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Actions
+                                    الإجراءات
                                 </th>
                             </tr>
                         </thead>
@@ -192,19 +192,19 @@
                                                 bg-yellow-100 text-yellow-800
                                             {% endif %}
                                         ">
-                                            <i class="fas fa-circle text-xs mr-1"></i>
-                                            {% if doc.is_verified %}Verified{% else %}Pending{% endif %}
+                                            <i class="fas fa-circle text-xs ml-1"></i>
+                                            {% if doc.is_verified %}موثق{% else %}قيد المراجعة{% endif %}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex space-x-2">
                                             <a href="{% url 'student_portal:download_document' doc.id %}" target="_blank" class="text-blue-600 hover:text-blue-900">
-                                                <i class="fas fa-eye mr-1"></i>
-                                                View
+                                                <i class="fas fa-eye ml-1"></i>
+                                                عرض
                                             </a>
                                             <a href="{% url 'student_portal:download_document' doc.id %}" class="text-green-600 hover:text-green-900">
-                                                <i class="fas fa-download mr-1"></i>
-                                                Download
+                                                <i class="fas fa-download ml-1"></i>
+                                                تحميل
                                             </a>
                                         </div>
                                     </td>
@@ -216,11 +216,11 @@
             {% else %}
                 <div class="text-center py-16">
                     <i class="fas fa-folder-open text-6xl text-gray-300 mb-6"></i>
-                    <h3 class="text-xl font-medium text-gray-900 mb-2">No documents found</h3>
-                    <p class="text-gray-600 mb-8">You don't have any documents yet. Request official documents through our services.</p>
+                    <h3 class="text-xl font-medium text-gray-900 mb-2">لم يتم العثور على وثائق</h3>
+                    <p class="text-gray-600 mb-8">ليس لديك أي وثائق حتى الآن. اطلب الوثائق الرسمية من خلال خدماتنا.</p>
                     <a href="{% url 'student_portal:create_request' %}" class="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
-                        <i class="fas fa-plus mr-2"></i>
-                        Request Your First Document
+                        <i class="fas fa-plus ml-2"></i>
+                        اطلب وثيقتك الأولى
                     </a>
                 </div>
             {% endif %}

@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Support Ticket #{{ ticket.id }} - My University Services{% endblock %}
+{% block title %}تذكرة الدعم #{{ ticket.id }} - خدمات جامعتي{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-8">
@@ -12,14 +12,14 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900">
-                            <i class="fas fa-ticket-alt mr-3" style="color: #102A71;"></i>
-                            Support Ticket #{{ ticket.id }}
+                            <i class="fas fa-ticket-alt ml-3" style="color: #102A71;"></i>
+                            تذكرة الدعم #{{ ticket.id }}
                         </h1>
                         <p class="text-gray-600 mt-2">{{ ticket.subject }}</p>
                     </div>
                     <a href="{% url 'student_portal:support_center' %}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        Back to Support
+                        <i class="fas fa-arrow-right ml-2"></i>
+                        العودة إلى الدعم
                     </a>
                 </div>
             </div>
@@ -34,8 +34,8 @@
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-6">
                             <h3 class="text-lg font-semibold text-gray-900">
-                                <i class="fas fa-info-circle mr-2" style="color: #102A71;"></i>
-                                Ticket Details
+                                <i class="fas fa-info-circle ml-2" style="color: #102A71;"></i>
+                                تفاصيل التذكرة
                             </h3>
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
                                    {% if ticket.status == 'open' %}bg-green-100 text-green-800
@@ -50,16 +50,16 @@
                         
                         <div class="prose max-w-none">
                             <div class="bg-gray-50 rounded-lg p-4 mb-4">
-                                <h4 class="text-sm font-medium text-gray-700 mb-2">Original Message:</h4>
+                                <h4 class="text-sm font-medium text-gray-700 mb-2">الرسالة الأصلية:</h4>
                                 <p class="text-gray-900">{{ ticket.description|linebreaks }}</p>
                             </div>
                             
                             {% if ticket.attachment %}
                             <div class="mt-4">
-                                <h4 class="text-sm font-medium text-gray-700 mb-2">Attachment:</h4>
+                                <h4 class="text-sm font-medium text-gray-700 mb-2">المرفق:</h4>
                                 <a href="{{ ticket.attachment.url }}" class="inline-flex items-center px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
-                                    <i class="fas fa-paperclip mr-2"></i>
-                                    {{ ticket.attachment.name|default:"Download Attachment" }}
+                                    <i class="fas fa-paperclip ml-2"></i>
+                                    {{ ticket.attachment.name|default:"تحميل المرفق" }}
                                 </a>
                             </div>
                             {% endif %}
@@ -71,8 +71,8 @@
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100">
                     <div class="p-6">
                         <h3 class="text-lg font-semibold text-gray-900 mb-6">
-                            <i class="fas fa-comments mr-2" style="color: #F5C400;"></i>
-                            Conversation
+                            <i class="fas fa-comments ml-2" style="color: #F5C400;"></i>
+                            المحادثة
                         </h3>
                         
                         <div class="space-y-6">
@@ -96,15 +96,15 @@
                                                 <div class="flex items-center space-x-2">
                                                     <span class="text-sm font-medium text-gray-900">
                                                         {% if response.is_staff %}
-                                                            {{ response.author.get_full_name|default:"Support Staff" }}
+                                                            {{ response.author.get_full_name|default:"فريق الدعم" }}
                                                         {% else %}
-                                                            You
+                                                            أنت
                                                         {% endif %}
                                                     </span>
                                                     {% if response.is_staff %}
                                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                            <i class="fas fa-shield-alt mr-1"></i>
-                                                            Staff
+                                                            <i class="fas fa-shield-alt ml-1"></i>
+                                                            الموظفين
                                                         </span>
                                                     {% endif %}
                                                 </div>
@@ -117,8 +117,8 @@
                                             {% if response.attachment %}
                                             <div class="mt-3">
                                                 <a href="{{ response.attachment.url }}" class="inline-flex items-center px-2 py-1 bg-gray-200 text-gray-700 rounded text-xs hover:bg-gray-300 transition-colors">
-                                                    <i class="fas fa-paperclip mr-1"></i>
-                                                    {{ response.attachment.name|default:"Attachment" }}
+                                                    <i class="fas fa-paperclip ml-1"></i>
+                                                    {{ response.attachment.name|default:"مرفق" }}
                                                 </a>
                                             </div>
                                             {% endif %}
@@ -131,7 +131,7 @@
                                     <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
                                         <i class="fas fa-comments text-gray-400 text-xl"></i>
                                     </div>
-                                    <p class="text-gray-500">No responses yet. Our support team will respond soon.</p>
+                                    <p class="text-gray-500">لا توجد ردود بعد. سيرد فريق الدعم قريباً.</p>
                                 </div>
                             {% endif %}
                         </div>
@@ -143,8 +143,8 @@
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100">
                     <div class="p-6">
                         <h3 class="text-lg font-semibold text-gray-900 mb-6">
-                            <i class="fas fa-reply mr-2" style="color: #102A71;"></i>
-                            Add Response
+                            <i class="fas fa-reply ml-2" style="color: #102A71;"></i>
+                            إضافة رد
                         </h3>
                         
                         <form method="post" enctype="multipart/form-data" action="{% url 'student_portal:respond_to_ticket' ticket.id %}">
@@ -152,30 +152,30 @@
                             
                             <div class="mb-4">
                                 <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Your Message *
+                                    رسالتك *
                                 </label>
                                 <textarea name="message" id="message" rows="4" required
                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                          placeholder="Type your response here..."></textarea>
+                                          placeholder="اكتب ردك هنا..."></textarea>
                             </div>
                             
                             <div class="mb-6">
                                 <label for="attachment" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Attachment (Optional)
+                                    مرفق (اختياري)
                                 </label>
                                 <input type="file" name="attachment" id="attachment"
                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <p class="text-xs text-gray-500 mt-1">Max file size: 10MB</p>
+                                <p class="text-xs text-gray-500 mt-1">الحد الأقصى لحجم الملف: 10 ميجابايت</p>
                             </div>
                             
                             <div class="flex items-center justify-between">
                                 <div class="text-sm text-gray-500">
-                                    <i class="fas fa-info-circle mr-1"></i>
-                                    You will be notified when staff responds
+                                    <i class="fas fa-info-circle ml-1"></i>
+                                    سيتم إشعارك عندما يرد الموظفون
                                 </div>
                                 <button type="submit" class="inline-flex items-center px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                                    <i class="fas fa-paper-plane mr-2"></i>
-                                    Send Response
+                                    <i class="fas fa-paper-plane ml-2"></i>
+                                    إرسال الرد
                                 </button>
                             </div>
                         </form>
@@ -186,8 +186,8 @@
                     <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-200 flex items-center justify-center">
                         <i class="fas fa-lock text-gray-400 text-xl"></i>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Ticket Closed</h3>
-                    <p class="text-gray-600">This ticket has been closed and no longer accepts responses.</p>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">التذكرة مغلقة</h3>
+                    <p class="text-gray-600">تم إغلاق هذه التذكرة ولا تقبل المزيد من الردود.</p>
                 </div>
                 {% endif %}
             </div>
@@ -198,51 +198,51 @@
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100">
                     <div class="p-6">
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                            <i class="fas fa-info mr-2" style="color: #102A71;"></i>
-                            Ticket Information
+                            <i class="fas fa-info ml-2" style="color: #102A71;"></i>
+                            معلومات التذكرة
                         </h3>
                         
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Ticket ID</label>
+                                <label class="block text-sm font-medium text-gray-700">رقم التذكرة</label>
                                 <p class="text-sm text-gray-900">#{{ ticket.id }}</p>
                             </div>
                             
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Category</label>
+                                <label class="block text-sm font-medium text-gray-700">الفئة</label>
                                 <p class="text-sm text-gray-900">{{ ticket.get_category_display|default:ticket.category }}</p>
                             </div>
                             
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Priority</label>
+                                <label class="block text-sm font-medium text-gray-700">الأولوية</label>
                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
                                        {% if ticket.priority == 'high' %}bg-red-100 text-red-800
                                        {% elif ticket.priority == 'medium' %}bg-yellow-100 text-yellow-800
                                        {% else %}bg-green-100 text-green-800{% endif %}">
                                     {% if ticket.priority == 'high' %}
-                                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                                        <i class="fas fa-exclamation-triangle ml-1"></i>
                                     {% elif ticket.priority == 'medium' %}
-                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        <i class="fas fa-exclamation-circle ml-1"></i>
                                     {% else %}
-                                        <i class="fas fa-info-circle mr-1"></i>
+                                        <i class="fas fa-info-circle ml-1"></i>
                                     {% endif %}
                                     {{ ticket.get_priority_display|default:ticket.priority|title }}
                                 </span>
                             </div>
                             
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Created</label>
+                                <label class="block text-sm font-medium text-gray-700">تم الإنشاء</label>
                                 <p class="text-sm text-gray-900">{{ ticket.created_at|date:"M d, Y \a\t H:i" }}</p>
                             </div>
                             
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Last Updated</label>
+                                <label class="block text-sm font-medium text-gray-700">آخر تحديث</label>
                                 <p class="text-sm text-gray-900">{{ ticket.updated_at|date:"M d, Y \a\t H:i" }}</p>
                             </div>
                             
                             {% if ticket.assigned_to %}
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Assigned To</label>
+                                <label class="block text-sm font-medium text-gray-700">مُعيَّن إلى</label>
                                 <p class="text-sm text-gray-900">{{ ticket.assigned_to.get_full_name }}</p>
                             </div>
                             {% endif %}
@@ -254,26 +254,26 @@
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100">
                     <div class="p-6">
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                            <i class="fas fa-bolt mr-2" style="color: #F5C400;"></i>
-                            Quick Actions
+                            <i class="fas fa-bolt ml-2" style="color: #F5C400;"></i>
+                            الإجراءات السريعة
                         </h3>
                         
                         <div class="space-y-3">
                             {% if ticket.status != 'closed' %}
                                 <button onclick="markAsResolved()" class="w-full flex items-center justify-center px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors">
-                                    <i class="fas fa-check mr-2"></i>
-                                    Mark as Resolved
+                                    <i class="fas fa-check ml-2"></i>
+                                    تحديد كمحلولة
                                 </button>
                             {% endif %}
                             
                             <a href="{% url 'student_portal:create_ticket' %}" class="w-full flex items-center justify-center px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
-                                <i class="fas fa-plus mr-2"></i>
-                                Create New Ticket
+                                <i class="fas fa-plus ml-2"></i>
+                                إنشاء تذكرة جديدة
                             </a>
                             
                             <button onclick="printTicket()" class="w-full flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                                <i class="fas fa-print mr-2"></i>
-                                Print Ticket
+                                <i class="fas fa-print ml-2"></i>
+                                طباعة التذكرة
                             </button>
                         </div>
                     </div>
@@ -283,24 +283,24 @@
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100">
                     <div class="p-6">
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                            <i class="fas fa-lightbulb mr-2" style="color: #F5C400;"></i>
-                            Related Help
+                            <i class="fas fa-lightbulb ml-2" style="color: #F5C400;"></i>
+                            المساعدة ذات الصلة
                         </h3>
                         
                         <div class="space-y-3">
                             <a href="#" class="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                <h4 class="text-sm font-medium text-gray-900">How to reset your password</h4>
-                                <p class="text-xs text-gray-600 mt-1">Step-by-step guide for password recovery</p>
+                                <h4 class="text-sm font-medium text-gray-900">كيفية إعادة تعيين كلمة المرور</h4>
+                                <p class="text-xs text-gray-600 mt-1">دليل خطوة بخطوة لاستعادة كلمة المرور</p>
                             </a>
                             
                             <a href="#" class="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                <h4 class="text-sm font-medium text-gray-900">Account access issues</h4>
-                                <p class="text-xs text-gray-600 mt-1">Common solutions for login problems</p>
+                                <h4 class="text-sm font-medium text-gray-900">مشاكل الوصول للحساب</h4>
+                                <p class="text-xs text-gray-600 mt-1">حلول شائعة لمشاكل تسجيل الدخول</p>
                             </a>
                             
                             <a href="#" class="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                <h4 class="text-sm font-medium text-gray-900">Contact support directly</h4>
-                                <p class="text-xs text-gray-600 mt-1">Phone and email support options</p>
+                                <h4 class="text-sm font-medium text-gray-900">التواصل مع الدعم مباشرة</h4>
+                                <p class="text-xs text-gray-600 mt-1">خيارات الدعم الهاتفي والبريد الإلكتروني</p>
                             </a>
                         </div>
                     </div>
@@ -312,9 +312,9 @@
 
 <script>
 function markAsResolved() {
-    if (confirm('Are you sure you want to mark this ticket as resolved?')) {
+    if (confirm('هل أنت متأكد من أنك تريد تحديد هذه التذكرة كمحلولة؟')) {
         // Add AJAX call to mark ticket as resolved
-        alert('This feature will be implemented with backend integration.');
+        alert('سيتم تنفيذ هذه الميزة مع التكامل مع الخادم.');
     }
 }
 

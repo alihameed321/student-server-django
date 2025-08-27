@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Payment Verification - Staff Panel{% endblock %}
+{% block title %}التحقق من المدفوعات - لوحة الموظفين{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-8">
@@ -10,12 +10,12 @@
         <div class="mb-8">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">Payment Verification</h1>
-                    <p class="mt-2 text-gray-600">Review and verify student payments</p>
+                    <h1 class="text-3xl font-bold text-gray-900">التحقق من المدفوعات</h1>
+                    <p class="mt-2 text-gray-600">مراجعة والتحقق من مدفوعات الطلاب</p>
                 </div>
                 <a href="{% url 'staff_panel:financial_management' %}" 
                    class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
-                    <i class="fas fa-arrow-left mr-2"></i>Back to Financial
+                    <i class="fas fa-arrow-left mr-2"></i>العودة للإدارة المالية
                 </a>
             </div>
         </div>
@@ -29,7 +29,7 @@
                             <input type="text" 
                                    name="search" 
                                    value="{{ search_query }}" 
-                                   placeholder="Search by student name, ID, fee type, payment provider, sender name, transaction reference..."
+                                   placeholder="البحث بالاسم، رقم الطالب، نوع الرسوم، مقدم الدفع، اسم المرسل، مرجع المعاملة..."
                                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="fas fa-search text-gray-400"></i>
@@ -39,12 +39,12 @@
                     <div class="flex gap-2">
                         <button type="submit" 
                                 class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                            <i class="fas fa-search mr-2"></i>Search
+                            <i class="fas fa-search mr-2"></i>بحث
                         </button>
                         {% if search_query %}
                             <a href="{% url 'staff_panel:payment_verification' %}" 
                                class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
-                                <i class="fas fa-times mr-2"></i>Clear
+                                <i class="fas fa-times mr-2"></i>مسح
                             </a>
                         {% endif %}
                     </div>
@@ -56,12 +56,12 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-xl font-semibold text-gray-900">Pending Payments</h2>
+                    <h2 class="text-xl font-semibold text-gray-900">المدفوعات المعلقة</h2>
                     <div class="text-sm text-gray-500">
                         {% if search_query %}
-                            {{ total_payments }} result{{ total_payments|pluralize }} found
+                            تم العثور على {{ total_payments }} نتيجة
                         {% else %}
-                            {{ total_payments }} payment{{ total_payments|pluralize }} pending
+                            {{ total_payments }} دفعة معلقة
                         {% endif %}
                     </div>
                 </div>
@@ -72,22 +72,22 @@
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Student
+                                        الطالب
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Fee Type
+                                        نوع الرسوم
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Amount
+                                        المبلغ
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Payment Method
+                                        طريقة الدفع
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Submitted
+                                        تاريخ التقديم
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Actions
+                                        الإجراءات
                                     </th>
                                 </tr>
                             </thead>
@@ -127,15 +127,15 @@
                                             <div class="flex space-x-2">
                                                 <button onclick="verifyPayment({{ payment.id }}, this)" 
                                                         class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition-colors">
-                                                    <i class="fas fa-check mr-1"></i>Verify
+                                                    <i class="fas fa-check mr-1"></i>تحقق
                                                 </button>
                                                 <button onclick="rejectPayment({{ payment.id }})" 
                                                         class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs transition-colors">
-                                                    <i class="fas fa-times mr-1"></i>Reject
+                                                    <i class="fas fa-times mr-1"></i>رفض
                                                 </button>
                                                 <button onclick="viewPaymentDetails({{ payment.id }})" 
                                                         class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs transition-colors">
-                                                    <i class="fas fa-eye mr-1"></i>View
+                                                    <i class="fas fa-eye mr-1"></i>عرض
                                                 </button>
                                             </div>
                                         </td>
@@ -149,16 +149,16 @@
                         <i class="fas fa-credit-card text-gray-400 text-4xl mb-4"></i>
                         <h3 class="text-lg font-medium text-gray-900 mb-2">
                             {% if search_query %}
-                                No payments found
+                                لم يتم العثور على مدفوعات
                             {% else %}
-                                No pending payments
+                                لا توجد مدفوعات معلقة
                             {% endif %}
                         </h3>
                         <p class="text-gray-500">
                             {% if search_query %}
-                                Try adjusting your search criteria.
+                                حاول تعديل معايير البحث.
                             {% else %}
-                                All payments have been processed.
+                                تم معالجة جميع المدفوعات.
                             {% endif %}
                         </p>
                     </div>
@@ -172,26 +172,26 @@
                                 {% if pending_payments.has_previous %}
                                     <a href="?{% if search_query %}search={{ search_query }}&{% endif %}page={{ pending_payments.previous_page_number }}" 
                                        class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                        Previous
+                                        السابق
                                     </a>
                                 {% endif %}
                                 {% if pending_payments.has_next %}
                                     <a href="?{% if search_query %}search={{ search_query }}&{% endif %}page={{ pending_payments.next_page_number }}" 
                                        class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                        Next
+                                        التالي
                                     </a>
                                 {% endif %}
                             </div>
                             <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                                 <div>
                                     <p class="text-sm text-gray-700">
-                                        Showing
+                                        عرض
                                         <span class="font-medium">{{ pending_payments.start_index }}</span>
-                                        to
+                                        إلى
                                         <span class="font-medium">{{ pending_payments.end_index }}</span>
-                                        of
+                                        من
                                         <span class="font-medium">{{ total_payments }}</span>
-                                        results
+                                        نتيجة
                                     </p>
                                 </div>
                                 <div>
@@ -239,7 +239,7 @@
         <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Payment Details</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">تفاصيل الدفعة</h3>
                     <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
                         <i class="fas fa-times"></i>
                     </button>
@@ -247,7 +247,7 @@
                 <div id="modalContent">
                     <div class="flex items-center justify-center py-8">
                         <i class="fas fa-spinner fa-spin text-gray-400 text-2xl mr-3"></i>
-                        <span class="text-gray-500">Loading payment details...</span>
+                        <span class="text-gray-500">جاري تحميل تفاصيل الدفعة...</span>
                     </div>
                 </div>
             </div>
@@ -261,7 +261,7 @@
         <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Reject Payment</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">رفض الدفعة</h3>
                     <button onclick="closeRejectionModal()" class="text-gray-400 hover:text-gray-600">
                         <i class="fas fa-times"></i>
                     </button>
@@ -269,11 +269,11 @@
                 <div class="space-y-4">
                     <div>
                         <label for="rejectionReason" class="block text-sm font-medium text-gray-700 mb-2">
-                            Reason for rejection:
+                            سبب الرفض:
                         </label>
                         <textarea id="rejectionReason" rows="3" 
                                   class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                                  placeholder="Please provide a reason for rejecting this payment..."></textarea>
+                                  placeholder="يرجى تقديم سبب رفض هذه الدفعة..."></textarea>
                     </div>
                     <div class="flex justify-end space-x-3">
                         <button onclick="closeRejectionModal()" 
@@ -282,7 +282,7 @@
                         </button>
                         <button onclick="confirmRejectPayment(this)" 
                                 class="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors">
-                            <i class="fas fa-times mr-2"></i>Reject Payment
+                            <i class="fas fa-times mr-2"></i>رفض الدفعة
                         </button>
                     </div>
                 </div>
@@ -324,7 +324,7 @@ function verifyPayment(paymentId, buttonElement) {
             } else {
                 showNotification(data.message, 'error');
                 // If payment has already been processed, remove it from the table
-                if (data.message.includes('already been verified') || data.message.includes('already been rejected')) {
+                if (data.message.includes('تم التحقق منها بالفعل') || data.message.includes('تم رفضها بالفعل')) {
                     const row = button.closest('tr');
                     row.style.transition = 'opacity 0.3s';
                     row.style.opacity = '0';
@@ -407,7 +407,7 @@ function confirmRejectPayment(buttonElement) {
     })
     .catch(error => {
         console.error('Error:', error);
-        showNotification('An error occurred while rejecting the payment', 'error');
+        showNotification('حدث خطأ أثناء رفض الدفعة', 'error');
         button.innerHTML = originalText;
         button.disabled = false;
     });
@@ -418,7 +418,7 @@ function viewPaymentDetails(paymentId) {
     document.getElementById('modalContent').innerHTML = `
         <div class="flex items-center justify-center py-8">
             <i class="fas fa-spinner fa-spin text-gray-400 text-2xl mr-3"></i>
-            <span class="text-gray-500">Loading payment details...</span>
+            <span class="text-gray-500">جاري تحميل تفاصيل الدفعة...</span>
         </div>
     `;
     
@@ -431,14 +431,14 @@ function viewPaymentDetails(paymentId) {
                 <div class="space-y-6">
                     <!-- Student Information -->
                     <div class="bg-gray-50 rounded-lg p-4">
-                        <h4 class="font-semibold text-gray-900 mb-3">Student Information</h4>
+                        <h4 class="font-semibold text-gray-900 mb-3">معلومات الطالب</h4>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <span class="text-sm text-gray-600">Name:</span>
+                                <span class="text-sm text-gray-600">الاسم:</span>
                                 <p class="font-medium">${payment.student_name}</p>
                             </div>
                             <div>
-                                <span class="text-sm text-gray-600">Student ID:</span>
+                                <span class="text-sm text-gray-600">رقم الطالب:</span>
                                 <p class="font-medium">${payment.student_id}</p>
                             </div>
                         </div>
@@ -446,22 +446,22 @@ function viewPaymentDetails(paymentId) {
                     
                     <!-- Payment Information -->
                     <div class="bg-blue-50 rounded-lg p-4">
-                        <h4 class="font-semibold text-gray-900 mb-3">Payment Information</h4>
+                        <h4 class="font-semibold text-gray-900 mb-3">معلومات الدفعة</h4>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <span class="text-sm text-gray-600">Amount:</span>
+                                <span class="text-sm text-gray-600">المبلغ:</span>
                                 <p class="font-medium text-lg text-green-600">$${payment.amount.toFixed(2)}</p>
                             </div>
                             <div>
-                                <span class="text-sm text-gray-600">Payment Method:</span>
+                                <span class="text-sm text-gray-600">طريقة الدفع:</span>
                                 <p class="font-medium">${payment.payment_method}</p>
                             </div>
                             <div>
-                                <span class="text-sm text-gray-600">Fee Type:</span>
+                                <span class="text-sm text-gray-600">نوع الرسوم:</span>
                                 <p class="font-medium">${payment.fee_name}</p>
                             </div>
                             <div>
-                                <span class="text-sm text-gray-600">Transaction Reference:</span>
+                                <span class="text-sm text-gray-600">مرجع المعاملة:</span>
                                 <p class="font-medium">${payment.transaction_reference}</p>
                             </div>
                         </div>
@@ -469,29 +469,29 @@ function viewPaymentDetails(paymentId) {
                     
                     <!-- Status Information -->
                     <div class="bg-yellow-50 rounded-lg p-4">
-                        <h4 class="font-semibold text-gray-900 mb-3">Status Information</h4>
+                        <h4 class="font-semibold text-gray-900 mb-3">معلومات الحالة</h4>
                         <div class="grid grid-cols-1 gap-3">
                             <div class="flex justify-between">
-                                <span class="text-sm text-gray-600">Status:</span>
+                                <span class="text-sm text-gray-600">الحالة:</span>
                                 <span class="font-medium px-2 py-1 rounded-full text-xs ${payment.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : payment.status === 'Verified' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${payment.status}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-sm text-gray-600">Payment Date:</span>
+                                <span class="text-sm text-gray-600">تاريخ الدفع:</span>
                                 <span class="font-medium">${payment.payment_date}</span>
                             </div>
                             ${payment.verified_by ? `
                             <div class="flex justify-between">
-                                <span class="text-sm text-gray-600">Verified By:</span>
+                                <span class="text-sm text-gray-600">تم التحقق بواسطة:</span>
                                 <span class="font-medium">${payment.verified_by}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-sm text-gray-600">Verified At:</span>
+                                <span class="text-sm text-gray-600">تاريخ التحقق:</span>
                                 <span class="font-medium">${payment.verified_at}</span>
                             </div>
                             ` : ''}
                             ${payment.verification_notes ? `
                             <div>
-                                <span class="text-sm text-gray-600">Notes:</span>
+                                <span class="text-sm text-gray-600">ملاحظات:</span>
                                 <p class="font-medium mt-1">${payment.verification_notes}</p>
                             </div>
                             ` : ''}
@@ -503,7 +503,7 @@ function viewPaymentDetails(paymentId) {
                     <div class="flex justify-end space-x-3 pt-4 border-t">
                         <button onclick="closeModal(); verifyPayment(${payment.id}, this)" 
                                 class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors">
-                            <i class="fas fa-check mr-2"></i>Verify Payment
+                            <i class="fas fa-check mr-2"></i>التحقق من الدفعة
                         </button>
                         <button onclick="closeModal(); rejectPayment(${payment.id})" 
                                 class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors">
@@ -527,7 +527,7 @@ function viewPaymentDetails(paymentId) {
         document.getElementById('modalContent').innerHTML = `
             <div class="text-center py-8">
                 <i class="fas fa-exclamation-triangle text-red-400 text-2xl mb-3"></i>
-                <p class="text-red-600">Failed to load payment details</p>
+                <p class="text-red-600">فشل في تحميل تفاصيل الدفعة</p>
             </div>
         `;
     });

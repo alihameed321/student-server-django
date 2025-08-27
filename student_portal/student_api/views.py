@@ -50,20 +50,20 @@ def service_requests(request):
             if status_filter:
                 valid_statuses = [choice[0] for choice in ServiceRequest.STATUS_CHOICES]
                 if status_filter not in valid_statuses:
-                    raise ServiceRequestException(f"Invalid status filter: {status_filter}")
+                    raise ServiceRequestException(f"فلتر الحالة غير صحيح: {status_filter}")
                 requests = requests.filter(status=status_filter)
             
             request_type_filter = request.GET.get('request_type')
             if request_type_filter:
                 valid_types = [choice[0] for choice in ServiceRequest.REQUEST_TYPE_CHOICES]
                 if request_type_filter not in valid_types:
-                    raise ServiceRequestException(f"Invalid request type filter: {request_type_filter}")
+                    raise ServiceRequestException(f"فلتر نوع الطلب غير صحيح: {request_type_filter}")
                 requests = requests.filter(request_type=request_type_filter)
             
             search = request.GET.get('search')
             if search:
                 if len(search.strip()) < 2:
-                    raise ServiceRequestException("Search query must be at least 2 characters long")
+                    raise ServiceRequestException("يجب أن يكون استعلام البحث مكوناً من حرفين على الأقل")
                 requests = requests.filter(
                     Q(title__icontains=search) | Q(description__icontains=search)
                 )
@@ -93,14 +93,14 @@ def service_requests(request):
                     logger.info(f"Service request created: {service_request.id} by user {request.user.id}")
                     return Response({
                         'success': True,
-                        'message': 'Service request created successfully',
+                        'message': 'تم إنشاء طلب الخدمة بنجاح',
                         'data': detail_serializer.data
                     }, status=status.HTTP_201_CREATED)
                 except Exception as e:
                     logger.error(f"Error creating service request: {str(e)}")
-                    raise ServiceRequestException("Failed to create service request")
+                    raise ServiceRequestException("فشل في إنشاء طلب الخدمة")
             else:
-                raise ServiceRequestException("Invalid request data", details=serializer.errors)
+                raise ServiceRequestException("بيانات الطلب غير صحيحة", details=serializer.errors)
     
     except ServiceRequestException as e:
         return Response({
@@ -117,7 +117,7 @@ def service_requests(request):
             'success': False,
             'error': {
                 'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
-                'message': 'An unexpected error occurred',
+                'message': 'حدث خطأ غير متوقع',
                 'details': {}
             }
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -151,7 +151,7 @@ def service_request_detail(request, request_id):
             'success': False,
             'error': {
                 'code': status.HTTP_404_NOT_FOUND,
-                'message': 'Service request not found',
+                'message': 'طلب الخدمة غير موجود',
                 'details': {}
             }
         }, status=status.HTTP_404_NOT_FOUND)
@@ -161,7 +161,7 @@ def service_request_detail(request, request_id):
             'success': False,
             'error': {
                 'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
-                'message': 'An unexpected error occurred',
+                'message': 'حدث خطأ غير متوقع',
                 'details': {}
             }
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -186,7 +186,7 @@ def cancel_service_request(request, request_id):
         
         if service_request.status not in ['pending', 'in_review']:
             raise ServiceRequestException(
-                f"Cannot cancel request with status '{service_request.get_status_display()}'",
+                f"لا يمكن إلغاء الطلب بحالة '{service_request.get_status_display()}'",
                 code=status.HTTP_400_BAD_REQUEST
             )
         
@@ -198,7 +198,7 @@ def cancel_service_request(request, request_id):
         serializer = ServiceRequestDetailSerializer(service_request, context={'request': request})
         return Response({
             'success': True,
-            'message': 'Service request cancelled successfully',
+            'message': 'تم إلغاء طلب الخدمة بنجاح',
             'data': serializer.data
         })
     

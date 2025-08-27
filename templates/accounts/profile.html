@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Profile - My University Services{% endblock %}
+{% block title %}الملف الشخصي - خدمات الجامعة{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-8">
@@ -12,20 +12,20 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900">
-                            <i class="fas fa-user mr-3" style="color: #102A71;"></i>
-                            My Profile
+                            <i class="fas fa-user ml-3" style="color: #102A71;"></i>
+                            الملف الشخصي
                         </h1>
-                        <p class="text-gray-600 mt-2">Manage your personal information and account settings</p>
+                        <p class="text-gray-600 mt-2">إدارة معلوماتك الشخصية وإعدادات الحساب</p>
                     </div>
                     {% if user.user_type == 'student' %}
                         <a href="{% url 'student_portal:dashboard' %}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                            <i class="fas fa-arrow-left mr-2"></i>
-                            Back to Dashboard
+                            <i class="fas fa-arrow-right ml-2"></i>
+                            العودة للوحة التحكم
                         </a>
                     {% elif user.user_type == 'staff' %}
                         <a href="{% url 'staff_panel:dashboard' %}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                            <i class="fas fa-arrow-left mr-2"></i>
-                            Back to Dashboard
+                            <i class="fas fa-arrow-right ml-2"></i>
+                            العودة للوحة التحكم
                         </a>
                     {% endif %}
                 </div>
@@ -57,35 +57,35 @@
                         <!-- Status Badge -->
                         {% if user.user_type == 'student' %}
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                <i class="fas fa-check-circle mr-1"></i>
-                                Active Student
+                                <i class="fas fa-check-circle ml-1"></i>
+                                طالب نشط
                             </span>
                         {% elif user.user_type == 'staff' %}
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                                <i class="fas fa-user-tie mr-1"></i>
-                                Staff Member
+                                <i class="fas fa-user-tie ml-1"></i>
+                                عضو هيئة تدريس
                             </span>
                         {% endif %}
                         
                         <!-- Quick Actions -->
                         <div class="mt-6 space-y-3">
                             <button class="w-full flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                                <i class="fas fa-camera mr-2"></i>
-                                Change Photo
+                                <i class="fas fa-camera ml-2"></i>
+                                تغيير الصورة
                             </button>
                             {% if user.user_type == 'student' %}
                                 <a href="{% url 'accounts:student_id_card' %}" class="w-full flex items-center justify-center px-4 py-2 text-white rounded-lg hover:opacity-90 transition-colors" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                                    <i class="fas fa-credit-card mr-2"></i>
-                                    Student ID Card
+                                    <i class="fas fa-credit-card ml-2"></i>
+                                    بطاقة الطالب الجامعية
                                 </a>
                                 <a href="{% url 'accounts:digital_id' %}" class="w-full flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                                    <i class="fas fa-id-card mr-2"></i>
-                                    Digital ID Report
+                                    <i class="fas fa-id-card ml-2"></i>
+                                    تقرير الهوية الرقمية
                                 </a>
                             {% elif user.user_type == 'staff' %}
                                 <a href="{% url 'staff_panel:dashboard' %}" class="w-full flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                                    <i class="fas fa-tachometer-alt mr-2"></i>
-                                    Staff Dashboard
+                                    <i class="fas fa-tachometer-alt ml-2"></i>
+                                    لوحة تحكم الموظفين
                                 </a>
                             {% endif %}
                         </div>
@@ -99,38 +99,38 @@
                 <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-lg font-semibold text-gray-900">
-                            <i class="fas fa-user-circle mr-2" style="color: #102A71;"></i>
-                            Personal Information
+                            <i class="fas fa-user-circle ml-2" style="color: #102A71;"></i>
+                            المعلومات الشخصية
                         </h3>
                         <button class="inline-flex items-center px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
-                            <i class="fas fa-edit mr-1"></i>
-                            Edit
+                            <i class="fas fa-edit ml-1"></i>
+                            تعديل
                         </button>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.first_name|default:"Not provided" }}</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">الاسم الأول</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.first_name|default:"غير محدد" }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.last_name|default:"Not provided" }}</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">اسم العائلة</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.last_name|default:"غير محدد" }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">البريد الإلكتروني</label>
                             <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.email }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.phone_number|default:"Not provided" }}</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">رقم الهاتف</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.phone_number|default:"غير محدد" }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
-                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.date_of_birth|date:"M d, Y"|default:"Not provided" }}</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">تاريخ الميلاد</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.date_of_birth|date:"M d, Y"|default:"غير محدد" }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">University ID</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">الرقم الجامعي</label>
                             <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.university_id }}</p>
                         </div>
                     </div>
@@ -141,31 +141,31 @@
                 <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-lg font-semibold text-gray-900">
-                            <i class="fas fa-graduation-cap mr-2" style="color: #F5C400;"></i>
-                            Academic Information
+                            <i class="fas fa-graduation-cap ml-2" style="color: #F5C400;"></i>
+                            المعلومات الأكاديمية
                         </h3>
                         <button class="inline-flex items-center px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
-                            <i class="fas fa-edit mr-1"></i>
-                            Edit
+                            <i class="fas fa-edit ml-1"></i>
+                            تعديل
                         </button>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Program/Major</label>
-                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.major|default:"Not provided" }}</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">البرنامج/التخصص</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.major|default:"غير محدد" }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Year of Study</label>
-                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.academic_level|default:"Not provided" }}</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">سنة الدراسة</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.academic_level|default:"غير محدد" }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Enrollment Date</label>
-                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.student_profile.enrollment_date|date:"M d, Y"|default:"Not provided" }}</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">تاريخ التسجيل</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.student_profile.enrollment_date|date:"M d, Y"|default:"غير محدد" }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Student Status</label>
-                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.student_profile.status|default:"Active" }}</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">حالة الطالب</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.student_profile.status|default:"نشط" }}</p>
                         </div>
                     </div>
                 </div>
@@ -174,31 +174,31 @@
                 <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-lg font-semibold text-gray-900">
-                            <i class="fas fa-user-tie mr-2" style="color: #102A71;"></i>
-                            Staff Information
+                            <i class="fas fa-user-tie ml-2" style="color: #102A71;"></i>
+                            معلومات الموظف
                         </h3>
                         <button class="inline-flex items-center px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
-                            <i class="fas fa-edit mr-1"></i>
-                            Edit
+                            <i class="fas fa-edit ml-1"></i>
+                            تعديل
                         </button>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Position</label>
-                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.staffprofile.position|default:"Not provided" }}</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">المنصب</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.staffprofile.position|default:"غير محدد" }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
-                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.staffprofile.department|default:"Not provided" }}</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">القسم</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.staffprofile.department|default:"غير محدد" }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Hire Date</label>
-                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.staffprofile.hire_date|date:"M d, Y"|default:"Not provided" }}</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">تاريخ التوظيف</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.staffprofile.hire_date|date:"M d, Y"|default:"غير محدد" }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Employee ID</label>
-                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.staffprofile.employee_id|default:"Not provided" }}</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">رقم الموظف</label>
+                            <p class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ user.staffprofile.employee_id|default:"غير محدد" }}</p>
                         </div>
                     </div>
                 </div>
@@ -207,41 +207,41 @@
                 <!-- Account Settings -->
                 <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                     <h3 class="text-lg font-semibold text-gray-900 mb-6">
-                        <i class="fas fa-cog mr-2" style="color: #102A71;"></i>
-                        Account Settings
+                        <i class="fas fa-cog ml-2" style="color: #102A71;"></i>
+                        إعدادات الحساب
                     </h3>
                     
                     <div class="space-y-4">
                         <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                             <div>
-                                <h4 class="text-sm font-medium text-gray-900">Change Password</h4>
-                                <p class="text-sm text-gray-500">Update your account password</p>
+                                <h4 class="text-sm font-medium text-gray-900">تغيير كلمة المرور</h4>
+                                <p class="text-sm text-gray-500">تحديث كلمة مرور حسابك</p>
                             </div>
                             <a href="{% url 'accounts:change_password' %}" class="inline-flex items-center px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
-                                <i class="fas fa-key mr-1"></i>
-                                Change
+                                <i class="fas fa-key ml-1"></i>
+                                تغيير
                             </a>
                         </div>
                         
                         <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                             <div>
-                                <h4 class="text-sm font-medium text-gray-900">Notification Preferences</h4>
-                                <p class="text-sm text-gray-500">Manage your notification settings</p>
+                                <h4 class="text-sm font-medium text-gray-900">تفضيلات الإشعارات</h4>
+                                <p class="text-sm text-gray-500">إدارة إعدادات الإشعارات الخاصة بك</p>
                             </div>
                             <a href="{% url 'notifications:notification_preferences' %}" class="inline-flex items-center px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
-                                <i class="fas fa-bell mr-1"></i>
-                                Manage
+                                <i class="fas fa-bell ml-1"></i>
+                                إدارة
                             </a>
                         </div>
                         
                         <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                             <div>
-                                <h4 class="text-sm font-medium text-gray-900">Privacy Settings</h4>
-                                <p class="text-sm text-gray-500">Control your privacy preferences</p>
+                                <h4 class="text-sm font-medium text-gray-900">إعدادات الخصوصية</h4>
+                                <p class="text-sm text-gray-500">التحكم في تفضيلات الخصوصية الخاصة بك</p>
                             </div>
                             <button class="inline-flex items-center px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
-                                <i class="fas fa-shield-alt mr-1"></i>
-                                Manage
+                                <i class="fas fa-shield-alt ml-1"></i>
+                                إدارة
                             </button>
                         </div>
                     </div>
@@ -250,8 +250,8 @@
                 <!-- Account Activity -->
                 <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                     <h3 class="text-lg font-semibold text-gray-900 mb-6">
-                        <i class="fas fa-history mr-2" style="color: #F5C400;"></i>
-                        Recent Activity
+                        <i class="fas fa-history ml-2" style="color: #F5C400;"></i>
+                        النشاط الأخير
                     </h3>
                     
                     <div class="space-y-4">
@@ -260,8 +260,8 @@
                                 <i class="fas fa-sign-in-alt text-green-600 text-sm"></i>
                             </div>
                             <div class="flex-1">
-                                <p class="text-sm font-medium text-gray-900">Logged in</p>
-                                <p class="text-xs text-gray-500">{{ user.last_login|date:"M d, Y \a\t H:i"|default:"Never" }}</p>
+                                <p class="text-sm font-medium text-gray-900">تسجيل الدخول</p>
+                                <p class="text-xs text-gray-500">{{ user.last_login|date:"M d, Y \a\t H:i"|default:"لم يسجل دخول من قبل" }}</p>
                             </div>
                         </div>
                         
@@ -270,7 +270,7 @@
                                 <i class="fas fa-user-plus text-blue-600 text-sm"></i>
                             </div>
                             <div class="flex-1">
-                                <p class="text-sm font-medium text-gray-900">Account created</p>
+                                <p class="text-sm font-medium text-gray-900">إنشاء الحساب</p>
                                 <p class="text-xs text-gray-500">{{ user.date_joined|date:"M d, Y" }}</p>
                             </div>
                         </div>

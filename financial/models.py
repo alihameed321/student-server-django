@@ -1,65 +1,130 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from decimal import Decimal
 
 
 class FeeType(models.Model):
-    """Different types of fees that can be charged"""
-    name = models.CharField(max_length=100, unique=True)
-    description = models.TextField(blank=True)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    """أنواع مختلفة من الرسوم التي يمكن فرضها"""
+    name = models.CharField(
+        max_length=100, 
+        unique=True,
+        verbose_name=_('الاسم'),
+        help_text=_('اسم نوع الرسوم')
+    )
+    description = models.TextField(
+        blank=True,
+        verbose_name=_('الوصف'),
+        help_text=_('وصف نوع الرسوم')
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name=_('نشط'),
+        help_text=_('هل نوع الرسوم نشط')
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('تاريخ الإنشاء'),
+        help_text=_('تاريخ ووقت إنشاء نوع الرسوم')
+    )
+    
+    class Meta:
+        verbose_name = _('نوع الرسوم')
+        verbose_name_plural = _('أنواع الرسوم')
+        ordering = ['name']
     
     def __str__(self):
         return self.name
 
 
 class StudentFee(models.Model):
-    """Fees assigned to students"""
+    """الرسوم المخصصة للطلاب"""
     
     STATUS_CHOICES = (
-        ('pending', 'Pending Payment'),
-        ('paid', 'Paid'),
-        ('overdue', 'Overdue'),
-        ('cancelled', 'Cancelled'),
-        ('partial', 'Partially Paid'),
+        ('pending', _('في انتظار الدفع')),
+        ('paid', _('مدفوع')),
+        ('overdue', _('متأخر')),
+        ('cancelled', _('ملغي')),
+        ('partial', _('مدفوع جزئياً')),
     )
     
-    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='fees')
-    fee_type = models.ForeignKey(FeeType, on_delete=models.CASCADE)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    due_date = models.DateField()
-    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='pending')
-    description = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='created_fees')
+    student = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='fees',
+        verbose_name=_('الطالب'),
+        help_text=_('الطالب المخصص له الرسوم')
+    )
+    fee_type = models.ForeignKey(
+        FeeType, 
+        on_delete=models.CASCADE,
+        verbose_name=_('نوع الرسوم'),
+        help_text=_('نوع الرسوم')
+    )
+    amount = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2,
+        verbose_name=_('المبلغ'),
+        help_text=_('مبلغ الرسوم')
+    )
+    due_date = models.DateField(
+        verbose_name=_('تاريخ الاستحقاق'),
+        help_text=_('تاريخ استحقاق الدفع')
+    )
+    status = models.CharField(
+        max_length=15, 
+        choices=STATUS_CHOICES, 
+        default='pending',
+        verbose_name=_('الحالة'),
+        help_text=_('حالة الرسوم')
+    )
+    description = models.TextField(
+        blank=True,
+        verbose_name=_('الوصف'),
+        help_text=_('وصف الرسوم')
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('تاريخ الإنشاء'),
+        help_text=_('تاريخ ووقت إنشاء الرسوم')
+    )
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        related_name='created_fees',
+        verbose_name=_('أنشأ بواسطة'),
+        help_text=_('الموظف الذي أنشأ الرسوم')
+    )
     
     class Meta:
         ordering = ['-created_at']
+        verbose_name = _('رسوم الطالب')
+        verbose_name_plural = _('رسوم الطلاب')
     
     def __str__(self):
         return f"{self.student.university_id} - {self.fee_type.name} - ${self.amount}"
     
     @property
     def amount_paid(self):
-        """Calculate total amount paid for this fee"""
+        """حساب إجمالي المبلغ المدفوع لهذه الرسوم"""
         return self.payments.filter(status='verified').aggregate(
             total=models.Sum('amount')
         )['total'] or Decimal('0.00')
     
     @property
     def remaining_balance(self):
-        """Calculate remaining balance"""
+        """حساب الرصيد المتبقي"""
         return self.amount - self.amount_paid
     
     @property
     def is_overdue(self):
-        """Check if fee is overdue"""
+        """التحقق من تأخر الرسوم"""
         return self.due_date < timezone.now().date() and self.status != 'paid'
     
     def update_status(self):
-        """Update fee status based on payments"""
+        """تحديث حالة الرسوم بناءً على المدفوعات"""
         paid_amount = self.amount_paid
         if paid_amount >= self.amount:
             self.status = 'paid'
@@ -73,18 +138,65 @@ class StudentFee(models.Model):
 
 
 class PaymentProvider(models.Model):
-    """Available payment providers"""
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True)
-    instructions = models.TextField(help_text="Payment instructions for students")
-    is_active = models.BooleanField(default=True)
-    logo = models.ImageField(upload_to='payment_providers/', null=True, blank=True)
+    """مقدمو خدمات الدفع المتاحة"""
+    name = models.CharField(
+        max_length=100,
+        verbose_name=_('الاسم'),
+        help_text=_('اسم مقدم خدمة الدفع')
+    )
+    description = models.TextField(
+        blank=True,
+        verbose_name=_('الوصف'),
+        help_text=_('وصف مقدم خدمة الدفع')
+    )
+    instructions = models.TextField(
+        verbose_name=_('التعليمات'),
+        help_text=_('تعليمات الدفع للطلاب')
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name=_('نشط'),
+        help_text=_('هل مقدم الخدمة نشط')
+    )
+    logo = models.ImageField(
+        upload_to='payment_providers/', 
+        null=True, 
+        blank=True,
+        verbose_name=_('الشعار'),
+        help_text=_('شعار مقدم خدمة الدفع')
+    )
     
-    # University account information
-    university_account_name = models.CharField(max_length=200, blank=True, null=True, help_text="University account holder name")
-    university_account_number = models.CharField(max_length=100, blank=True, null=True, help_text="University account number")
-    university_phone = models.CharField(max_length=20, blank=True, help_text="University phone number for this provider")
-    additional_info = models.TextField(blank=True, help_text="Additional account information (IBAN, routing number, etc.)")
+    # معلومات حساب الجامعة
+    university_account_name = models.CharField(
+        max_length=200, 
+        blank=True, 
+        null=True,
+        verbose_name=_('اسم حساب الجامعة'),
+        help_text=_('اسم صاحب حساب الجامعة')
+    )
+    university_account_number = models.CharField(
+        max_length=100, 
+        blank=True, 
+        null=True,
+        verbose_name=_('رقم حساب الجامعة'),
+        help_text=_('رقم حساب الجامعة')
+    )
+    university_phone = models.CharField(
+        max_length=20, 
+        blank=True,
+        verbose_name=_('هاتف الجامعة'),
+        help_text=_('رقم هاتف الجامعة لهذا المقدم')
+    )
+    additional_info = models.TextField(
+        blank=True,
+        verbose_name=_('معلومات إضافية'),
+        help_text=_('معلومات حساب إضافية (IBAN، رقم التوجيه، إلخ)')
+    )
+    
+    class Meta:
+        verbose_name = _('مقدم خدمة الدفع')
+        verbose_name_plural = _('مقدمو خدمات الدفع')
+        ordering = ['name']
     
     def __str__(self):
         return self.name

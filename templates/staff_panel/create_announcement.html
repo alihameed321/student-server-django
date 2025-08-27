@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Create Announcement - Staff Panel{% endblock %}
+{% block title %}إنشاء إعلان - لوحة الموظفين{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-8">
@@ -15,8 +15,8 @@
                         <i class="fas fa-arrow-left text-xl"></i>
                     </a>
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-900">Create Announcement</h1>
-                        <p class="mt-2 text-gray-600">Share important information with students</p>
+                        <h1 class="text-3xl font-bold text-gray-900">إنشاء إعلان</h1>
+                        <p class="mt-2 text-gray-600">شارك المعلومات المهمة مع الطلاب</p>
                     </div>
                 </div>
             </div>
@@ -29,79 +29,79 @@
                 
                 <!-- Basic Information Section -->
                 <div class="mb-8">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-6">Announcement Details</h2>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6">تفاصيل الإعلان</h2>
                     <div class="space-y-6">
                         <div>
                             <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
-                                Title <span class="text-red-500">*</span>
+                                العنوان <span class="text-red-500">*</span>
                             </label>
                             <input type="text" id="title" name="title" required
-                                   placeholder="Enter announcement title"
+                                   placeholder="أدخل عنوان الإعلان"
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <div>
                             <label for="content" class="block text-sm font-medium text-gray-700 mb-2">
-                                Content <span class="text-red-500">*</span>
+                                المحتوى <span class="text-red-500">*</span>
                             </label>
                             <textarea id="content" name="content" rows="8" required
-                                      placeholder="Write your announcement content here..."
+                                      placeholder="اكتب محتوى الإعلان هنا..."
                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
-                            <p class="text-sm text-gray-500 mt-1">You can use basic formatting and line breaks</p>
+                            <p class="text-sm text-gray-500 mt-1">يمكنك استخدام التنسيق الأساسي وفواصل الأسطر</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Settings Section -->
                 <div class="mb-8">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-6">Announcement Settings</h2>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6">إعدادات الإعلان</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="priority" class="block text-sm font-medium text-gray-700 mb-2">
-                                Priority <span class="text-red-500">*</span>
+                                الأولوية <span class="text-red-500">*</span>
                             </label>
                             <select id="priority" name="priority" required
                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option value="">Select Priority</option>
-                                <option value="low">Low - General Information</option>
-                                <option value="medium">Medium - Important Notice</option>
-                                <option value="high">High - Important Announcement</option>
-                                <option value="urgent">Urgent - Emergency Alert</option>
+                                <option value="">اختر الأولوية</option>
+                                <option value="low">منخفضة - معلومات عامة</option>
+                                <option value="medium">متوسطة - إشعار مهم</option>
+                                <option value="high">عالية - إعلان مهم</option>
+                                <option value="urgent">عاجل - تنبيه طوارئ</option>
                             </select>
                         </div>
                         
                         <div>
                             <label for="target_audience" class="block text-sm font-medium text-gray-700 mb-2">
-                                Target Audience <span class="text-red-500">*</span>
+                                الجمهور المستهدف <span class="text-red-500">*</span>
                             </label>
                             <select id="target_audience" name="target_audience" required
                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option value="">Select Audience</option>
-                                <option value="all">All Students</option>
-                                <option value="undergraduate">Undergraduate Students</option>
-                                <option value="graduate">Graduate Students</option>
-                                <option value="year_1">1st Year Students</option>
-                                <option value="year_2">2nd Year Students</option>
-                                <option value="year_3">3rd Year Students</option>
-                                <option value="year_4">4th Year Students</option>
-                                <option value="specific_program">Specific Program</option>
+                                <option value="">اختر الجمهور</option>
+                                <option value="all">جميع الطلاب</option>
+                                <option value="undergraduate">طلاب البكالوريوس</option>
+                                <option value="graduate">طلاب الدراسات العليا</option>
+                                <option value="year_1">طلاب السنة الأولى</option>
+                                <option value="year_2">طلاب السنة الثانية</option>
+                                <option value="year_3">طلاب السنة الثالثة</option>
+                                <option value="year_4">طلاب السنة الرابعة</option>
+                                <option value="specific_program">برنامج محدد</option>
                             </select>
                         </div>
                         
                         <div id="program_selection" class="hidden">
                             <label for="specific_program" class="block text-sm font-medium text-gray-700 mb-2">
-                                Select Program
+                                اختر البرنامج
                             </label>
                             <select id="specific_program" name="specific_program"
                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option value="">Select Program</option>
-                                <option value="Computer Science">Computer Science</option>
-                                <option value="Business Administration">Business Administration</option>
-                                <option value="Engineering">Engineering</option>
-                                <option value="Medicine">Medicine</option>
-                                <option value="Law">Law</option>
-                                <option value="Arts">Arts</option>
-                                <option value="Science">Science</option>
+                                <option value="">اختر البرنامج</option>
+                                <option value="Computer Science">علوم الحاسوب</option>
+                                <option value="Business Administration">إدارة الأعمال</option>
+                                <option value="Engineering">الهندسة</option>
+                                <option value="Medicine">الطب</option>
+                                <option value="Law">القانون</option>
+                                <option value="Arts">الآداب</option>
+                                <option value="Science">العلوم</option>
                             </select>
                         </div>
                     </div>
@@ -109,81 +109,81 @@
 
                 <!-- Scheduling Section -->
                 <div class="mb-8">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-6">Publishing Schedule</h2>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6">جدولة النشر</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="publish_date" class="block text-sm font-medium text-gray-700 mb-2">
-                                Publish Date
+                                تاريخ النشر
                             </label>
                             <input type="datetime-local" id="publish_date" name="publish_date"
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <p class="text-sm text-gray-500 mt-1">Leave empty to publish immediately</p>
+                            <p class="text-sm text-gray-500 mt-1">اتركه فارغاً للنشر فوراً</p>
                         </div>
                         
                         <div>
                             <label for="expiry_date" class="block text-sm font-medium text-gray-700 mb-2">
-                                Expiry Date
+                                تاريخ الانتهاء
                             </label>
                             <input type="datetime-local" id="expiry_date" name="expiry_date"
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <p class="text-sm text-gray-500 mt-1">Leave empty for no expiry</p>
+                            <p class="text-sm text-gray-500 mt-1">اتركه فارغاً لعدم الانتهاء</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Attachments Section -->
                 <div class="mb-8">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-6">Attachments</h2>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6">المرفقات</h2>
                     <div>
                         <label for="attachments" class="block text-sm font-medium text-gray-700 mb-2">
-                            Upload Files
+                            رفع الملفات
                         </label>
                         <input type="file" id="attachments" name="attachments" multiple
                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif"
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <p class="text-sm text-gray-500 mt-1">Accepted formats: PDF, DOC, DOCX, JPG, PNG, GIF (Max 10MB per file)</p>
+                        <p class="text-sm text-gray-500 mt-1">الصيغ المقبولة: PDF, DOC, DOCX, JPG, PNG, GIF (حد أقصى 10 ميجابايت لكل ملف)</p>
                         <div id="file-list" class="mt-3 space-y-2"></div>
                     </div>
                 </div>
 
                 <!-- Notification Settings -->
                 <div class="mb-8">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-6">Notification Settings</h2>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6">إعدادات الإشعارات</h2>
                     <div class="space-y-4">
                         <label class="flex items-center">
                             <input type="checkbox" id="send_email" name="send_email" checked
                                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                            <span class="ml-2 text-sm text-gray-700">Send email notification to target audience</span>
+                            <span class="ml-2 text-sm text-gray-700">إرسال إشعار بريد إلكتروني للجمهور المستهدف</span>
                         </label>
                         
                         <label class="flex items-center">
                             <input type="checkbox" id="send_sms" name="send_sms"
                                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                            <span class="ml-2 text-sm text-gray-700">Send SMS notification (for high priority announcements)</span>
+                            <span class="ml-2 text-sm text-gray-700">إرسال إشعار رسالة نصية (للإعلانات عالية الأولوية)</span>
                         </label>
                         
                         <label class="flex items-center">
                             <input type="checkbox" id="pin_announcement" name="pin_announcement"
                                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                            <span class="ml-2 text-sm text-gray-700">Pin announcement to top of announcements page</span>
+                            <span class="ml-2 text-sm text-gray-700">تثبيت الإعلان في أعلى صفحة الإعلانات</span>
                         </label>
                         
                         <label class="flex items-center">
                             <input type="checkbox" id="is_active" name="is_active" checked
                                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                            <span class="ml-2 text-sm text-gray-700">Announcement is active</span>
+                            <span class="ml-2 text-sm text-gray-700">الإعلان نشط</span>
                         </label>
                     </div>
                 </div>
 
                 <!-- Preview Section -->
                 <div class="mb-8">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-6">Preview</h2>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6">معاينة</h2>
                     <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
                         <div id="preview-content">
                             <div class="text-center text-gray-500 py-8">
                                 <i class="fas fa-eye text-3xl mb-2"></i>
-                                <p>Preview will appear here as you type</p>
+                                <p>ستظهر المعاينة هنا أثناء الكتابة</p>
                             </div>
                         </div>
                     </div>
@@ -194,21 +194,21 @@
                     <div class="flex space-x-3">
                         <button type="button" onclick="saveDraft()" 
                                 class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-lg transition-colors">
-                            <i class="fas fa-save mr-2"></i>Save Draft
+                            <i class="fas fa-save mr-2"></i>حفظ كمسودة
                         </button>
                         <button type="button" onclick="previewAnnouncement()" 
                                 class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-lg transition-colors">
-                            <i class="fas fa-eye mr-2"></i>Preview
+                            <i class="fas fa-eye mr-2"></i>معاينة
                         </button>
                     </div>
                     <div class="flex space-x-3">
                         <a href="{% url 'staff_panel:announcement_management' %}" 
                            class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-lg transition-colors">
-                            Cancel
+                            إلغاء
                         </a>
                         <button type="submit" 
                                 class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors">
-                            <i class="fas fa-bullhorn mr-2"></i>Publish Announcement
+                            <i class="fas fa-bullhorn mr-2"></i>نشر الإعلان
                         </button>
                     </div>
                 </div>

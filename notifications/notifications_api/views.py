@@ -111,7 +111,7 @@ def mark_notification_read(request, notification_id):
         
         return Response({
             'success': True,
-            'message': 'Notification marked as read',
+            'message': 'تم وضع علامة مقروء على الإشعار',
             'data': {
                 'id': notification.id,
                 'is_read': notification.is_read,
@@ -122,7 +122,7 @@ def mark_notification_read(request, notification_id):
     except Notification.DoesNotExist:
         return Response({
             'success': False,
-            'message': 'Notification not found'
+            'message': 'الإشعار غير موجود'
         }, status=status.HTTP_404_NOT_FOUND)
 
 
@@ -140,7 +140,7 @@ def mark_notification_unread(request, notification_id):
         
         return Response({
             'success': True,
-            'message': 'Notification marked as unread',
+            'message': 'تم وضع علامة غير مقروء على الإشعار',
             'data': {
                 'id': notification.id,
                 'is_read': notification.is_read,
@@ -151,7 +151,7 @@ def mark_notification_unread(request, notification_id):
     except Notification.DoesNotExist:
         return Response({
             'success': False,
-            'message': 'Notification not found'
+            'message': 'الإشعار غير موجود'
         }, status=status.HTTP_404_NOT_FOUND)
 
 
@@ -176,7 +176,7 @@ def mark_all_notifications_read(request):
     
     return Response({
         'success': True,
-        'message': f'{updated_count} notifications marked as read',
+        'message': f'تم وضع علامة مقروء على {updated_count} إشعار',
         'data': {
             'updated_count': updated_count
         }
@@ -237,7 +237,7 @@ def notification_stats(request):
     
     return Response({
         'success': False,
-        'message': 'Error generating statistics'
+        'message': 'خطأ في إنشاء الإحصائيات'
     }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -278,13 +278,13 @@ def delete_notification(request, notification_id):
         
         return Response({
             'success': True,
-            'message': 'Notification deleted successfully'
+            'message': 'تم حذف الإشعار بنجاح'
         }, status=status.HTTP_200_OK)
     
     except Notification.DoesNotExist:
         return Response({
             'success': False,
-            'message': 'Notification not found'
+            'message': 'الإشعار غير موجود'
         }, status=status.HTTP_404_NOT_FOUND)
 
 

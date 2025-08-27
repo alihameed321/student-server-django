@@ -109,7 +109,7 @@ def financial_summary(request):
     except Exception as e:
         logger.error(f"Error generating financial summary for user {request.user.id}: {str(e)}")
         return Response(
-            {'error': 'Failed to generate financial summary', 'detail': str(e)},
+            {'error': 'فشل في إنشاء الملخص المالي', 'detail': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
@@ -231,7 +231,7 @@ class StudentFeeListView(generics.ListAPIView):
         except Exception as e:
             logger.error(f"Error fetching student fees for user {request.user.id}: {str(e)}")
             return Response(
-                {'error': 'Failed to fetch student fees', 'detail': str(e)},
+                {'error': 'فشل في جلب رسوم الطالب', 'detail': str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
@@ -324,7 +324,7 @@ def create_payment(request):
         if not serializer.is_valid():
             logger.warning(f"Invalid payment data from user {user.id}: {serializer.errors}")
             return Response({
-                'error': 'Invalid payment data',
+                'error': 'بيانات الدفع غير صحيحة',
                 'details': serializer.errors
             }, status=status.HTTP_400_BAD_REQUEST)
         
@@ -437,7 +437,7 @@ def create_payment(request):
             
             response_data = {
                 'success': True,
-                'message': 'Payment submitted successfully. Awaiting verification.',
+                'message': 'تم إرسال الدفع بنجاح. في انتظار التحقق.',
                 'payment_count': len(created_payments),
                 'total_amount': str(calculated_total),
                 'payment_provider': payment_provider.name,
@@ -452,8 +452,8 @@ def create_payment(request):
     except Exception as e:
         logger.error(f"Unexpected error creating payment for user {user.id}: {str(e)}")
         return Response({
-            'error': 'Payment creation failed',
-            'detail': 'An unexpected error occurred. Please try again or contact support.'
+            'error': 'فشل في إنشاء الدفع',
+            'detail': 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 

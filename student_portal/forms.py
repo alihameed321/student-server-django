@@ -25,11 +25,11 @@ class ServiceRequestForm(forms.ModelForm):
             }),
             'title': forms.TextInput(attrs={
                 'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
-                'placeholder': 'Enter request title'
+                'placeholder': 'أدخل عنوان الطلب'
             }),
             'description': forms.Textarea(attrs={
                 'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
-                'placeholder': 'Describe your request in detail',
+                'placeholder': 'اوصف طلبك بالتفصيل',
                 'rows': 5
             }),
             'priority': forms.Select(attrs={
@@ -41,13 +41,13 @@ class ServiceRequestForm(forms.ModelForm):
     def clean_title(self):
         title = self.cleaned_data.get('title')
         if len(title) < 5:
-            raise ValidationError('Title must be at least 5 characters long.')
+            raise ValidationError('يجب أن يكون العنوان 5 أحرف على الأقل.')
         return title
     
     def clean_description(self):
         description = self.cleaned_data.get('description')
         if len(description) < 20:
-            raise ValidationError('Description must be at least 20 characters long.')
+            raise ValidationError('يجب أن يكون الوصف 20 حرفاً على الأقل.')
         return description
     
     def clean_supporting_documents(self):
@@ -55,13 +55,13 @@ class ServiceRequestForm(forms.ModelForm):
         if file:
             # Check file size (10MB limit)
             if file.size > 10 * 1024 * 1024:
-                raise ValidationError('File size must be less than 10MB.')
+                raise ValidationError('يجب أن يكون حجم الملف أقل من 10 ميجابايت.')
             
             # Check file extension
             allowed_extensions = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png']
             file_extension = file.name.lower().split('.')[-1]
             if f'.{file_extension}' not in allowed_extensions:
-                raise ValidationError('Only PDF, DOC, DOCX, JPG, and PNG files are allowed.')
+                raise ValidationError('يُسمح فقط بملفات PDF و DOC و DOCX و JPG و PNG.')
         
         return file
     
@@ -77,14 +77,14 @@ class SupportTicketForm(forms.ModelForm):
         widgets = {
             'subject': forms.TextInput(attrs={
                 'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
-                'placeholder': 'Enter ticket subject'
+                'placeholder': 'أدخل موضوع التذكرة'
             }),
             'category': forms.Select(attrs={
                 'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
             }),
             'description': forms.Textarea(attrs={
                 'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
-                'placeholder': 'Describe your issue in detail',
+                'placeholder': 'اوصف مشكلتك بالتفصيل',
                 'rows': 6
             }),
             'priority': forms.Select(attrs={
@@ -95,13 +95,13 @@ class SupportTicketForm(forms.ModelForm):
     def clean_subject(self):
         subject = self.cleaned_data.get('subject')
         if len(subject) < 5:
-            raise ValidationError('Subject must be at least 5 characters long.')
+            raise ValidationError('يجب أن يكون الموضوع 5 أحرف على الأقل.')
         return subject
     
     def clean_description(self):
         description = self.cleaned_data.get('description')
         if len(description) < 20:
-            raise ValidationError('Description must be at least 20 characters long.')
+            raise ValidationError('يجب أن يكون الوصف 20 حرفاً على الأقل.')
         return description
     
 
@@ -117,7 +117,7 @@ class TicketResponseForm(forms.ModelForm):
             'message': forms.Textarea(attrs={
                 'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
                 'rows': 4,
-                'placeholder': 'Enter your response...'
+                'placeholder': 'أدخل ردك...'
             })
         }
     
@@ -126,6 +126,6 @@ class TicketResponseForm(forms.ModelForm):
         message = self.cleaned_data.get('message')
         
         if message and len(message.strip()) < 10:
-            raise ValidationError('Response must be at least 10 characters long.')
+            raise ValidationError('يجب أن يكون الرد 10 أحرف على الأقل.')
         
         return message

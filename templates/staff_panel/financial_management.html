@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Financial Management - Staff Panel{% endblock %}
+{% block title %}إدارة الشؤون المالية - لوحة الموظفين{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-8">
@@ -10,12 +10,12 @@
         <div class="mb-8">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">Financial Management</h1>
-                    <p class="mt-2 text-gray-600">Manage payments, fees, and financial operations</p>
+                    <h1 class="text-3xl font-bold text-gray-900">إدارة الشؤون المالية</h1>
+                    <p class="mt-2 text-gray-600">إدارة المدفوعات والرسوم والعمليات المالية</p>
                 </div>
                 <a href="{% url 'staff_panel:dashboard' %}" 
                    class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
-                    <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                    <i class="fas fa-arrow-left mr-2"></i>العودة إلى لوحة التحكم
                 </a>
             </div>
         </div>
@@ -28,11 +28,11 @@
                         <i class="fas fa-dollar-sign text-green-600 text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Total Revenue</p>
+                        <p class="text-sm font-medium text-gray-600">إجمالي الإيرادات</p>
                         <p class="text-2xl font-bold text-gray-900">${{ total_revenue|floatformat:2 }}</p>
                         <p class="text-xs text-green-600 mt-1">
                             <i class="fas fa-arrow-up mr-1"></i>
-                            Today: ${{ revenue_today|floatformat:2 }}
+                            اليوم: ${{ revenue_today|floatformat:2 }}
                         </p>
                     </div>
                 </div>
@@ -44,7 +44,7 @@
                         <i class="fas fa-clock text-yellow-600 text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Pending Payments</p>
+                        <p class="text-sm font-medium text-gray-600">المدفوعات المعلقة</p>
                         <p class="text-2xl font-bold text-gray-900">{{ pending_payments_count }}</p>
                         <p class="text-xs text-yellow-600 mt-1">
                             <i class="fas fa-dollar-sign mr-1"></i>
@@ -60,11 +60,11 @@
                         <i class="fas fa-check-circle text-blue-600 text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Verified Today</p>
+                        <p class="text-sm font-medium text-gray-600">تم التحقق اليوم</p>
                         <p class="text-2xl font-bold text-gray-900">{{ verified_today }}</p>
                         <p class="text-xs text-blue-600 mt-1">
                             <i class="fas fa-calendar mr-1"></i>
-                            Payments processed
+                            مدفوعات تمت معالجتها
                         </p>
                     </div>
                 </div>
@@ -76,11 +76,11 @@
                         <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Outstanding Fees</p>
+                        <p class="text-sm font-medium text-gray-600">الرسوم المستحقة</p>
                         <p class="text-2xl font-bold text-gray-900">${{ outstanding_fees|floatformat:2 }}</p>
                         <p class="text-xs text-red-600 mt-1">
                             <i class="fas fa-users mr-1"></i>
-                            {{ students_with_outstanding }} students
+                            {{ students_with_outstanding }} طالب
                         </p>
                     </div>
                 </div>
@@ -90,30 +90,30 @@
         <!-- Quick Actions -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
             <div class="p-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">الإجراءات السريعة</h2>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <a href="{% url 'staff_panel:payment_verification' %}" 
                        class="flex items-center p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
                         <i class="fas fa-credit-card text-blue-600 text-xl mr-3"></i>
-                        <span class="font-medium text-blue-900">Verify Payments</span>
+                        <span class="font-medium text-blue-900">التحقق من المدفوعات</span>
                     </a>
                     
                     <a href="{% url 'staff_panel:fee_management' %}" 
                        class="flex items-center p-4 bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
                         <i class="fas fa-file-invoice-dollar text-green-600 text-xl mr-3"></i>
-                        <span class="font-medium text-green-900">Manage Fees</span>
+                        <span class="font-medium text-green-900">إدارة الرسوم</span>
                     </a>
                     
                     <a href="{% url 'staff_panel:create_fee' %}" 
                        class="flex items-center p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors">
                         <i class="fas fa-plus text-purple-600 text-xl mr-3"></i>
-                        <span class="font-medium text-purple-900">Create Fee</span>
+                        <span class="font-medium text-purple-900">إنشاء رسوم</span>
                     </a>
                     
                     <a href="{% url 'staff_panel:pending_payments' %}" 
                        class="flex items-center p-4 bg-orange-50 hover:bg-orange-100 rounded-lg transition-colors">
                         <i class="fas fa-hourglass-half text-orange-600 text-xl mr-3"></i>
-                        <span class="font-medium text-orange-900">Pending Payments</span>
+                        <span class="font-medium text-orange-900">المدفوعات المعلقة</span>
                     </a>
                 </div>
             </div>
@@ -123,7 +123,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             <!-- Payment Trends Chart -->
             <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Payment Trends (Last 7 Days)</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">اتجاهات المدفوعات (آخر 7 أيام)</h3>
                 <div class="space-y-3">
                     {% for trend in payment_trends %}
                     <div class="flex items-center justify-between">
@@ -136,14 +136,14 @@
                         </div>
                     </div>
                     {% empty %}
-                    <p class="text-gray-500 text-center py-4">No payment data available</p>
+                    <p class="text-gray-500 text-center py-4">لا توجد بيانات مدفوعات متاحة</p>
                     {% endfor %}
                 </div>
             </div>
             
             <!-- Fee Breakdown -->
             <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Fee Breakdown by Type</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">تفصيل الرسوم حسب النوع</h3>
                 <div class="space-y-4">
                     {% for fee in fee_breakdown %}
                     <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -153,11 +153,11 @@
                         </div>
                         <div class="text-right">
                             <p class="text-sm font-bold text-gray-900">${{ fee.total|floatformat:2 }}</p>
-                            <p class="text-xs text-gray-500">{{ fee.count }} fees</p>
+                            <p class="text-xs text-gray-500">{{ fee.count }} رسوم</p>
                         </div>
                     </div>
                     {% empty %}
-                    <p class="text-gray-500 text-center py-4">No fee data available</p>
+                    <p class="text-gray-500 text-center py-4">لا توجد بيانات رسوم متاحة</p>
                     {% endfor %}
                 </div>
             </div>
@@ -166,9 +166,9 @@
         <!-- Recent Financial Activity -->
         <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-900">Recent Transactions</h3>
+                <h3 class="text-lg font-semibold text-gray-900">المعاملات الحديثة</h3>
                 <a href="{% url 'staff_panel:pending_payments' %}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                    View All <i class="fas fa-arrow-right ml-1"></i>
+                    عرض الكل <i class="fas fa-arrow-right ml-1"></i>
                 </a>
             </div>
             
@@ -177,11 +177,11 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">الطالب</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">النوع</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">الحالة</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">التاريخ</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -213,11 +213,11 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 {% if transaction.is_verified %}
                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                    Verified
+                                    موثق
                                 </span>
                                 {% else %}
                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                    Pending
+                                    قيد الانتظار
                                 </span>
                                 {% endif %}
                             </td>
@@ -232,7 +232,7 @@
             {% else %}
             <div class="text-center py-8">
                 <i class="fas fa-receipt text-gray-400 text-4xl mb-4"></i>
-                <p class="text-gray-500">No recent transactions found</p>
+                <p class="text-gray-500">لم يتم العثور على معاملات حديثة</p>
             </div>
             {% endif %}
         </div>

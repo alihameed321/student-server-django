@@ -18,7 +18,7 @@ class StudentDashboardView(LoginRequiredMixin, View):
     
     def get(self, request):
         if not request.user.is_student:
-            messages.error(request, 'Access denied. Students only.')
+            messages.error(request, 'الوصول مرفوض. للطلاب فقط.')
             return redirect('accounts:login')
         
         # Get dashboard statistics
@@ -61,7 +61,7 @@ class StudentDashboardView(LoginRequiredMixin, View):
 def eservices_center(request):
     """E-services center view"""
     if not request.user.is_student:
-        messages.error(request, 'Access denied. Students only.')
+        messages.error(request, 'الوصول مرفوض. للطلاب فقط.')
         return redirect('accounts:login')
     
     requests_list = ServiceRequest.objects.filter(
@@ -94,10 +94,10 @@ def create_request(request):
             service_request.student = request.user
             service_request.save()
             
-            messages.success(request, 'Request submitted successfully!')
+            messages.success(request, 'تم تقديم الطلب بنجاح!')
             return redirect('student_portal:eservices_center')
         else:
-            messages.error(request, 'Please correct the errors below.')
+            messages.error(request, 'يرجى تصحيح الأخطاء أدناه.')
     else:
         form = ServiceRequestForm()
     
@@ -137,12 +137,12 @@ def cancel_request(request, request_id):
     if service_request.status == 'pending':
         service_request.status = 'rejected'
         service_request.save()
-        messages.success(request, 'Request cancelled successfully.')
+        messages.success(request, 'تم إلغاء الطلب بنجاح.')
         return JsonResponse({'success': True})
     else:
         return JsonResponse({
             'success': False, 
-            'error': 'Cannot cancel this request.'
+            'error': 'لا يمكن إلغاء هذا الطلب.'
         })
 
 
@@ -231,7 +231,7 @@ def create_ticket(request):
             ticket = form.save(commit=False)
             ticket.student = request.user
             ticket.save()
-            messages.success(request, 'Support ticket created successfully!')
+            messages.success(request, 'تم إنشاء تذكرة الدعم بنجاح!')
             return redirect('student_portal:support_center')
         else:
             messages.error(request, 'Please correct the errors below.')
@@ -278,10 +278,10 @@ def respond_to_ticket(request, ticket_id):
         ticket.description += f"\n\n--- Student Response ({timezone.now()}) ---\n{response_text}"
         ticket.save()
         
-        messages.success(request, 'Response added successfully.')
+        messages.success(request, 'تم إضافة الرد بنجاح.')
         return JsonResponse({'success': True})
     
-    return JsonResponse({'success': False, 'error': 'No response provided.'})
+    return JsonResponse({'success': False, 'error': 'لم يتم تقديم رد.'})
 
 
 # AJAX Views
@@ -311,7 +311,7 @@ def mark_notification_read(request, notification_id):
 def get_dashboard_stats(request):
     """Get dashboard statistics via AJAX"""
     if not request.user.is_student:
-        return JsonResponse({'error': 'Access denied'}, status=403)
+        return JsonResponse({'error': 'الوصول مرفوض'}, status=403)
     
     stats = {
         'pending_requests': ServiceRequest.objects.filter(

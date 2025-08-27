@@ -87,12 +87,12 @@ class ServiceRequestCreateSerializer(serializers.ModelSerializer):
     
     def validate_title(self, value):
         if len(value.strip()) < 5:
-            raise serializers.ValidationError("Title must be at least 5 characters long.")
+            raise serializers.ValidationError("يجب أن يكون العنوان مكوناً من 5 أحرف على الأقل.")
         return value.strip()
     
     def validate_description(self, value):
         if len(value.strip()) < 20:
-            raise serializers.ValidationError("Description must be at least 20 characters long.")
+            raise serializers.ValidationError("يجب أن يكون الوصف مكوناً من 20 حرفاً على الأقل.")
         return value.strip()
     
     def create(self, validated_data):
@@ -180,13 +180,13 @@ class StudentDocumentSerializer(serializers.ModelSerializer):
     def get_status_badge(self, obj):
         if obj.is_official:
             return {
-                'text': 'Official',
+                'text': 'رسمي',
                 'color': '#28a745',
                 'background': '#d4edda'
             }
         else:
             return {
-                'text': 'Unofficial',
+                'text': 'غير رسمي',
                 'color': '#6c757d',
                 'background': '#e2e3e5'
             }

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - My University Services</title>
+    <title>تسجيل الدخول - خدمات الجامعة</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -76,8 +76,8 @@
             <div class="bg-white/10 backdrop-blur-sm rounded-full p-4 w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-6 shadow-lg logo-glow hover:scale-105 transition-transform duration-300">
                 <img src="{% static 'images/logo.png' %}" alt="University Logo" class="w-full h-full object-contain">
             </div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-white mb-2 font-tajawal">My University Services</h1>
-            <p class="text-white/80 text-sm sm:text-base">Student Portal Login</p>
+            <h1 class="text-2xl sm:text-3xl font-bold text-white mb-2 font-tajawal">خدمات الجامعة</h1>
+            <p class="text-white/80 text-sm sm:text-base">تسجيل دخول بوابة الطلاب</p>
         </div>
         
         <!-- Login Form -->
@@ -101,7 +101,7 @@
                 </div>
             {% endif %}
             
-            <h2 class="text-xl sm:text-2xl font-bold text-university-blue mb-6 text-center font-tajawal">Welcome Back</h2>
+            <h2 class="text-xl sm:text-2xl font-bold text-university-blue mb-6 text-center font-tajawal">أهلاً بعودتك</h2>
             
             <form method="post" @submit="handleSubmit" data-validate>
                 {% csrf_token %}
@@ -109,21 +109,21 @@
                 <!-- Username Field -->
                 <div class="mb-5">
                     <label for="username" class="block text-sm font-medium text-gray-700 mb-2 font-tajawal">
-                        <i class="fas fa-user mr-2 text-university-blue"></i>Username / Student ID
+                        <i class="fas fa-user ml-2 text-university-blue"></i>اسم المستخدم / الرقم الجامعي
                     </label>
                     <input type="text" 
                             id="username" 
                             name="username" 
                             x-model="form.username"
                             class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-university-blue focus:border-transparent transition-all duration-200 text-sm sm:text-base input-focus"
-                            placeholder="Enter your username or student ID"
+                            placeholder="أدخل اسم المستخدم أو الرقم الجامعي"
                             required>
                 </div>
                 
                 <!-- Password Field -->
                 <div class="mb-5">
                     <label for="password" class="block text-sm font-medium text-gray-700 mb-2 font-tajawal">
-                        <i class="fas fa-lock mr-2 text-university-blue"></i>Password
+                        <i class="fas fa-lock ml-2 text-university-blue"></i>كلمة المرور
                     </label>
                     <div class="relative">
                         <input type="password" 
@@ -131,7 +131,7 @@
                                 name="password" 
                                 x-model="form.password"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-university-blue focus:border-transparent transition-all duration-200 pr-12 text-sm sm:text-base input-focus"
-                                placeholder="Enter your password"
+                                placeholder="أدخل كلمة المرور"
                                 required>
                         <button type="button" 
                                 @click="showPassword = !showPassword"
@@ -148,10 +148,10 @@
                                name="remember_me" 
                                x-model="form.rememberMe"
                                class="rounded border-gray-300 text-university-blue shadow-sm focus:border-university-blue focus:ring focus:ring-university-blue focus:ring-opacity-50">
-                        <span class="ml-2 text-sm text-gray-600 font-tajawal">Remember me</span>
+                        <span class="mr-2 text-sm text-gray-600 font-tajawal">تذكرني</span>
                     </label>
                     <a href="{% url 'accounts:password_reset' %}" class="text-sm text-university-blue hover:text-university-gold transition-colors font-tajawal">
-                        Forgot password?
+                        نسيت كلمة المرور؟
                     </a>
                 </div>
                 
@@ -160,14 +160,14 @@
                         :disabled="loading"
                         class="w-full bg-gradient-to-r from-university-blue to-university-light-blue hover:from-university-light-blue hover:to-university-blue disabled:opacity-50 text-white font-medium py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-tajawal text-sm sm:text-base">
                     <span x-show="!loading" class="flex items-center">
-                        <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                        <i class="fas fa-sign-in-alt ml-2"></i>تسجيل الدخول
                     </span>
                     <span x-show="loading" class="flex items-center">
                         <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        Signing in...
+                        جاري تسجيل الدخول...
                     </span>
                 </button>
             </form>
@@ -177,11 +177,11 @@
                 <div class="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6">
                     <a href="mailto:it-support@university.edu" class="flex items-center text-sm text-gray-600 hover:text-university-blue transition-colors font-tajawal">
                         <i class="fas fa-envelope mr-2 text-university-gold"></i>
-                        IT Support
+                        الدعم التقني
                     </a>
                     <a href="#" class="flex items-center text-sm text-gray-600 hover:text-university-blue transition-colors font-tajawal">
                         <i class="fas fa-book mr-2 text-university-gold"></i>
-                        User Guide
+                        دليل المستخدم
                     </a>
                 </div>
             </div>
@@ -190,10 +190,10 @@
         <!-- Footer -->
         <div class="text-center mt-8">
             <p class="text-sm text-white/70 font-tajawal">
-                © 2024 My University. All rights reserved.
+                © 2024 الجامعة. جميع الحقوق محفوظة.
             </p>
             <p class="text-xs text-white/50 mt-1 font-tajawal">
-                Powered by Django & Tailwind CSS
+                مدعوم بـ Django و Tailwind CSS
             </p>
         </div>
     </div>

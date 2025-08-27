@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}My Requests - My University Services{% endblock %}
+{% block title %}طلباتي - خدمات جامعتي{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-8">
@@ -12,14 +12,14 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900 mb-2">
-                            <i class="fas fa-list-alt mr-3" style="color: #102A71;"></i>
-                            My Requests
+                            <i class="fas fa-list-alt ml-3" style="color: #102A71;"></i>
+                            طلباتي
                         </h1>
-                        <p class="text-gray-600">Track all your submitted service requests</p>
+                        <p class="text-gray-600">تتبع جميع طلبات الخدمة المقدمة</p>
                     </div>
                     <a href="{% url 'student_portal:create_request' %}" class="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
-                        <i class="fas fa-plus mr-2"></i>
-                        New Request
+                        <i class="fas fa-plus ml-2"></i>
+                        طلب جديد
                     </a>
                 </div>
             </div>
@@ -30,16 +30,16 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-1">
                 <nav class="flex space-x-1">
                     <button class="flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors text-white" style="background-color: #102A71;" onclick="filterRequests('all')">
-                        All Requests
+                        جميع الطلبات
                     </button>
                     <button class="flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors text-gray-600 hover:text-gray-900 hover:bg-gray-100" onclick="filterRequests('pending')">
-                        Pending
+                        قيد الانتظار
                     </button>
                     <button class="flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors text-gray-600 hover:text-gray-900 hover:bg-gray-100" onclick="filterRequests('in_review')">
-                        In Review
+                        قيد المراجعة
                     </button>
                     <button class="flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors text-gray-600 hover:text-gray-900 hover:bg-gray-100" onclick="filterRequests('completed')">
-                        Completed
+                        مكتملة
                     </button>
                 </nav>
             </div>
@@ -72,9 +72,9 @@
                                         <h3 class="text-lg font-semibold text-gray-900">{{ request.title }}</h3>
                                         <p class="text-sm text-gray-600 mb-1">{{ request.get_request_type_display }}</p>
                                         <p class="text-sm text-gray-500">
-                                            Submitted: {{ request.created_at|date:"M d, Y \a\t H:i" }}
+                                            تم التقديم: {{ request.created_at|date:"M d, Y \a\t H:i" }}
                                             {% if request.processed_by %}
-                                                • Processed by: {{ request.processed_by.get_full_name }}
+                                                • تمت المعالجة بواسطة: {{ request.processed_by.get_full_name }}
                                             {% endif %}
                                         </p>
                                         {% if request.description %}
@@ -97,31 +97,31 @@
                                                 bg-red-100 text-red-800
                                             {% endif %}
                                         ">
-                                            <i class="fas fa-circle text-xs mr-2"></i>
+                                            <i class="fas fa-circle text-xs ml-2"></i>
                                             {{ request.get_status_display }}
                                         </span>
                                         {% if request.priority %}
                                             <div class="text-xs text-gray-500 mt-1">
-                                                Priority: 
+                                                الأولوية: 
                                                 {% if request.priority == 'high' %}
-                                                    <span class="text-red-600 font-medium">High</span>
+                                                    <span class="text-red-600 font-medium">عالية</span>
                                                 {% elif request.priority == 'medium' %}
-                                                    <span class="text-yellow-600 font-medium">Medium</span>
+                                                    <span class="text-yellow-600 font-medium">متوسطة</span>
                                                 {% else %}
-                                                    <span class="text-green-600 font-medium">Low</span>
+                                                    <span class="text-green-600 font-medium">منخفضة</span>
                                                 {% endif %}
                                             </div>
                                         {% endif %}
                                     </div>
                                     <div class="flex flex-col space-y-2">
                                         <a href="{% url 'student_portal:request_detail' request.id %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
-                                            <i class="fas fa-eye mr-2"></i>
-                                            View Details
+                                            <i class="fas fa-eye ml-2"></i>
+                                            عرض التفاصيل
                                         </a>
                                         {% if request.status == 'pending' %}
                                             <button onclick="cancelRequest({{ request.id }})" class="inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
-                                                <i class="fas fa-times mr-2"></i>
-                                                Cancel
+                                                <i class="fas fa-times ml-2"></i>
+                                                إلغاء
                                             </button>
                                         {% endif %}
                                     </div>
@@ -137,19 +137,19 @@
                         <nav class="flex space-x-2">
                             {% if requests.has_previous %}
                                 <a href="?page={{ requests.previous_page_number }}" class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-                                    <i class="fas fa-chevron-left mr-1"></i>
-                                    Previous
+                                    <i class="fas fa-chevron-right ml-1"></i>
+                                    السابق
                                 </a>
                             {% endif %}
                             
                             <span class="px-4 py-2 text-sm font-medium text-white rounded-md" style="background-color: #102A71;">
-                                Page {{ requests.number }} of {{ requests.paginator.num_pages }}
+                                صفحة {{ requests.number }} من {{ requests.paginator.num_pages }}
                             </span>
                             
                             {% if requests.has_next %}
                                 <a href="?page={{ requests.next_page_number }}" class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-                                    Next
-                                    <i class="fas fa-chevron-right ml-1"></i>
+                                    التالي
+                                    <i class="fas fa-chevron-left mr-1"></i>
                                 </a>
                             {% endif %}
                         </nav>
@@ -158,11 +158,11 @@
             {% else %}
                 <div class="text-center py-16">
                     <i class="fas fa-clipboard-list text-6xl text-gray-300 mb-6"></i>
-                    <h3 class="text-xl font-medium text-gray-900 mb-2">No requests found</h3>
-                    <p class="text-gray-600 mb-8">You haven't submitted any service requests yet.</p>
+                    <h3 class="text-xl font-medium text-gray-900 mb-2">لا توجد طلبات</h3>
+                    <p class="text-gray-600 mb-8">لم تقم بتقديم أي طلبات خدمة بعد.</p>
                     <a href="{% url 'student_portal:create_request' %}" class="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
-                        <i class="fas fa-plus mr-2"></i>
-                        Create Your First Request
+                        <i class="fas fa-plus ml-2"></i>
+                        إنشاء طلبك الأول
                     </a>
                 </div>
             {% endif %}
@@ -200,7 +200,7 @@
     }
     
     function cancelRequest(requestId) {
-        if (confirm('Are you sure you want to cancel this request?')) {
+        if (confirm('هل أنت متأكد من إلغاء هذا الطلب؟')) {
             fetch(`/student/requests/${requestId}/cancel/`, {
                 method: 'POST',
                 headers: {
@@ -213,12 +213,12 @@
                 if (data.success) {
                     location.reload();
                 } else {
-                    alert('Error: ' + (data.error || 'Unable to cancel request'));
+                    alert('خطأ: ' + (data.error || 'غير قادر على إلغاء الطلب'));
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred while canceling the request.');
+                alert('حدث خطأ أثناء إلغاء الطلب.');
             });
         }
     }

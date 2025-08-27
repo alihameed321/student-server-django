@@ -1,42 +1,97 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 
 class Notification(models.Model):
-    """System notifications for users"""
+    """إشعارات النظام للمستخدمين"""
     
     NOTIFICATION_TYPES = (
-        ('info', 'Information'),
-        ('warning', 'Warning'),
-        ('success', 'Success'),
-        ('error', 'Error'),
-        ('announcement', 'Announcement'),
+        ('info', _('معلومات')),
+        ('warning', _('تحذير')),
+        ('success', _('نجح')),
+        ('error', _('خطأ')),
+        ('announcement', _('إعلان')),
     )
     
     PRIORITY_LEVELS = (
-        ('low', 'Low'),
-        ('medium', 'Medium'),
-        ('high', 'High'),
-        ('urgent', 'Urgent'),
+        ('low', _('منخفض')),
+        ('medium', _('متوسط')),
+        ('high', _('عالي')),
+        ('urgent', _('عاجل')),
     )
     
-    recipient = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notifications')
-    title = models.CharField(max_length=200)
-    message = models.TextField()
-    notification_type = models.CharField(max_length=15, choices=NOTIFICATION_TYPES, default='info')
-    priority = models.CharField(max_length=10, choices=PRIORITY_LEVELS, default='medium')
-    is_read = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    read_at = models.DateTimeField(null=True, blank=True)
-    expires_at = models.DateTimeField(null=True, blank=True)
+    recipient = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='notifications',
+        verbose_name=_('المستلم'),
+        help_text=_('المستخدم المستلم للإشعار')
+    )
+    title = models.CharField(
+        max_length=200,
+        verbose_name=_('العنوان'),
+        help_text=_('عنوان الإشعار')
+    )
+    message = models.TextField(
+        verbose_name=_('الرسالة'),
+        help_text=_('محتوى الإشعار')
+    )
+    notification_type = models.CharField(
+        max_length=15, 
+        choices=NOTIFICATION_TYPES, 
+        default='info',
+        verbose_name=_('نوع الإشعار'),
+        help_text=_('نوع الإشعار')
+    )
+    priority = models.CharField(
+        max_length=10, 
+        choices=PRIORITY_LEVELS, 
+        default='medium',
+        verbose_name=_('الأولوية'),
+        help_text=_('مستوى أولوية الإشعار')
+    )
+    is_read = models.BooleanField(
+        default=False,
+        verbose_name=_('مقروء'),
+        help_text=_('هل تم قراءة الإشعار')
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('تاريخ الإنشاء'),
+        help_text=_('تاريخ ووقت إنشاء الإشعار')
+    )
+    read_at = models.DateTimeField(
+        null=True, 
+        blank=True,
+        verbose_name=_('تاريخ القراءة'),
+        help_text=_('تاريخ ووقت قراءة الإشعار')
+    )
+    expires_at = models.DateTimeField(
+        null=True, 
+        blank=True,
+        verbose_name=_('تاريخ الانتهاء'),
+        help_text=_('تاريخ ووقت انتهاء صلاحية الإشعار')
+    )
     
-    # Optional link for action
-    action_url = models.URLField(blank=True)
-    action_text = models.CharField(max_length=100, blank=True)
+    # رابط اختياري للإجراء
+    action_url = models.URLField(
+        blank=True,
+        verbose_name=_('رابط الإجراء'),
+        help_text=_('رابط للإجراء المطلوب')
+    )
+    action_text = models.CharField(
+        max_length=100, 
+        blank=True,
+        verbose_name=_('نص الإجراء'),
+        help_text=_('نص زر الإجراء')
+    )
     
     class Meta:
         ordering = ['-created_at']
+        verbose_name = _('إشعار')
+        verbose_name_plural = _('إشعارات')
     
     def __str__(self):
         return f"{self.recipient.university_id} - {self.title}"

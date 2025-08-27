@@ -38,7 +38,7 @@ def custom_exception_handler(exc, context):
                 'success': False,
                 'error': {
                     'code': status.HTTP_400_BAD_REQUEST,
-                    'message': 'Validation Error',
+                    'message': 'خطأ في التحقق من صحة البيانات',
                     'details': {'validation_errors': exc.message_dict if hasattr(exc, 'message_dict') else str(exc)}
                 }
             }
@@ -49,8 +49,8 @@ def custom_exception_handler(exc, context):
                 'success': False,
                 'error': {
                     'code': status.HTTP_404_NOT_FOUND,
-                    'message': 'Resource not found',
-                    'details': {'detail': 'The requested resource was not found.'}
+                    'message': 'المورد غير موجود',
+                    'details': {'detail': 'المورد المطلوب غير موجود.'}
                 }
             }
             response = Response(custom_response_data, status=status.HTTP_404_NOT_FOUND)
@@ -60,8 +60,8 @@ def custom_exception_handler(exc, context):
                 'success': False,
                 'error': {
                     'code': status.HTTP_400_BAD_REQUEST,
-                    'message': 'Data integrity error',
-                    'details': {'detail': 'The operation could not be completed due to data constraints.'}
+                    'message': 'خطأ في سلامة البيانات',
+                    'details': {'detail': 'لا يمكن إكمال العملية بسبب قيود البيانات.'}
                 }
             }
             response = Response(custom_response_data, status=status.HTTP_400_BAD_REQUEST)
@@ -72,8 +72,8 @@ def custom_exception_handler(exc, context):
                 'success': False,
                 'error': {
                     'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    'message': 'Internal server error',
-                    'details': {'detail': 'An unexpected error occurred. Please try again later.'}
+                    'message': 'خطأ داخلي في الخادم',
+                    'details': {'detail': 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى لاحقاً.'}
                 }
             }
             response = Response(custom_response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -89,7 +89,7 @@ def get_error_message(exc, response):
         if isinstance(exc.detail, dict):
             # Handle field-specific errors
             if 'non_field_errors' in exc.detail:
-                return exc.detail['non_field_errors'][0] if exc.detail['non_field_errors'] else 'Validation error'
+                return exc.detail['non_field_errors'][0] if exc.detail['non_field_errors'] else 'خطأ في التحقق من صحة البيانات'
             else:
                 # Return first field error
                 for field, errors in exc.detail.items():
@@ -97,22 +97,22 @@ def get_error_message(exc, response):
                         return f"{field.replace('_', ' ').title()}: {errors[0]}"
                     return str(errors)
         elif isinstance(exc.detail, list):
-            return exc.detail[0] if exc.detail else 'An error occurred'
+            return exc.detail[0] if exc.detail else 'حدث خطأ'
         else:
             return str(exc.detail)
     
     # Default messages based on status code
     status_messages = {
-        400: 'Bad request - please check your input',
-        401: 'Authentication required',
-        403: 'Permission denied',
-        404: 'Resource not found',
-        405: 'Method not allowed',
-        429: 'Too many requests - please try again later',
-        500: 'Internal server error'
+        400: 'طلب غير صحيح - يرجى التحقق من المدخلات',
+        401: 'المصادقة مطلوبة',
+        403: 'الإذن مرفوض',
+        404: 'المورد غير موجود',
+        405: 'الطريقة غير مسموحة',
+        429: 'طلبات كثيرة جداً - يرجى المحاولة مرة أخرى لاحقاً',
+        500: 'خطأ داخلي في الخادم'
     }
     
-    return status_messages.get(response.status_code, 'An error occurred')
+    return status_messages.get(response.status_code, 'حدث خطأ')
 
 
 class StudentPortalAPIException(Exception):

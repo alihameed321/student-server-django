@@ -15,23 +15,23 @@ class NotificationAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_at'
     
     fieldsets = (
-        ('Notification Information', {
+        ('معلومات الإشعار', {
             'fields': ('recipient', 'title', 'message'),
             'classes': ('wide',)
         }),
-        ('Classification', {
+        ('التصنيف', {
             'fields': ('notification_type', 'priority'),
             'classes': ('wide',)
         }),
-        ('Action & Expiry', {
+        ('الإجراء وانتهاء الصلاحية', {
             'fields': ('action_url', 'action_text', 'expires_at'),
             'classes': ('wide',)
         }),
-        ('Status', {
+        ('الحالة', {
             'fields': ('is_read', 'read_at'),
             'classes': ('wide',)
         }),
-        ('Metadata', {
+        ('البيانات الوصفية', {
             'fields': ('created_at',),
             'classes': ('collapse',)
         }),
@@ -41,7 +41,7 @@ class NotificationAdmin(admin.ModelAdmin):
     
     def get_recipient_info(self, obj):
         return f"{obj.recipient.university_id} - {obj.recipient.get_full_name()}"
-    get_recipient_info.short_description = 'Recipient'
+    get_recipient_info.short_description = 'المستلم'
     get_recipient_info.admin_order_field = 'recipient__university_id'
     
     def get_type_badge(self, obj):
@@ -58,7 +58,7 @@ class NotificationAdmin(admin.ModelAdmin):
             color,
             obj.get_notification_type_display()
         )
-    get_type_badge.short_description = 'Type'
+    get_type_badge.short_description = 'النوع'
     get_type_badge.admin_order_field = 'notification_type'
     
     def get_priority_badge(self, obj):
@@ -74,7 +74,7 @@ class NotificationAdmin(admin.ModelAdmin):
             color,
             obj.get_priority_display().upper()
         )
-    get_priority_badge.short_description = 'Priority'
+    get_priority_badge.short_description = 'الأولوية'
     get_priority_badge.admin_order_field = 'priority'
     
     def get_read_status(self, obj):
@@ -90,7 +90,7 @@ class NotificationAdmin(admin.ModelAdmin):
             return format_html(
                 '<span style="background-color: #102A71; color: white; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: bold;">UNREAD</span>'
             )
-    get_read_status.short_description = 'Status'
+    get_read_status.short_description = 'الحالة'
     get_read_status.admin_order_field = 'is_read'
     
     actions = ['mark_as_read', 'mark_as_unread']
@@ -105,9 +105,9 @@ class NotificationAdmin(admin.ModelAdmin):
         
         self.message_user(
             request,
-            f'{updated} notification(s) marked as read.'
+            f'تم وضع علامة مقروء على {updated} إشعار.'
         )
-    mark_as_read.short_description = 'Mark selected notifications as read'
+    mark_as_read.short_description = 'وضع علامة مقروء على الإشعارات المحددة'
     
     def mark_as_unread(self, request, queryset):
         """Mark selected notifications as unread"""
@@ -118,9 +118,9 @@ class NotificationAdmin(admin.ModelAdmin):
         
         self.message_user(
             request,
-            f'{updated} notification(s) marked as unread.'
+            f'تم وضع علامة غير مقروء على {updated} إشعار.'
         )
-    mark_as_unread.short_description = 'Mark selected notifications as unread'
+    mark_as_unread.short_description = 'وضع علامة غير مقروء على الإشعارات المحددة'
     
     class Media:
         css = {
@@ -129,6 +129,6 @@ class NotificationAdmin(admin.ModelAdmin):
 
 
 # Custom admin site styling
-admin.site.site_header = 'University Services Administration'
-admin.site.site_title = 'University Admin'
-admin.site.index_title = 'Welcome to University Services Admin Panel'
+admin.site.site_header = 'إدارة الخدمات الجامعية'
+admin.site.site_title = 'إدارة الجامعة'
+admin.site.index_title = 'مرحباً بك في لوحة إدارة الخدمات الجامعية'

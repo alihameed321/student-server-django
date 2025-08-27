@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Document Management - Staff Panel{% endblock %}
+{% block title %}إدارة الوثائق - لوحة الموظفين{% endblock %}
 
 {% block extra_css %}
 <!-- Tailwind CSS styling - no custom styles needed -->
@@ -14,10 +14,10 @@
         <div class="flex items-center justify-between mb-6">
             <h1 class="text-3xl font-bold text-gray-900">
                 <i class="fas fa-folder-open mr-3" style="color: #102A71;"></i>
-                Document Management
+                إدارة الوثائق
             </h1>
             <a href="{% url 'staff_panel:upload_document' %}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm">
-                <i class="fas fa-upload mr-2"></i>Upload Document
+                <i class="fas fa-upload mr-2"></i>رفع وثيقة
             </a>
         </div>
 
@@ -25,7 +25,7 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
             <div class="px-6 py-4 border-b border-gray-200">
                 <h2 class="text-lg font-semibold text-gray-900">
-                    <i class="fas fa-plus-circle mr-2 text-blue-600"></i>Quick Upload
+                    <i class="fas fa-plus-circle mr-2 text-blue-600"></i>رفع سريع
                 </h2>
             </div>
             <div class="p-6">
@@ -33,37 +33,37 @@
                     {% csrf_token %}
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
-                            <label for="student" class="block text-sm font-medium text-gray-700 mb-2">Select Student</label>
+                            <label for="student" class="block text-sm font-medium text-gray-700 mb-2">اختر الطالب</label>
                             <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="student" name="student" required>
-                                <option value="">Choose student...</option>
+                                <option value="">اختر طالب...</option>
                                 {% for student in students %}
                                     <option value="{{ student.id }}">{{ student.get_full_name }} ({{ student.student_id }})</option>
                                 {% endfor %}
                             </select>
                         </div>
                         <div>
-                            <label for="document_type" class="block text-sm font-medium text-gray-700 mb-2">Document Type</label>
+                            <label for="document_type" class="block text-sm font-medium text-gray-700 mb-2">نوع الوثيقة</label>
                             <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="document_type" name="document_type" required>
-                                <option value="">Choose type...</option>
-                                <option value="enrollment_certificate">Enrollment Certificate</option>
-                                <option value="transcript">Official Transcript</option>
-                                <option value="graduation_certificate">Graduation Certificate</option>
-                                <option value="payment_receipt">Payment Receipt</option>
-                                <option value="other">Other Document</option>
+                                <option value="">اختر النوع...</option>
+                                <option value="enrollment_certificate">شهادة قيد</option>
+                                <option value="transcript">كشف درجات رسمي</option>
+                                <option value="graduation_certificate">شهادة تخرج</option>
+                                <option value="payment_receipt">إيصال دفع</option>
+                                <option value="other">وثيقة أخرى</option>
                             </select>
                         </div>
                         <div>
-                            <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Document Title</label>
-                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="title" name="title" placeholder="Enter document title" required>
+                            <label for="title" class="block text-sm font-medium text-gray-700 mb-2">عنوان الوثيقة</label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="title" name="title" placeholder="أدخل عنوان الوثيقة" required>
                         </div>
                         <div>
-                            <label for="document_file" class="block text-sm font-medium text-gray-700 mb-2">Document File</label>
+                            <label for="document_file" class="block text-sm font-medium text-gray-700 mb-2">ملف الوثيقة</label>
                             <input type="file" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" id="document_file" name="document_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
                         </div>
                     </div>
                     <div class="text-center mt-6">
                         <button type="submit" class="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors">
-                            <i class="fas fa-upload mr-2"></i>Upload Document
+                            <i class="fas fa-upload mr-2"></i>رفع الوثيقة
                         </button>
                     </div>
                 </form>
@@ -74,7 +74,7 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200">
             <div class="px-6 py-4 border-b border-gray-200">
                 <h2 class="text-lg font-semibold text-gray-900">
-                    <i class="fas fa-list mr-2 text-blue-600"></i>Recent Documents
+                    <i class="fas fa-list mr-2 text-blue-600"></i>الوثائق الحديثة
                 </h2>
             </div>
             <div class="p-6">
@@ -83,13 +83,13 @@
                         <table class="min-w-full divide-y divide-gray-200" id="documentsTable">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document Type</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Issued Date</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Issued By</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">الطالب</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">نوع الوثيقة</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">العنوان</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ الإصدار</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">أصدر بواسطة</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">الحالة</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
@@ -119,27 +119,27 @@
                                         {% if document.issued_by %}
                                             {{ document.issued_by.get_full_name }}
                                         {% else %}
-                                            <span class="text-gray-500">System</span>
+                                            <span class="text-gray-500">النظام</span>
                                         {% endif %}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         {% if document.is_official %}
-                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Official</span>
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">رسمي</span>
                                         {% else %}
-                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">قيد الانتظار</span>
                                         {% endif %}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex space-x-2">
                                             {% if document.document_file %}
-                                                <a href="{{ document.document_file.url }}" class="text-blue-600 hover:text-blue-900" target="_blank" title="View Document">
+                                                <a href="{{ document.document_file.url }}" class="text-blue-600 hover:text-blue-900" target="_blank" title="عرض الوثيقة">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                <a href="{{ document.document_file.url }}" class="text-green-600 hover:text-green-900" download title="Download Document">
+                                                <a href="{{ document.document_file.url }}" class="text-green-600 hover:text-green-900" download title="تحميل الوثيقة">
                                                     <i class="fas fa-download"></i>
                                                 </a>
                                             {% else %}
-                                                <span class="text-gray-400" title="No file available">
+                                                <span class="text-gray-400" title="لا يوجد ملف متاح">
                                                     <i class="fas fa-file-slash"></i>
                                                 </span>
                                             {% endif %}
@@ -153,10 +153,10 @@
                 {% else %}
                     <div class="text-center py-12">
                         <i class="fas fa-file-alt text-6xl text-gray-300 mb-4"></i>
-                        <h3 class="text-lg font-medium text-gray-900 mb-2">No Documents Found</h3>
-                        <p class="text-gray-500 mb-4">Start by uploading documents for students.</p>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">لم يتم العثور على وثائق</h3>
+                        <p class="text-gray-500 mb-4">ابدأ برفع الوثائق للطلاب.</p>
                         <a href="{% url 'staff_panel:upload_document' %}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
-                            <i class="fas fa-upload mr-2"></i>Upload First Document
+                            <i class="fas fa-upload mr-2"></i>رفع أول وثيقة
                         </a>
                     </div>
                 {% endif %}

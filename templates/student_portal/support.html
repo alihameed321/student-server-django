@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Support Center - My University Services{% endblock %}
+{% block title %}مركز الدعم - خدمات جامعتي{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-8">
@@ -12,14 +12,14 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900 mb-2">
-                            <i class="fas fa-headset mr-3" style="color: #102A71;"></i>
-                            Support Center
+                            <i class="fas fa-headset ml-3" style="color: #102A71;"></i>
+                            مركز الدعم
                         </h1>
-                        <p class="text-gray-600">Get help with your university services and submit support tickets</p>
+                        <p class="text-gray-600">احصل على المساعدة في خدماتك الجامعية وقدم تذاكر الدعم</p>
                     </div>
                     <button onclick="openNewTicketModal()" class="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
-                        <i class="fas fa-plus mr-2"></i>
-                        New Ticket
+                        <i class="fas fa-plus ml-2"></i>
+                        تذكرة جديدة
                     </button>
                 </div>
             </div>
@@ -33,13 +33,13 @@
                         <i class="fas fa-question-circle text-2xl" style="color: #102A71;"></i>
                     </div>
                     <div class="ml-4">
-                        <h3 class="text-lg font-semibold text-gray-900">FAQ</h3>
-                        <p class="text-sm text-gray-600">Common questions</p>
+                        <h3 class="text-lg font-semibold text-gray-900">الأسئلة الشائعة</h3>
+                        <p class="text-sm text-gray-600">الأسئلة المتكررة</p>
                     </div>
                 </div>
-                <p class="text-gray-600 mb-4">Find answers to frequently asked questions about university services.</p>
+                <p class="text-gray-600 mb-4">اعثر على إجابات للأسئلة الشائعة حول الخدمات الجامعية.</p>
                 <a href="#" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                    Browse FAQ <i class="fas fa-arrow-right ml-1"></i>
+                    تصفح الأسئلة الشائعة <i class="fas fa-arrow-right mr-1"></i>
                 </a>
             </div>
 
@@ -49,14 +49,14 @@
                         <i class="fas fa-phone text-2xl" style="color: #102A71;"></i>
                     </div>
                     <div class="ml-4">
-                        <h3 class="text-lg font-semibold text-gray-900">Contact Us</h3>
-                        <p class="text-sm text-gray-600">Direct contact</p>
+                        <h3 class="text-lg font-semibold text-gray-900">اتصل بنا</h3>
+                        <p class="text-sm text-gray-600">التواصل المباشر</p>
                     </div>
                 </div>
-                <p class="text-gray-600 mb-4">Reach out to our support team directly for immediate assistance.</p>
+                <p class="text-gray-600 mb-4">تواصل مع فريق الدعم مباشرة للحصول على المساعدة الفورية.</p>
                 <div class="space-y-2">
-                    <p class="text-sm"><i class="fas fa-phone mr-2" style="color: #102A71;"></i> +1 (555) 123-4567</p>
-                    <p class="text-sm"><i class="fas fa-envelope mr-2" style="color: #102A71;"></i> support@university.edu</p>
+                    <p class="text-sm"><i class="fas fa-phone ml-2" style="color: #102A71;"></i> +1 (555) 123-4567</p>
+                    <p class="text-sm"><i class="fas fa-envelope ml-2" style="color: #102A71;"></i> support@university.edu</p>
                 </div>
             </div>
 
@@ -66,14 +66,14 @@
                         <i class="fas fa-clock text-2xl" style="color: #102A71;"></i>
                     </div>
                     <div class="ml-4">
-                        <h3 class="text-lg font-semibold text-gray-900">Office Hours</h3>
-                        <p class="text-sm text-gray-600">When we're available</p>
+                        <h3 class="text-lg font-semibold text-gray-900">ساعات العمل</h3>
+                        <p class="text-sm text-gray-600">متى نكون متاحين</p>
                     </div>
                 </div>
                 <div class="space-y-2 text-sm text-gray-600">
-                    <p><strong>Monday - Friday:</strong> 8:00 AM - 6:00 PM</p>
-                    <p><strong>Saturday:</strong> 9:00 AM - 2:00 PM</p>
-                    <p><strong>Sunday:</strong> Closed</p>
+                    <p><strong>الاثنين - الجمعة:</strong> 8:00 ص - 6:00 م</p>
+                    <p><strong>السبت:</strong> 9:00 ص - 2:00 م</p>
+                    <p><strong>الأحد:</strong> مغلق</p>
                 </div>
             </div>
         </div>
@@ -83,16 +83,16 @@
             <div class="p-6 border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h2 class="text-xl font-semibold text-gray-900">My Support Tickets</h2>
-                        <p class="text-gray-600 mt-1">Track your submitted support requests</p>
+                        <h2 class="text-xl font-semibold text-gray-900">تذاكر الدعم الخاصة بي</h2>
+                        <p class="text-gray-600 mt-1">تتبع طلبات الدعم المقدمة</p>
                     </div>
                     <div class="flex space-x-2">
                         <select onchange="filterTickets(this.value)" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <option value="all">All Tickets</option>
-                            <option value="open">Open</option>
-                            <option value="in_progress">In Progress</option>
-                            <option value="resolved">Resolved</option>
-                            <option value="closed">Closed</option>
+                            <option value="all">جميع التذاكر</option>
+                            <option value="open">مفتوحة</option>
+                            <option value="in_progress">قيد المعالجة</option>
+                            <option value="resolved">محلولة</option>
+                            <option value="closed">مغلقة</option>
                         </select>
                     </div>
                 </div>
@@ -120,22 +120,22 @@
                                     <div>
                                         <h3 class="text-lg font-semibold text-gray-900">{{ ticket.subject }}</h3>
                                         <p class="text-sm text-gray-600 mb-1">
-                                            Ticket #{{ ticket.id }} • {{ ticket.get_category_display }}
+                                            تذكرة #{{ ticket.id }} • {{ ticket.get_category_display }}
                                             {% if ticket.priority %}
-                                                • Priority: 
+                                                • الأولوية: 
                                                 {% if ticket.priority == 'high' %}
-                                                    <span class="text-red-600 font-medium">High</span>
+                                                    <span class="text-red-600 font-medium">عالية</span>
                                                 {% elif ticket.priority == 'medium' %}
-                                                    <span class="text-yellow-600 font-medium">Medium</span>
+                                                    <span class="text-yellow-600 font-medium">متوسطة</span>
                                                 {% else %}
-                                                    <span class="text-green-600 font-medium">Low</span>
+                                                    <span class="text-green-600 font-medium">منخفضة</span>
                                                 {% endif %}
                                             {% endif %}
                                         </p>
                                         <p class="text-sm text-gray-500">
-                                            Created: {{ ticket.created_at|date:"M d, Y \a\t H:i" }}
+                                            تم الإنشاء: {{ ticket.created_at|date:"M d, Y \a\t H:i" }}
                                             {% if ticket.assigned_to %}
-                                                • Assigned to: {{ ticket.assigned_to.get_full_name }}
+                                                • مُسند إلى: {{ ticket.assigned_to.get_full_name }}
                                             {% endif %}
                                         </p>
                                         <p class="text-sm text-gray-600 mt-2">{{ ticket.description|truncatewords:20 }}</p>
@@ -154,24 +154,24 @@
                                                 bg-gray-100 text-gray-800
                                             {% endif %}
                                         ">
-                                            <i class="fas fa-circle text-xs mr-2"></i>
+                                            <i class="fas fa-circle text-xs ml-2"></i>
                                             {{ ticket.get_status_display }}
                                         </span>
                                         {% if ticket.responses.count %}
                                             <div class="text-xs text-gray-500 mt-1">
-                                                {{ ticket.responses.count }} response{{ ticket.responses.count|pluralize }}
+                                                {{ ticket.responses.count }} رد
                                             </div>
                                         {% endif %}
                                     </div>
                                     <div class="flex flex-col space-y-2">
                                         <button onclick="viewTicket({{ ticket.id }})" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
-                                            <i class="fas fa-eye mr-2"></i>
-                                            View
+                                            <i class="fas fa-eye ml-2"></i>
+                                            عرض
                                         </button>
                                         {% if ticket.status == 'open' %}
                                             <button onclick="closeTicket({{ ticket.id }})" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                                                <i class="fas fa-times mr-2"></i>
-                                                Close
+                                                <i class="fas fa-times ml-2"></i>
+                                                إغلاق
                                             </button>
                                         {% endif %}
                                     </div>
@@ -183,11 +183,11 @@
             {% else %}
                 <div class="text-center py-16">
                     <i class="fas fa-headset text-6xl text-gray-300 mb-6"></i>
-                    <h3 class="text-xl font-medium text-gray-900 mb-2">No support tickets</h3>
-                    <p class="text-gray-600 mb-8">You haven't submitted any support tickets yet.</p>
+                    <h3 class="text-xl font-medium text-gray-900 mb-2">لا توجد تذاكر دعم</h3>
+                    <p class="text-gray-600 mb-8">لم تقم بتقديم أي تذاكر دعم حتى الآن.</p>
                     <button onclick="openNewTicketModal()" class="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
-                        <i class="fas fa-plus mr-2"></i>
-                        Create Your First Ticket
+                        <i class="fas fa-plus ml-2"></i>
+                        أنشئ تذكرتك الأولى
                     </button>
                 </div>
             {% endif %}
@@ -201,7 +201,7 @@
         <div class="bg-white rounded-xl shadow-xl max-w-md w-full">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Create Support Ticket</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">إنشاء تذكرة دعم</h3>
                     <button onclick="closeNewTicketModal()" class="text-gray-400 hover:text-gray-600">
                         <i class="fas fa-times"></i>
                     </button>
@@ -210,38 +210,38 @@
                     {% csrf_token %}
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-                            <input type="text" name="subject" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Brief description of your issue">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">الموضوع</label>
+                            <input type="text" name="subject" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="وصف مختصر لمشكلتك">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">الفئة</label>
                             <select name="category" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option value="">Select a category</option>
-                                <option value="technical">Technical Support</option>
-                                <option value="academic">Academic Services</option>
-                                <option value="financial">Financial Services</option>
-                                <option value="general">General Inquiry</option>
+                                <option value="">اختر فئة</option>
+                                <option value="technical">الدعم التقني</option>
+                                <option value="academic">الخدمات الأكاديمية</option>
+                                <option value="financial">الخدمات المالية</option>
+                                <option value="general">استفسار عام</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">الأولوية</label>
                             <select name="priority" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option value="low">Low</option>
-                                <option value="medium" selected>Medium</option>
-                                <option value="high">High</option>
+                                <option value="low">منخفضة</option>
+                                <option value="medium" selected>متوسطة</option>
+                                <option value="high">عالية</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                            <textarea name="description" required rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Please provide detailed information about your issue"></textarea>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">الوصف</label>
+                            <textarea name="description" required rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="يرجى تقديم معلومات مفصلة حول مشكلتك"></textarea>
                         </div>
                     </div>
                     <div class="flex space-x-3 mt-6">
                         <button type="button" onclick="closeNewTicketModal()" class="flex-1 px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                            Cancel
+                            إلغاء
                         </button>
                         <button type="submit" class="flex-1 px-4 py-2 text-white rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
-                            Submit Ticket
+                            إرسال التذكرة
                         </button>
                     </div>
                 </form>
@@ -291,12 +291,12 @@
                 closeNewTicketModal();
                 location.reload();
             } else {
-                alert('Error: ' + (data.error || 'Unable to create ticket'));
+                alert('خطأ: ' + (data.error || 'غير قادر على إنشاء التذكرة'));
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('An error occurred while creating the ticket.');
+            alert('حدث خطأ أثناء إنشاء التذكرة.');
         });
     }
     
@@ -305,7 +305,7 @@
     }
     
     function closeTicket(ticketId) {
-        if (confirm('Are you sure you want to close this ticket?')) {
+        if (confirm('هل أنت متأكد من أنك تريد إغلاق هذه التذكرة؟')) {
             fetch(`/student/support/${ticketId}/close/`, {
                 method: 'POST',
                 headers: {
@@ -318,12 +318,12 @@
                 if (data.success) {
                     location.reload();
                 } else {
-                    alert('Error: ' + (data.error || 'Unable to close ticket'));
+                    alert('خطأ: ' + (data.error || 'غير قادر على إغلاق التذكرة'));
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred while closing the ticket.');
+                alert('حدث خطأ أثناء إغلاق التذكرة.');
             });
         }
     }

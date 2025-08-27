@@ -34,7 +34,7 @@ def api_login(request):
         
         response_data = {
             'success': True,
-            'message': 'Login successful',
+            'message': 'تم تسجيل الدخول بنجاح',
             'access_token': str(access_token),
             'refresh_token': str(refresh),
             'user': user_serializer.data
@@ -48,7 +48,7 @@ def api_login(request):
         logger.warning(f"Serializer errors: {serializer.errors}")
         return Response({
             'success': False,
-            'message': 'Invalid credentials',
+            'message': 'بيانات الاعتماد غير صحيحة',
             'errors': serializer.errors
         }, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -66,13 +66,13 @@ def api_logout(request):
         logger.info(f"User logged out: {request.user.username}")
         return Response({
             'success': True,
-            'message': 'Logout successful'
+            'message': 'تم تسجيل الخروج بنجاح'
         }, status=status.HTTP_200_OK)
     except Exception as e:
         logger.error(f"Logout error for user {request.user.username}: {str(e)}")
         return Response({
             'success': False,
-            'message': 'Logout failed'
+            'message': 'فشل في تسجيل الخروج'
         }, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -96,7 +96,7 @@ def api_refresh_token(request):
         if not refresh_token:
             return Response({
                 'success': False,
-                'message': 'Refresh token required'
+                'message': 'رمز التحديث مطلوب'
             }, status=status.HTTP_400_BAD_REQUEST)
         
         token = RefreshToken(refresh_token)
@@ -109,5 +109,5 @@ def api_refresh_token(request):
     except Exception as e:
         return Response({
             'success': False,
-            'message': 'Invalid refresh token'
+            'message': 'رمز التحديث غير صحيح'
         }, status=status.HTTP_401_UNAUTHORIZED)

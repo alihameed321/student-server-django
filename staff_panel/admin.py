@@ -15,27 +15,27 @@ class DashboardStatsAdmin(admin.ModelAdmin):
     date_hierarchy = 'date'
     
     fieldsets = (
-        ('Date Information', {
+        ('معلومات التاريخ', {
             'fields': ('date',),
             'classes': ('wide',)
         }),
-        ('Student Statistics', {
+        ('إحصائيات الطلاب', {
             'fields': ('total_students', 'new_students_today', 'active_students'),
             'classes': ('wide',)
         }),
-        ('Request Statistics', {
+        ('إحصائيات الطلبات', {
             'fields': ('total_requests', 'pending_requests', 'approved_requests_today', 'rejected_requests_today'),
             'classes': ('wide',)
         }),
-        ('Financial Statistics', {
+        ('الإحصائيات المالية', {
             'fields': ('total_fees_collected_today', 'pending_payments', 'verified_payments_today'),
             'classes': ('wide',)
         }),
-        ('Support Statistics', {
+        ('إحصائيات الدعم', {
             'fields': ('open_support_tickets', 'resolved_tickets_today'),
             'classes': ('wide',)
         }),
-        ('Metadata', {
+        ('البيانات الوصفية', {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
@@ -54,9 +54,9 @@ class DashboardStatsAdmin(admin.ModelAdmin):
         
         self.message_user(
             request,
-            f'{updated} dashboard stat(s) recalculated.'
+            f'تم إعادة حساب {updated} إحصائية لوحة التحكم.'
         )
-    recalculate_stats.short_description = 'Recalculate selected statistics'
+    recalculate_stats.short_description = 'إعادة حساب الإحصائيات المحددة'
 
 
 @admin.register(StaffActivity)
@@ -70,19 +70,19 @@ class StaffActivityAdmin(admin.ModelAdmin):
     date_hierarchy = 'timestamp'
     
     fieldsets = (
-        ('Activity Information', {
+        ('معلومات النشاط', {
             'fields': ('staff_member', 'activity_type', 'description'),
             'classes': ('wide',)
         }),
-        ('Target & Context', {
+        ('الهدف والسياق', {
             'fields': ('target_user', 'metadata'),
             'classes': ('wide',)
         }),
-        ('Technical Details', {
+        ('التفاصيل التقنية', {
             'fields': ('ip_address', 'user_agent'),
             'classes': ('collapse',)
         }),
-        ('Metadata', {
+        ('البيانات الوصفية', {
             'fields': ('timestamp',),
             'classes': ('collapse',)
         }),
@@ -92,14 +92,14 @@ class StaffActivityAdmin(admin.ModelAdmin):
     
     def get_staff_info(self, obj):
         return f"{obj.staff_member.university_id} - {obj.staff_member.get_full_name()}"
-    get_staff_info.short_description = 'Staff Member'
+    get_staff_info.short_description = 'عضو الموظفين'
     get_staff_info.admin_order_field = 'staff_member__university_id'
     
     def get_target_user(self, obj):
         if obj.target_user:
             return f"{obj.target_user.university_id} - {obj.target_user.get_full_name()}"
         return '-'
-    get_target_user.short_description = 'Target User'
+    get_target_user.short_description = 'المستخدم المستهدف'
     get_target_user.admin_order_field = 'target_user__university_id'
     
     def get_activity_badge(self, obj):
@@ -123,7 +123,7 @@ class StaffActivityAdmin(admin.ModelAdmin):
             color,
             obj.get_activity_type_display()
         )
-    get_activity_badge.short_description = 'Activity Type'
+    get_activity_badge.short_description = 'نوع النشاط'
     get_activity_badge.admin_order_field = 'activity_type'
 
 
@@ -138,19 +138,19 @@ class WorkflowTemplateAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_at'
     
     fieldsets = (
-        ('Template Information', {
+        ('معلومات القالب', {
             'fields': ('name', 'description', 'category'),
             'classes': ('wide',)
         }),
-        ('Workflow Configuration', {
+        ('تكوين سير العمل', {
             'fields': ('steps', 'conditions', 'notifications'),
             'classes': ('wide',)
         }),
-        ('Status & Permissions', {
+        ('الحالة والصلاحيات', {
             'fields': ('is_active', 'required_permissions'),
             'classes': ('wide',)
         }),
-        ('Metadata', {
+        ('البيانات الوصفية', {
             'fields': ('created_by', 'created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
@@ -173,7 +173,7 @@ class WorkflowTemplateAdmin(admin.ModelAdmin):
             color,
             obj.get_category_display()
         )
-    get_category_badge.short_description = 'Category'
+    get_category_badge.short_description = 'الفئة'
     get_category_badge.admin_order_field = 'category'
     
     def get_status_badge(self, obj):
@@ -185,7 +185,7 @@ class WorkflowTemplateAdmin(admin.ModelAdmin):
             return format_html(
                 '<span style="background-color: #6c757d; color: white; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: bold;">Inactive</span>'
             )
-    get_status_badge.short_description = 'Status'
+    get_status_badge.short_description = 'الحالة'
     get_status_badge.admin_order_field = 'is_active'
 
 

@@ -86,16 +86,16 @@ class PaymentCreateSerializer(serializers.Serializer):
     
     def validate_fees(self, value):
         if not value:
-            raise serializers.ValidationError("At least one fee must be selected.")
+            raise serializers.ValidationError("يجب اختيار رسم واحد على الأقل.")
         
         for fee_data in value:
             if 'id' not in fee_data or 'amount' not in fee_data:
-                raise serializers.ValidationError("Each fee must have 'id' and 'amount' fields.")
+                raise serializers.ValidationError("يجب أن يحتوي كل رسم على حقلي 'id' و 'amount'.")
             
             try:
                 Decimal(fee_data['amount'])
             except (ValueError, TypeError):
-                raise serializers.ValidationError("Invalid amount format.")
+                raise serializers.ValidationError("تنسيق المبلغ غير صحيح.")
         
         return value
     
@@ -103,12 +103,12 @@ class PaymentCreateSerializer(serializers.Serializer):
         try:
             provider = PaymentProvider.objects.get(id=value, is_active=True)
         except PaymentProvider.DoesNotExist:
-            raise serializers.ValidationError("Invalid or inactive payment provider.")
+            raise serializers.ValidationError("مقدم الدفع غير صحيح أو غير نشط.")
         return value
     
     def validate_total_amount(self, value):
         if value <= 0:
-            raise serializers.ValidationError("Payment amount must be greater than zero.")
+            raise serializers.ValidationError("يجب أن يكون مبلغ الدفع أكبر من الصفر.")
         return value
 
 

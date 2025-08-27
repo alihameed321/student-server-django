@@ -14,23 +14,23 @@ class CustomUserAdmin(UserAdmin):
     
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        ('Personal info', {
+        ('المعلومات الشخصية', {
             'fields': ('first_name', 'last_name', 'email', 'phone_number', 'date_of_birth', 'profile_picture'),
             'classes': ('collapse',)
         }),
-        ('University info', {
+        ('المعلومات الجامعية', {
             'fields': ('university_id', 'user_type', 'major', 'academic_level', 'enrollment_year', 'department', 'position'),
             'classes': ('wide',)
         }),
-        ('Digital ID', {
+        ('الهوية الرقمية', {
             'fields': ('qr_code',),
             'classes': ('collapse',)
         }),
-        ('Permissions', {
+        ('الصلاحيات', {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
             'classes': ('collapse',)
         }),
-        ('Important dates', {
+        ('التواريخ المهمة', {
             'fields': ('last_login', 'date_joined'),
             'classes': ('collapse',)
         }),
@@ -45,7 +45,7 @@ class CustomUserAdmin(UserAdmin):
     
     def get_full_name(self, obj):
         return obj.get_full_name() or '-'
-    get_full_name.short_description = 'Full Name'
+    get_full_name.short_description = 'الاسم الكامل'
     
     class Media:
         css = {
@@ -62,11 +62,11 @@ class StudentProfileAdmin(admin.ModelAdmin):
     ordering = ('user__university_id',)
     
     fieldsets = (
-        ('Student Information', {
+        ('معلومات الطالب', {
             'fields': ('user', 'student_id_number'),
             'classes': ('wide',)
         }),
-        ('Academic Details', {
+        ('التفاصيل الأكاديمية', {
             'fields': ('gpa', 'total_credits', 'graduation_date'),
             'classes': ('wide',)
         }),
@@ -82,11 +82,11 @@ class StaffProfileAdmin(admin.ModelAdmin):
     ordering = ('user__university_id',)
     
     fieldsets = (
-        ('Staff Information', {
+        ('معلومات الموظف', {
             'fields': ('user', 'employee_id', 'hire_date'),
             'classes': ('wide',)
         }),
-        ('Employment Details', {
+        ('تفاصيل التوظيف', {
             'fields': ('salary', 'permissions'),
             'classes': ('wide',)
         }),

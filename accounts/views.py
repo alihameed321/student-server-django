@@ -40,7 +40,7 @@ class CustomLoginView(LoginView):
             return '/student/dashboard/'
     
     def form_invalid(self, form):
-        messages.error(self.request, 'Invalid username or password.')
+        messages.error(self.request, 'اسم المستخدم أو كلمة المرور غير صحيحة.')
         return super().form_invalid(form)
 
 
@@ -48,7 +48,7 @@ class CustomLogoutView(LogoutView):
     next_page = '/accounts/login/'
     
     def dispatch(self, request, *args, **kwargs):
-        messages.success(request, 'You have been successfully logged out.')
+        messages.success(request, 'تم تسجيل الخروج بنجاح.')
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -81,10 +81,10 @@ def edit_profile(request):
         form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Profile updated successfully!')
+            messages.success(request, 'تم تحديث الملف الشخصي بنجاح!')
             return redirect('accounts:profile')
         else:
-            messages.error(request, 'Please correct the errors below.')
+            messages.error(request, 'يرجى تصحيح الأخطاء أدناه.')
     else:
         form = ProfileUpdateForm(instance=request.user)
     
@@ -102,10 +102,10 @@ def change_password(request):
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)
-            messages.success(request, 'Password changed successfully!')
+            messages.success(request, 'تم تغيير كلمة المرور بنجاح!')
             return redirect('accounts:profile')
         else:
-            messages.error(request, 'Please correct the errors below.')
+            messages.error(request, 'يرجى تصحيح الأخطاء أدناه.')
     else:
         form = PasswordChangeForm(request.user)
     
@@ -120,7 +120,7 @@ def digital_id_view(request):
     """Display digital ID page"""
     # Only allow students to access this view
     if request.user.user_type != 'student':
-        messages.error(request, 'Access denied. This feature is only available to students.')
+        messages.error(request, 'الوصول مرفوض. هذه الميزة متاحة للطلاب فقط.')
         return redirect('accounts:profile')
     
     # Generate QR code for the user
@@ -159,7 +159,7 @@ def student_id_card_view(request):
     """Display student ID card page"""
     # Only allow students to access this view
     if request.user.user_type != 'student':
-        messages.error(request, 'Access denied. This feature is only available to students.')
+        messages.error(request, 'الوصول مرفوض. هذه الميزة متاحة للطلاب فقط.')
         return redirect('accounts:profile')
     
     return render(request, 'accounts/student_id_card.html')
@@ -207,7 +207,7 @@ def regenerate_digital_id(request):
     try:
         # Regenerate QR code
         request.user.generate_qr_code()
-        messages.success(request, 'Digital ID regenerated successfully!')
+        messages.success(request, 'تم إعادة إنشاء الهوية الرقمية بنجاح!')
         return JsonResponse({'success': True, 'university_id': request.user.university_id})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
@@ -218,7 +218,7 @@ def download_digital_id(request):
     """Download digital ID as PDF"""
     # Only allow students to download digital ID
     if request.user.user_type != 'student':
-        messages.error(request, 'Access denied. This feature is only available to students.')
+        messages.error(request, 'الوصول مرفوض. هذه الميزة متاحة للطلاب فقط.')
         return redirect('accounts:profile')
     
     try:
@@ -366,7 +366,7 @@ def download_id_card(request):
     """Download student ID card as a modern, stylish PDF"""
     # Only allow students to download ID card
     if request.user.user_type != 'student':
-        messages.error(request, 'Access denied. This feature is only available to students.')
+        messages.error(request, 'الوصول مرفوض. هذه الميزة متاحة للطلاب فقط.')
         return redirect('accounts:profile')
     
     try:

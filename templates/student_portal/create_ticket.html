@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Create Support Ticket - University Services{% endblock %}
+{% block title %}إنشاء تذكرة دعم - خدمات الجامعة{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-8">
@@ -12,14 +12,14 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-2xl font-bold text-gray-900">
-                            <i class="fas fa-plus-circle mr-3" style="color: #102A71;"></i>
-                            Create Support Ticket
+                            <i class="fas fa-plus-circle ml-3" style="color: #102A71;"></i>
+                            إنشاء تذكرة دعم
                         </h1>
-                        <p class="text-gray-600">Get help with technical issues or academic services</p>
+                        <p class="text-gray-600">احصل على المساعدة في المشاكل التقنية أو الخدمات الأكاديمية</p>
                     </div>
                     <a href="{% url 'student_portal:support_center' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        Back to Support
+                        <i class="fas fa-arrow-right ml-2"></i>
+                        العودة إلى الدعم
                     </a>
                 </div>
             </div>
@@ -28,8 +28,8 @@
         <!-- Form -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-900">Ticket Details</h2>
-                <p class="text-sm text-gray-600">Please provide as much detail as possible to help us assist you</p>
+                <h2 class="text-lg font-semibold text-gray-900">تفاصيل التذكرة</h2>
+                <p class="text-sm text-gray-600">يرجى تقديم أكبر قدر من التفاصيل لمساعدتنا في تقديم المساعدة لك</p>
             </div>
             
             <div class="p-6">
@@ -67,7 +67,7 @@
                             {% if form.priority.field.required %}<span class="text-red-500">*</span>{% endif %}
                         </label>
                         {{ form.priority }}
-                        <p class="mt-1 text-sm text-gray-500">Select the urgency level of your issue</p>
+                        <p class="mt-1 text-sm text-gray-500">اختر مستوى الإلحاح لمشكلتك</p>
                         {% if form.priority.errors %}
                             <p class="mt-1 text-sm text-red-600">{{ form.priority.errors.0 }}</p>
                         {% endif %}
@@ -80,7 +80,7 @@
                             {% if form.description.field.required %}<span class="text-red-500">*</span>{% endif %}
                         </label>
                         {{ form.description }}
-                        <p class="mt-1 text-sm text-gray-500">Please describe your issue in detail, including any error messages or steps to reproduce the problem</p>
+                        <p class="mt-1 text-sm text-gray-500">يرجى وصف مشكلتك بالتفصيل، بما في ذلك أي رسائل خطأ أو خطوات لإعادة إنتاج المشكلة</p>
                         {% if form.description.errors %}
                             <p class="mt-1 text-sm text-red-600">{{ form.description.errors.0 }}</p>
                         {% endif %}
@@ -94,7 +94,7 @@
                             {% if form.attachment.field.required %}<span class="text-red-500">*</span>{% endif %}
                         </label>
                         {{ form.attachment }}
-                        <p class="mt-1 text-sm text-gray-500">Upload screenshots, documents, or other files that might help us understand your issue (Max 10MB)</p>
+                        <p class="mt-1 text-sm text-gray-500">ارفع لقطات الشاشة أو المستندات أو الملفات الأخرى التي قد تساعدنا في فهم مشكلتك (الحد الأقصى 10 ميجابايت)</p>
                         {% if form.attachment.errors %}
                             <p class="mt-1 text-sm text-red-600">{{ form.attachment.errors.0 }}</p>
                         {% endif %}
@@ -105,11 +105,11 @@
                     <div class="pt-6 border-t border-gray-200">
                         <div class="flex justify-end space-x-3">
                             <a href="{% url 'student_portal:support_center' %}" class="inline-flex items-center px-6 py-3 text-gray-700 font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                                Cancel
+                                إلغاء
                             </a>
                             <button type="submit" class="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
-                                <i class="fas fa-paper-plane mr-2"></i>
-                                Submit Ticket
+                                <i class="fas fa-paper-plane ml-2"></i>
+                                إرسال التذكرة
                             </button>
                         </div>
                     </div>
@@ -124,15 +124,15 @@
                     <div class="flex-shrink-0">
                         <i class="fas fa-lightbulb text-blue-500 text-xl"></i>
                     </div>
-                    <div class="ml-3">
-                        <h3 class="text-sm font-medium text-blue-800">Tips for Better Support</h3>
+                    <div class="mr-3">
+                        <h3 class="text-sm font-medium text-blue-800">نصائح للحصول على دعم أفضل</h3>
                         <div class="mt-2 text-sm text-blue-700">
                             <ul class="list-disc list-inside space-y-1">
-                                <li>Be specific about the problem you're experiencing</li>
-                                <li>Include any error messages you see</li>
-                                <li>Mention what you were trying to do when the issue occurred</li>
-                                <li>Attach screenshots if they help explain the problem</li>
-                                <li>Let us know if this is a recurring issue or happened just once</li>
+                                <li>كن محدداً حول المشكلة التي تواجهها</li>
+                                <li>أدرج أي رسائل خطأ تراها</li>
+                                <li>اذكر ما كنت تحاول فعله عندما حدثت المشكلة</li>
+                                <li>أرفق لقطات الشاشة إذا كانت تساعد في شرح المشكلة</li>
+                                <li>أخبرنا إذا كانت هذه مشكلة متكررة أم حدثت مرة واحدة فقط</li>
                             </ul>
                         </div>
                     </div>
@@ -143,7 +143,7 @@
         <!-- Contact Information -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 mt-6">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-900">Need Immediate Help?</h2>
+                <h2 class="text-lg font-semibold text-gray-900">تحتاج مساعدة فورية؟</h2>
             </div>
             
             <div class="p-6">
@@ -155,9 +155,9 @@
                             </div>
                         </div>
                         <div>
-                            <h3 class="text-sm font-medium text-gray-900">Phone Support</h3>
+                            <h3 class="text-sm font-medium text-gray-900">الدعم الهاتفي</h3>
                             <p class="text-sm text-gray-600">+1 (555) 123-4567</p>
-                            <p class="text-xs text-gray-500">Monday - Friday, 8AM - 6PM</p>
+                            <p class="text-xs text-gray-500">الاثنين - الجمعة، 8 صباحاً - 6 مساءً</p>
                         </div>
                     </div>
                     
@@ -168,9 +168,9 @@
                             </div>
                         </div>
                         <div>
-                            <h3 class="text-sm font-medium text-gray-900">Visit Us</h3>
-                            <p class="text-sm text-gray-600">Student Services Office</p>
-                            <p class="text-xs text-gray-500">Main Building, Room 101</p>
+                            <h3 class="text-sm font-medium text-gray-900">زرنا</h3>
+                            <p class="text-sm text-gray-600">مكتب خدمات الطلاب</p>
+                            <p class="text-xs text-gray-500">المبنى الرئيسي، غرفة 101</p>
                         </div>
                     </div>
                 </div>

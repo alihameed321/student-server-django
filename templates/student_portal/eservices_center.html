@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}E-Services Center - My University Services{% endblock %}
+{% block title %}مركز الخدمات الإلكترونية - خدمات الجامعة{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-8">
@@ -12,14 +12,14 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900 mb-2">
-                            <i class="fas fa-clipboard-list mr-3" style="color: #102A71;"></i>
-                            E-Services Center
+                            <i class="fas fa-clipboard-list ml-3" style="color: #102A71;"></i>
+                            مركز الخدمات الإلكترونية
                         </h1>
-                        <p class="text-gray-600">Submit and track your academic service requests</p>
+                        <p class="text-gray-600">تقديم ومتابعة طلبات الخدمات الأكاديمية</p>
                     </div>
                     <a href="{% url 'student_portal:create_request' %}" class="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
-                        <i class="fas fa-plus mr-2"></i>
-                        New Request
+                        <i class="fas fa-plus ml-2"></i>
+                        طلب جديد
                     </a>
                 </div>
             </div>
@@ -32,10 +32,10 @@
                     <div class="p-3 rounded-lg" style="background-color: rgba(16, 42, 113, 0.1);">
                         <i class="fas fa-certificate text-xl" style="color: #102A71;"></i>
                     </div>
-                    <h3 class="text-lg font-semibold text-gray-900 ml-3">Certificates</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mr-3">الشهادات</h3>
                 </div>
-                <p class="text-gray-600 text-sm mb-4">Request enrollment certificates, transcripts, and other official documents</p>
-                <a href="{% url 'student_portal:create_request' %}?type=enrollment_certificate" class="text-sm font-medium hover:text-yellow-400" style="color: #102A71;">Request Certificate →</a>
+                <p class="text-gray-600 text-sm mb-4">طلب شهادات القيد والكشوف الأكاديمية والوثائق الرسمية الأخرى</p>
+                <a href="{% url 'student_portal:create_request' %}?type=enrollment_certificate" class="text-sm font-medium hover:text-yellow-400" style="color: #102A71;">طلب شهادة ←</a>
             </div>
 
             <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
@@ -43,10 +43,10 @@
                     <div class="p-3 rounded-lg" style="background-color: rgba(245, 196, 0, 0.1);">
                         <i class="fas fa-calendar-alt text-xl" style="color: #F5C400;"></i>
                     </div>
-                    <h3 class="text-lg font-semibold text-gray-900 ml-3">Schedule Changes</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mr-3">تغيير الجدول</h3>
                 </div>
-                <p class="text-gray-600 text-sm mb-4">Modify your course schedule or request semester postponement</p>
-                <a href="{% url 'student_portal:create_request' %}?type=schedule_modification" class="text-sm font-medium hover:text-yellow-400" style="color: #102A71;">Request Change →</a>
+                <p class="text-gray-600 text-sm mb-4">تعديل جدول المقررات أو طلب تأجيل الفصل الدراسي</p>
+                <a href="{% url 'student_portal:create_request' %}?type=schedule_modification" class="text-sm font-medium hover:text-yellow-400" style="color: #102A71;">طلب تغيير ←</a>
             </div>
 
             <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
@@ -54,10 +54,10 @@
                     <div class="p-3 rounded-lg" style="background-color: rgba(16, 42, 113, 0.1);">
                         <i class="fas fa-graduation-cap text-xl" style="color: #102A71;"></i>
                     </div>
-                    <h3 class="text-lg font-semibold text-gray-900 ml-3">Graduation</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mr-3">التخرج</h3>
                 </div>
-                <p class="text-gray-600 text-sm mb-4">Apply for graduation and request graduation certificates</p>
-                <a href="{% url 'student_portal:create_request' %}?type=graduation_certificate" class="text-sm font-medium hover:text-yellow-400" style="color: #102A71;">Apply Now →</a>
+                <p class="text-gray-600 text-sm mb-4">التقدم للتخرج وطلب شهادات التخرج</p>
+                <a href="{% url 'student_portal:create_request' %}?type=graduation_certificate" class="text-sm font-medium hover:text-yellow-400" style="color: #102A71;">التقدم الآن ←</a>
             </div>
         </div>
 
@@ -66,10 +66,10 @@
             <div class="p-6 border-b border-gray-100">
                 <div class="flex items-center justify-between">
                     <h2 class="text-xl font-semibold text-gray-900">
-                        <i class="fas fa-history mr-2" style="color: #102A71;"></i>
-                        Your Requests
+                        <i class="fas fa-history ml-2" style="color: #102A71;"></i>
+                        طلباتك
                     </h2>
-                    <a href="{% url 'student_portal:my_requests' %}" class="text-sm font-medium hover:text-yellow-400" style="color: #102A71;">View All →</a>
+                    <a href="{% url 'student_portal:my_requests' %}" class="text-sm font-medium hover:text-yellow-400" style="color: #102A71;">عرض الكل ←</a>
                 </div>
             </div>
             
@@ -114,7 +114,7 @@
                                         {{ request.get_status_display }}
                                     </span>
                                     <a href="{% url 'student_portal:request_detail' request.id %}" class="text-sm font-medium hover:text-yellow-400" style="color: #102A71;">
-                                        View Details
+                                        عرض التفاصيل
                                     </a>
                                 </div>
                             </div>
@@ -127,17 +127,17 @@
                             <nav class="flex space-x-2">
                                 {% if requests.has_previous %}
                                     <a href="?page={{ requests.previous_page_number }}" class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
-                                        Previous
+                                        السابق
                                     </a>
                                 {% endif %}
                                 
                                 <span class="px-3 py-2 text-sm font-medium text-white rounded-md" style="background-color: #102A71;">
-                                    Page {{ requests.number }} of {{ requests.paginator.num_pages }}
+                                    صفحة {{ requests.number }} من {{ requests.paginator.num_pages }}
                                 </span>
                                 
                                 {% if requests.has_next %}
                                     <a href="?page={{ requests.next_page_number }}" class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
-                                        Next
+                                        التالي
                                     </a>
                                 {% endif %}
                             </nav>
@@ -146,11 +146,11 @@
                 {% else %}
                     <div class="text-center py-12">
                         <i class="fas fa-clipboard-list text-6xl text-gray-300 mb-4"></i>
-                        <h3 class="text-lg font-medium text-gray-900 mb-2">No requests yet</h3>
-                        <p class="text-gray-600 mb-6">You haven't submitted any service requests yet.</p>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">لا توجد طلبات بعد</h3>
+                        <p class="text-gray-600 mb-6">لم تقم بتقديم أي طلبات خدمة بعد.</p>
                         <a href="{% url 'student_portal:create_request' %}" class="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
-                            <i class="fas fa-plus mr-2"></i>
-                            Create Your First Request
+                            <i class="fas fa-plus ml-2"></i>
+                            إنشاء طلبك الأول
                         </a>
                     </div>
                 {% endif %}

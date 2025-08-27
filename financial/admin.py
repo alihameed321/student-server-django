@@ -15,11 +15,11 @@ class FeeTypeAdmin(admin.ModelAdmin):
     ordering = ('name',)
     
     fieldsets = (
-        ('Fee Type Information', {
+        ('معلومات نوع الرسوم', {
             'fields': ('name', 'description', 'is_active'),
             'classes': ('wide',)
         }),
-        ('Metadata', {
+        ('البيانات الوصفية', {
             'fields': ('created_at',),
             'classes': ('collapse',)
         }),
@@ -35,7 +35,7 @@ class FeeTypeAdmin(admin.ModelAdmin):
         return format_html(
             '<span style="background-color: #dc3545; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: bold;">INACTIVE</span>'
         )
-    get_active_badge.short_description = 'Status'
+    get_active_badge.short_description = 'الحالة'
     get_active_badge.admin_order_field = 'is_active'
 
 
@@ -50,15 +50,15 @@ class StudentFeeAdmin(admin.ModelAdmin):
     date_hierarchy = 'due_date'
     
     fieldsets = (
-        ('Fee Information', {
+        ('معلومات الرسوم', {
             'fields': ('student', 'fee_type', 'amount', 'due_date', 'description'),
             'classes': ('wide',)
         }),
-        ('Status & Processing', {
+        ('الحالة والمعالجة', {
             'fields': ('status', 'created_by'),
             'classes': ('wide',)
         }),
-        ('Metadata', {
+        ('البيانات الوصفية', {
             'fields': ('created_at',),
             'classes': ('collapse',)
         }),
@@ -68,17 +68,17 @@ class StudentFeeAdmin(admin.ModelAdmin):
     
     def get_student_id(self, obj):
         return obj.student.university_id
-    get_student_id.short_description = 'Student ID'
+    get_student_id.short_description = 'رقم الطالب'
     get_student_id.admin_order_field = 'student__university_id'
     
     def get_student_name(self, obj):
         return obj.student.get_full_name()
-    get_student_name.short_description = 'Student Name'
+    get_student_name.short_description = 'اسم الطالب'
     get_student_name.admin_order_field = 'student__first_name'
     
     def get_amount_display(self, obj):
         return f"${obj.amount:,.2f}"
-    get_amount_display.short_description = 'Amount'
+    get_amount_display.short_description = 'المبلغ'
     get_amount_display.admin_order_field = 'amount'
     
     def get_status_badge(self, obj):
@@ -95,7 +95,7 @@ class StudentFeeAdmin(admin.ModelAdmin):
             color,
             obj.get_status_display()
         )
-    get_status_badge.short_description = 'Status'
+    get_status_badge.short_description = 'الحالة'
     get_status_badge.admin_order_field = 'status'
 
 
@@ -110,19 +110,19 @@ class PaymentAdmin(admin.ModelAdmin):
     date_hierarchy = 'payment_date'
     
     fieldsets = (
-        ('Payment Information', {
+        ('معلومات الدفع', {
             'fields': ('student', 'fee', 'amount', 'payment_provider'),
             'classes': ('wide',)
         }),
-        ('Transaction Details', {
+        ('تفاصيل المعاملة', {
             'fields': ('transaction_reference', 'payment_date'),
             'classes': ('wide',)
         }),
-        ('Status & Verification', {
+        ('الحالة والتحقق', {
             'fields': ('status', 'verification_notes', 'verified_by', 'verified_at'),
             'classes': ('wide',)
         }),
-        ('Metadata', {
+        ('البيانات الوصفية', {
             'fields': ('created_at',),
             'classes': ('collapse',)
         }),
@@ -133,17 +133,17 @@ class PaymentAdmin(admin.ModelAdmin):
     
     def get_student_info(self, obj):
         return f"{obj.student.university_id} - {obj.student.get_full_name()}"
-    get_student_info.short_description = 'Student'
+    get_student_info.short_description = 'الطالب'
     get_student_info.admin_order_field = 'student__university_id'
     
     def get_fee_info(self, obj):
         return f"{obj.fee.fee_type.name} - ${obj.fee.amount}"
-    get_fee_info.short_description = 'Fee'
+    get_fee_info.short_description = 'الرسوم'
     get_fee_info.admin_order_field = 'fee__fee_type__name'
     
     def get_amount(self, obj):
         return f"${obj.amount:,.2f}"
-    get_amount.short_description = 'Amount'
+    get_amount.short_description = 'المبلغ'
     get_amount.admin_order_field = 'amount'
     
     def get_status_badge(self, obj):
@@ -158,7 +158,7 @@ class PaymentAdmin(admin.ModelAdmin):
             color,
             obj.get_status_display()
         )
-    get_status_badge.short_description = 'Status'
+    get_status_badge.short_description = 'الحالة'
     get_status_badge.admin_order_field = 'status'
     
     def verify_payments(self, request, queryset):
@@ -167,8 +167,8 @@ class PaymentAdmin(admin.ModelAdmin):
         for payment in queryset.filter(status='pending'):
             payment.verify_payment(request.user)
             updated += 1
-        self.message_user(request, f'{updated} payments verified successfully.')
-    verify_payments.short_description = "Verify selected payments"
+        self.message_user(request, f'تم التحقق من {updated} دفعة بنجاح.')
+    verify_payments.short_description = "التحقق من المدفوعات المحددة"
     
     def reject_payments(self, request, queryset):
         """Bulk reject payments"""
@@ -176,8 +176,8 @@ class PaymentAdmin(admin.ModelAdmin):
         for payment in queryset.filter(status='pending'):
             payment.reject_payment(request.user, "Bulk rejection")
             updated += 1
-        self.message_user(request, f'{updated} payments rejected.')
-    reject_payments.short_description = "Reject selected payments"
+        self.message_user(request, f'تم رفض {updated} دفعة.')
+    reject_payments.short_description = "رفض المدفوعات المحددة"
 
 
 @admin.register(PaymentProvider)
@@ -190,11 +190,11 @@ class PaymentProviderAdmin(admin.ModelAdmin):
     ordering = ('name',)
     
     fieldsets = (
-        ('Provider Information', {
+        ('معلومات مقدم الخدمة', {
             'fields': ('name', 'description', 'instructions'),
             'classes': ('wide',)
         }),
-        ('Display & Status', {
+        ('العرض والحالة', {
             'fields': ('logo', 'is_active'),
             'classes': ('wide',)
         }),
@@ -209,12 +209,12 @@ class PaymentProviderAdmin(admin.ModelAdmin):
             return format_html(
                 '<span style="background-color: #6c757d; color: white; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: bold;">Inactive</span>'
             )
-    get_status_badge.short_description = 'Status'
+    get_status_badge.short_description = 'الحالة'
     get_status_badge.admin_order_field = 'is_active'
     
     def get_payments_count(self, obj):
         return obj.payments.count()
-    get_payments_count.short_description = 'Total Payments'
+    get_payments_count.short_description = 'إجمالي المدفوعات'
 
 
 @admin.register(PaymentReceipt)
@@ -228,11 +228,11 @@ class PaymentReceiptAdmin(admin.ModelAdmin):
     date_hierarchy = 'generated_at'
     
     fieldsets = (
-        ('Receipt Information', {
+        ('معلومات الإيصال', {
             'fields': ('receipt_number', 'payment'),
             'classes': ('wide',)
         }),
-        ('File & Generation', {
+        ('الملف والإنشاء', {
             'fields': ('receipt_file', 'generated_by', 'generated_at'),
             'classes': ('wide',)
         }),
@@ -242,12 +242,12 @@ class PaymentReceiptAdmin(admin.ModelAdmin):
     
     def get_student_info(self, obj):
         return f"{obj.payment.student.university_id} - {obj.payment.student.get_full_name()}"
-    get_student_info.short_description = 'Student'
+    get_student_info.short_description = 'الطالب'
     get_student_info.admin_order_field = 'payment__student__university_id'
     
     def get_payment_amount(self, obj):
         return f"${obj.payment.amount:,.2f}"
-    get_payment_amount.short_description = 'Amount'
+    get_payment_amount.short_description = 'المبلغ'
     get_payment_amount.admin_order_field = 'payment__amount'
 
 
@@ -262,19 +262,19 @@ class FinancialReportAdmin(admin.ModelAdmin):
     date_hierarchy = 'generated_at'
     
     fieldsets = (
-        ('Report Information', {
+        ('معلومات التقرير', {
             'fields': ('report_type', 'start_date', 'end_date', 'generated_by'),
             'classes': ('wide',)
         }),
-        ('Report Data', {
+        ('بيانات التقرير', {
             'fields': ('report_data', 'total_payments_received'),
             'classes': ('wide',)
         }),
-        ('File', {
+        ('الملف', {
             'fields': ('file_path',),
             'classes': ('collapse',)
         }),
-        ('Metadata', {
+        ('البيانات الوصفية', {
             'fields': ('generated_at',),
             'classes': ('collapse',)
         }),
@@ -284,9 +284,9 @@ class FinancialReportAdmin(admin.ModelAdmin):
     
     def get_period_display(self, obj):
         return f"{obj.start_date} to {obj.end_date}"
-    get_period_display.short_description = 'Period'
+    get_period_display.short_description = 'الفترة'
     
     def get_total_amount_display(self, obj):
         return f"${obj.total_payments_received:,.2f}" if obj.total_payments_received else '-'
-    get_total_amount_display.short_description = 'Total Amount'
+    get_total_amount_display.short_description = 'إجمالي المبلغ'
     get_total_amount_display.admin_order_field = 'total_payments_received'
