@@ -207,7 +207,7 @@ def cancel_service_request(request, request_id):
             'success': False,
             'error': {
                 'code': status.HTTP_404_NOT_FOUND,
-                'message': 'Service request not found',
+                'message': 'طلب الخدمة غير موجود',
                 'details': {}
             }
         }, status=status.HTTP_404_NOT_FOUND)
@@ -226,7 +226,7 @@ def cancel_service_request(request, request_id):
             'success': False,
             'error': {
                 'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
-                'message': 'An unexpected error occurred',
+                'message': 'حدث خطأ غير متوقع',
                 'details': {}
             }
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -249,7 +249,7 @@ def service_request_types(request):
     except Exception as e:
         logger.error(f"Error fetching service request types: {str(e)}")
         return Response(
-            {'success': False, 'error': {'code': 500, 'message': 'Internal server error', 'details': {'detail': 'An unexpected error occurred. Please try again later.'}}},
+            {'success': False, 'error': {'code': 500, 'message': 'خطأ في الخادم الداخلي', 'details': {'detail': 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى لاحقاً.'}}},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
@@ -292,7 +292,7 @@ def student_documents(request):
             logger.info(f"[DEBUG] Valid document types: {valid_types}")
             if document_type_filter not in valid_types:
                 logger.error(f"[DEBUG] Invalid document type filter: {document_type_filter}")
-                raise DocumentException(f"Invalid document type filter: {document_type_filter}")
+                raise DocumentException(f"فلتر نوع المستند غير صحيح: {document_type_filter}")
             documents = documents.filter(document_type=document_type_filter)
             filtered_count = documents.count()
             logger.info(f"[DEBUG] Documents after type filter '{document_type_filter}': {filtered_count}")
@@ -316,7 +316,7 @@ def student_documents(request):
                 logger.info(f"[DEBUG] Documents after date_from filter: {documents.count()}")
             except ValueError:
                 logger.error(f"[DEBUG] Invalid date_from format: {date_from}")
-                raise DocumentException("Invalid date_from format. Use YYYY-MM-DD")
+                raise DocumentException("تنسيق تاريخ البداية غير صحيح. استخدم YYYY-MM-DD")
         
         if date_to:
             try:
@@ -326,7 +326,7 @@ def student_documents(request):
                 logger.info(f"[DEBUG] Documents after date_to filter: {documents.count()}")
             except ValueError:
                 logger.error(f"[DEBUG] Invalid date_to format: {date_to}")
-                raise DocumentException("Invalid date_to format. Use YYYY-MM-DD")
+                raise DocumentException("تنسيق تاريخ النهاية غير صحيح. استخدم YYYY-MM-DD")
         
         # Search functionality
         search = request.GET.get('search')
@@ -334,7 +334,7 @@ def student_documents(request):
         if search:
             if len(search.strip()) < 2:
                 logger.error(f"[DEBUG] Search query too short: '{search}'")
-                raise DocumentException("Search query must be at least 2 characters long")
+                raise DocumentException("يجب أن يكون استعلام البحث مكوناً من حرفين على الأقل")
             from django.db.models import Q
             documents = documents.filter(
                 Q(title__icontains=search) | 
@@ -350,11 +350,11 @@ def student_documents(request):
         valid_sort_fields = ['issued_date', 'title', 'document_type', 'download_count']
         if sort_by not in valid_sort_fields:
             logger.error(f"[DEBUG] Invalid sort field: {sort_by}")
-            raise DocumentException(f"Invalid sort field. Valid options: {', '.join(valid_sort_fields)}")
+            raise DocumentException(f"حقل الترتيب غير صحيح. الخيارات الصحيحة: {', '.join(valid_sort_fields)}")
         
         if sort_order not in ['asc', 'desc']:
             logger.error(f"[DEBUG] Invalid sort order: {sort_order}")
-            raise DocumentException("Invalid sort order. Use 'asc' or 'desc'")
+            raise DocumentException("ترتيب الفرز غير صحيح. استخدم 'asc' أو 'desc'")
         
         sort_field = sort_by if sort_order == 'asc' else f'-{sort_by}'
         documents = documents.order_by(sort_field)
@@ -422,7 +422,7 @@ def student_documents(request):
             'success': False,
             'error': {
                 'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
-                'message': 'An unexpected error occurred',
+                'message': 'حدث خطأ غير متوقع',
                 'details': {}
             }
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -456,7 +456,7 @@ def document_detail(request, document_id):
             'success': False,
             'error': {
                 'code': status.HTTP_404_NOT_FOUND,
-                'message': 'Document not found',
+                'message': 'المستند غير موجود',
                 'details': {}
             }
         }, status=status.HTTP_404_NOT_FOUND)
@@ -466,7 +466,7 @@ def document_detail(request, document_id):
             'success': False,
             'error': {
                 'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
-                'message': 'An unexpected error occurred',
+                'message': 'حدث خطأ غير متوقع',
                 'details': {}
             }
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -494,7 +494,7 @@ def document_download(request, document_id):
                 'success': False,
                 'error': {
                     'code': status.HTTP_404_NOT_FOUND,
-                    'message': 'Document file not found',
+                    'message': 'ملف المستند غير موجود',
                     'details': {}
                 }
             }, status=status.HTTP_404_NOT_FOUND)
@@ -510,7 +510,7 @@ def document_download(request, document_id):
         try:
             file_path = document.document_file.path
             if not os.path.exists(file_path):
-                raise Http404("Document file not found on server")
+                raise Http404("ملف المستند غير موجود على الخادم")
             
             # Get file info
             file_size = os.path.getsize(file_path)
@@ -531,7 +531,7 @@ def document_download(request, document_id):
                 'success': False,
                 'error': {
                     'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    'message': 'Error accessing document file',
+                    'message': 'خطأ في الوصول إلى ملف المستند',
                     'details': {}
                 }
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -541,7 +541,7 @@ def document_download(request, document_id):
             'success': False,
             'error': {
                 'code': status.HTTP_404_NOT_FOUND,
-                'message': 'Document not found',
+                'message': 'المستند غير موجود',
                 'details': {}
             }
         }, status=status.HTTP_404_NOT_FOUND)
@@ -551,7 +551,7 @@ def document_download(request, document_id):
             'success': False,
             'error': {
                 'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
-                'message': 'An unexpected error occurred',
+                'message': 'حدث خطأ غير متوقع',
                 'details': {}
             }
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -587,7 +587,7 @@ def document_types(request):
             'success': False,
             'error': {
                 'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
-                'message': 'An unexpected error occurred',
+                'message': 'حدث خطأ غير متوقع',
                 'details': {}
             }
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -662,7 +662,7 @@ def document_statistics(request):
             'success': False,
             'error': {
                 'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
-                'message': 'An unexpected error occurred',
+                'message': 'حدث خطأ غير متوقع',
                 'details': {}
             }
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -702,7 +702,7 @@ def document_status_tracking(request):
                     'is_downloadable': file_accessible,
                     'file_exists': file_exists,
                     'processing_status': 'completed' if file_accessible else 'processing',
-                    'status_message': 'Document is ready for download' if file_accessible else 'Document is being processed'
+                    'status_message': 'المستند جاهز للتحميل' if file_accessible else 'جاري معالجة المستند'
                 },
                 'file_info': {
                     'has_file': file_exists,
@@ -742,7 +742,7 @@ def document_status_tracking(request):
             'success': False,
             'error': {
                 'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
-                'message': 'An unexpected error occurred',
+                'message': 'حدث خطأ غير متوقع',
                 'details': {}
             }
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -804,7 +804,7 @@ def document_advanced_search(request):
                 date_to_obj = datetime.strptime(date_to, '%Y-%m-%d').date()
                 documents = documents.filter(issued_date__date__lte=date_to_obj)
             except ValueError:
-                raise DocumentException("Invalid date_to format. Use YYYY-MM-DD")
+                raise DocumentException("تنسيق تاريخ النهاية غير صحيح. استخدم YYYY-MM-DD")
         
         # Download count filtering
         if min_downloads:
@@ -812,14 +812,14 @@ def document_advanced_search(request):
                 min_downloads_int = int(min_downloads)
                 documents = documents.filter(download_count__gte=min_downloads_int)
             except ValueError:
-                raise DocumentException("Invalid min_downloads value")
+                raise DocumentException("قيمة الحد الأدنى للتحميلات غير صحيحة")
         
         if max_downloads:
             try:
                 max_downloads_int = int(max_downloads)
                 documents = documents.filter(download_count__lte=max_downloads_int)
             except ValueError:
-                raise DocumentException("Invalid max_downloads value")
+                raise DocumentException("قيمة الحد الأقصى للتحميلات غير صحيحة")
         
         # Sorting
         sort_by = request.GET.get('sort_by', 'issued_date')
@@ -827,10 +827,10 @@ def document_advanced_search(request):
         
         valid_sort_fields = ['issued_date', 'title', 'document_type', 'download_count']
         if sort_by not in valid_sort_fields:
-            raise DocumentException(f"Invalid sort field. Valid options: {', '.join(valid_sort_fields)}")
+            raise DocumentException(f"حقل الترتيب غير صحيح. الخيارات الصحيحة: {', '.join(valid_sort_fields)}")
         
         if sort_order not in ['asc', 'desc']:
-            raise DocumentException("Invalid sort order. Use 'asc' or 'desc'")
+            raise DocumentException("ترتيب الفرز غير صحيح. استخدم 'asc' أو 'desc'")
         
         sort_field = sort_by if sort_order == 'asc' else f'-{sort_by}'
         documents = documents.order_by(sort_field)
@@ -883,7 +883,7 @@ def document_advanced_search(request):
             'success': False,
             'error': {
                 'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
-                'message': 'An unexpected error occurred',
+                'message': 'حدث خطأ غير متوقع',
                 'details': {}
             }
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -1020,7 +1020,7 @@ def document_sharing(request):
                 
                 return Response({
                     'success': True,
-                    'message': 'Sharing link created successfully',
+                    'message': 'تم إنشاء رابط المشاركة بنجاح',
                     'data': sharing_link
                 })
             
@@ -1028,7 +1028,7 @@ def document_sharing(request):
                 # Revoke sharing access (in real implementation, this would update a sharing model)
                 return Response({
                     'success': True,
-                    'message': 'Document sharing access revoked successfully',
+                    'message': 'تم إلغاء صلاحية مشاركة المستند بنجاح',
                     'data': {
                         'document_id': document.id,
                         'revoked_at': datetime.now().isoformat()
@@ -1036,7 +1036,7 @@ def document_sharing(request):
                 })
             
             else:
-                raise DocumentException(f"Invalid action: {action}")
+                raise DocumentException(f"إجراء غير صحيح: {action}")
     
     except DocumentException as e:
         return Response({
@@ -1053,7 +1053,7 @@ def document_sharing(request):
             'success': False,
             'error': {
                 'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
-                'message': 'An unexpected error occurred',
+                'message': 'حدث خطأ غير متوقع',
                 'details': {}
             }
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -1077,20 +1077,20 @@ def support_tickets(request):
             if status_filter:
                 valid_statuses = [choice[0] for choice in SupportTicket.STATUS_CHOICES]
                 if status_filter not in valid_statuses:
-                    raise SupportTicketException(f"Invalid status filter: {status_filter}")
+                    raise SupportTicketException(f"فلتر الحالة غير صحيح: {status_filter}")
                 tickets = tickets.filter(status=status_filter)
             
             category_filter = request.GET.get('category')
             if category_filter:
                 valid_categories = [choice[0] for choice in SupportTicket.CATEGORY_CHOICES]
                 if category_filter not in valid_categories:
-                    raise SupportTicketException(f"Invalid category filter: {category_filter}")
+                    raise SupportTicketException(f"فلتر الفئة غير صحيح: {category_filter}")
                 tickets = tickets.filter(category=category_filter)
             
             search = request.GET.get('search')
             if search:
                 if len(search.strip()) < 2:
-                    raise SupportTicketException("Search query must be at least 2 characters long")
+                    raise SupportTicketException("يجب أن يكون استعلام البحث مكوناً من حرفين على الأقل")
                 tickets = tickets.filter(
                     Q(subject__icontains=search) | Q(description__icontains=search)
                 )
@@ -1123,14 +1123,14 @@ def support_tickets(request):
                     logger.info(f"Support ticket created: {ticket.id} by user {request.user.id}")
                     return Response({
                         'success': True,
-                        'message': 'Support ticket created successfully',
+                        'message': 'تم إنشاء تذكرة الدعم بنجاح',
                         'data': detail_serializer.data
                     }, status=status.HTTP_201_CREATED)
                 except Exception as e:
                     logger.error(f"Error creating support ticket: {str(e)}")
-                    raise SupportTicketException("Failed to create support ticket")
+                    raise SupportTicketException("فشل في إنشاء تذكرة الدعم")
             else:
-                raise SupportTicketException("Invalid request data", details=serializer.errors)
+                raise SupportTicketException("بيانات الطلب غير صحيحة", details=serializer.errors)
     
     except SupportTicketException as e:
         return Response({
@@ -1147,7 +1147,7 @@ def support_tickets(request):
             'success': False,
             'error': {
                 'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
-                'message': 'An unexpected error occurred',
+                'message': 'حدث خطأ غير متوقع',
                 'details': {}
             }
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -1181,7 +1181,7 @@ def support_ticket_detail(request, ticket_id):
             'success': False,
             'error': {
                 'code': status.HTTP_404_NOT_FOUND,
-                'message': 'Support ticket not found',
+                'message': 'تذكرة الدعم غير موجودة',
                 'details': {}
             }
         }, status=status.HTTP_404_NOT_FOUND)
@@ -1191,7 +1191,7 @@ def support_ticket_detail(request, ticket_id):
             'success': False,
             'error': {
                 'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
-                'message': 'An unexpected error occurred',
+                'message': 'حدث خطأ غير متوقع',
                 'details': {}
             }
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -1216,7 +1216,7 @@ def add_ticket_response(request, ticket_id):
         
         if ticket.status not in ['open', 'in_progress']:
             raise SupportTicketException(
-                'Cannot respond to ticket with current status',
+                'لا يمكن الرد على التذكرة بالحالة الحالية',
                 code=status.HTTP_400_BAD_REQUEST
             )
         
@@ -1239,18 +1239,18 @@ def add_ticket_response(request, ticket_id):
             ticket_serializer = SupportTicketDetailSerializer(ticket, context={'request': request})
             return Response({
                 'success': True,
-                'message': 'Response added successfully',
+                'message': 'تم إضافة الرد بنجاح',
                 'data': ticket_serializer.data
             }, status=status.HTTP_201_CREATED)
         
-        raise SupportTicketException("Invalid request data", details=serializer.errors)
+        raise SupportTicketException("بيانات الطلب غير صحيحة", details=serializer.errors)
     
     except SupportTicket.DoesNotExist:
         return Response({
             'success': False,
             'error': {
                 'code': status.HTTP_404_NOT_FOUND,
-                'message': 'Support ticket not found',
+                'message': 'تذكرة الدعم غير موجودة',
                 'details': {}
             }
         }, status=status.HTTP_404_NOT_FOUND)
@@ -1269,7 +1269,7 @@ def add_ticket_response(request, ticket_id):
             'success': False,
             'error': {
                 'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
-                'message': 'An unexpected error occurred',
+                'message': 'حدث خطأ غير متوقع',
                 'details': {}
             }
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -1405,7 +1405,7 @@ def student_dashboard(request):
             'success': False,
             'error': {
                 'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
-                'message': 'An unexpected error occurred while loading dashboard',
+                'message': 'حدث خطأ غير متوقع أثناء تحميل لوحة التحكم',
                 'details': {}
             }
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

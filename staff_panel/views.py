@@ -311,20 +311,38 @@ class PaymentVerificationView(LoginRequiredMixin, TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        from financial.models import Payment
+        from financial.models import Payment, PaymentProvider, FeeType
         from django.core.paginator import Paginator
+        from datetime import datetime
         
-        # Get search query
+        # Get filter parameters
         search_query = self.request.GET.get('search', '')
+        status_filter = self.request.GET.get('status', 'pending')
+        payment_method_filter = self.request.GET.get('payment_method', '')
+        date_from = self.request.GET.get('date_from', '')
+        date_to = self.request.GET.get('date_to', '')
+        fee_type_filter = self.request.GET.get('fee_type', '')
         
-        # Base queryset
-        pending_payments = Payment.objects.filter(
-            status='pending'
-        ).select_related('student')
+        # Base queryset - include all statuses for filtering
+        payments = Payment.objects.select_related(
+            'student', 'fee__fee_type', 'payment_provider', 'verified_by'
+        )
+        
+        # Apply status filter
+        if status_filter == 'all':
+            pass  # Show all payments
+        elif status_filter == 'pending':
+            payments = payments.filter(status='pending')
+        elif status_filter == 'verified':
+            payments = payments.filter(status='verified')
+        elif status_filter == 'rejected':
+            payments = payments.filter(status='rejected')
+        else:
+            payments = payments.filter(status='pending')  # Default to pending
         
         # Apply search filter
         if search_query:
-            pending_payments = pending_payments.filter(
+            payments = payments.filter(
                 Q(student__first_name__icontains=search_query) |
                 Q(student__last_name__icontains=search_query) |
                 Q(student__university_id__icontains=search_query) |
@@ -334,18 +352,52 @@ class PaymentVerificationView(LoginRequiredMixin, TemplateView):
                 Q(transaction_reference__icontains=search_query)
             )
         
+        # Apply payment method filter
+        if payment_method_filter:
+            payments = payments.filter(payment_provider__id=payment_method_filter)
+        
+        # Apply fee type filter
+        if fee_type_filter:
+            payments = payments.filter(fee__fee_type__id=fee_type_filter)
+        
+        # Apply date range filter
+        if date_from:
+            try:
+                date_from_obj = datetime.strptime(date_from, '%Y-%m-%d').date()
+                payments = payments.filter(created_at__date__gte=date_from_obj)
+            except ValueError:
+                pass
+        
+        if date_to:
+            try:
+                date_to_obj = datetime.strptime(date_to, '%Y-%m-%d').date()
+                payments = payments.filter(created_at__date__lte=date_to_obj)
+            except ValueError:
+                pass
+        
         # Order by creation date
-        pending_payments = pending_payments.order_by('-created_at')
+        payments = payments.order_by('-created_at')
         
         # Pagination
-        paginator = Paginator(pending_payments, 10)  # 10 payments per page
+        paginator = Paginator(payments, 15)  # 15 payments per page
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         
+        # Get filter options for dropdowns
+        payment_providers = PaymentProvider.objects.filter(is_active=True).order_by('name')
+        fee_types = FeeType.objects.all().order_by('name')
+        
         context.update({
-            'pending_payments': page_obj,
+            'pending_payments': page_obj,  # Keep the same name for template compatibility
             'search_query': search_query,
+            'status_filter': status_filter,
+            'payment_method_filter': payment_method_filter,
+            'date_from': date_from,
+            'date_to': date_to,
+            'fee_type_filter': fee_type_filter,
             'total_payments': paginator.count,
+            'payment_providers': payment_providers,
+            'fee_types': fee_types,
         })
         return context
 
@@ -699,10 +751,10 @@ class CreateFeeView(LoginRequiredMixin, TemplateView):
                 StaffActivity.objects.create(
                     staff_member=request.user,
                     activity_type='fee_created',
-                    description=f'Created fee: {fee_name} - ${amount}'
+                    description=f'Created fee: {fee_name} for {apply_to} students'
                 )
                 
-                messages.success(request, 'تم إنشاء الرسوم بنجاح!')
+                messages.success(request, f'تم إنشاء الرسوم "{fee_name}" بنجاح!')
                 return redirect('staff_panel:fee_management')
                 
             except Exception as e:
@@ -711,6 +763,225 @@ class CreateFeeView(LoginRequiredMixin, TemplateView):
         else:
             messages.error(request, 'يرجى ملء جميع الحقول المطلوبة.')
             return self.get(request, *args, **kwargs)
+
+
+# Payment Provider Management Views
+class PaymentProviderManagementView(LoginRequiredMixin, TemplateView):
+    """Manage payment providers"""
+    template_name = 'staff_panel/payment_provider_management.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from financial.models import PaymentProvider
+        from django.core.paginator import Paginator
+        
+        # Get search query
+        search_query = self.request.GET.get('search', '')
+        
+        # Base queryset
+        providers = PaymentProvider.objects.all()
+        
+        # Apply search filter
+        if search_query:
+            providers = providers.filter(
+                Q(name__icontains=search_query) |
+                Q(description__icontains=search_query)
+            )
+        
+        # Order by name
+        providers = providers.order_by('name')
+        
+        # Pagination
+        paginator = Paginator(providers, 10)  # 10 providers per page
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        
+        # Statistics
+        total_providers = PaymentProvider.objects.count()
+        active_providers = PaymentProvider.objects.filter(is_active=True).count()
+        inactive_providers = total_providers - active_providers
+        
+        context.update({
+            'providers': page_obj,
+            'search_query': search_query,
+            'total_providers': total_providers,
+            'active_providers': active_providers,
+            'inactive_providers': inactive_providers,
+        })
+        return context
+
+
+class CreatePaymentProviderView(LoginRequiredMixin, TemplateView):
+    """Create new payment provider"""
+    template_name = 'staff_panel/create_payment_provider.html'
+    
+    def post(self, request, *args, **kwargs):
+        from financial.models import PaymentProvider
+        from .models import StaffActivity
+        
+        try:
+            # Get form data
+            name = request.POST.get('name', '').strip()
+            description = request.POST.get('description', '').strip()
+            instructions = request.POST.get('instructions', '').strip()
+            account_name = request.POST.get('account_name', '').strip()
+            account_number = request.POST.get('account_number', '').strip()
+            bank_name = request.POST.get('bank_name', '').strip()
+            iban = request.POST.get('iban', '').strip()
+            swift_code = request.POST.get('swift_code', '').strip()
+            is_active = request.POST.get('is_active') == 'on'
+            logo = request.FILES.get('logo')
+            
+            # Validate required fields
+            if not all([name, description, account_name, account_number]):
+                messages.error(request, 'يرجى ملء جميع الحقول المطلوبة.')
+                return self.get(request, *args, **kwargs)
+            
+            # Create payment provider
+            provider = PaymentProvider.objects.create(
+                name=name,
+                description=description,
+                instructions=instructions,
+                account_name=account_name,
+                account_number=account_number,
+                bank_name=bank_name,
+                iban=iban,
+                swift_code=swift_code,
+                is_active=is_active,
+                logo=logo
+            )
+            
+            # Log staff activity
+            StaffActivity.objects.create(
+                staff_member=request.user,
+                activity_type='payment_provider_created',
+                description=f'Created payment provider: {name}'
+            )
+            
+            messages.success(request, f'تم إنشاء مقدم الدفع "{name}" بنجاح!')
+            return redirect('staff_panel:payment_provider_management')
+            
+        except Exception as e:
+            messages.error(request, f'خطأ في إنشاء مقدم الدفع: {str(e)}')
+            return self.get(request, *args, **kwargs)
+
+
+class EditPaymentProviderView(LoginRequiredMixin, TemplateView):
+    """Edit payment provider"""
+    template_name = 'staff_panel/edit_payment_provider.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from financial.models import PaymentProvider
+        
+        provider_id = kwargs.get('provider_id')
+        try:
+            provider = PaymentProvider.objects.get(id=provider_id)
+            context['provider'] = provider
+        except PaymentProvider.DoesNotExist:
+            messages.error(self.request, 'مقدم الدفع غير موجود.')
+            
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        from financial.models import PaymentProvider
+        from .models import StaffActivity
+        
+        provider_id = kwargs.get('provider_id')
+        
+        try:
+            provider = PaymentProvider.objects.get(id=provider_id)
+            
+            # Get form data
+            name = request.POST.get('name', '').strip()
+            description = request.POST.get('description', '').strip()
+            instructions = request.POST.get('instructions', '').strip()
+            account_name = request.POST.get('account_name', '').strip()
+            account_number = request.POST.get('account_number', '').strip()
+            bank_name = request.POST.get('bank_name', '').strip()
+            iban = request.POST.get('iban', '').strip()
+            swift_code = request.POST.get('swift_code', '').strip()
+            is_active = request.POST.get('is_active') == 'on'
+            logo = request.FILES.get('logo')
+            
+            # Validate required fields
+            if not all([name, description, account_name, account_number]):
+                messages.error(request, 'يرجى ملء جميع الحقول المطلوبة.')
+                return self.get(request, *args, **kwargs)
+            
+            # Update payment provider
+            provider.name = name
+            provider.description = description
+            provider.instructions = instructions
+            provider.account_name = account_name
+            provider.account_number = account_number
+            provider.bank_name = bank_name
+            provider.iban = iban
+            provider.swift_code = swift_code
+            provider.is_active = is_active
+            
+            if logo:
+                provider.logo = logo
+                
+            provider.save()
+            
+            # Log staff activity
+            StaffActivity.objects.create(
+                staff_member=request.user,
+                activity_type='payment_provider_updated',
+                description=f'Updated payment provider: {name}'
+            )
+            
+            messages.success(request, f'تم تحديث مقدم الدفع "{name}" بنجاح!')
+            return redirect('staff_panel:payment_provider_management')
+            
+        except PaymentProvider.DoesNotExist:
+            messages.error(request, 'مقدم الدفع غير موجود.')
+        except Exception as e:
+            messages.error(request, f'خطأ في تحديث مقدم الدفع: {str(e)}')
+            
+        return self.get(request, *args, **kwargs)
+
+
+@login_required
+def delete_payment_provider(request, provider_id):
+    """Delete payment provider via AJAX"""
+    from financial.models import PaymentProvider
+    from .models import StaffActivity
+    
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'طريقة الطلب غير صحيحة'})
+    
+    try:
+        provider = PaymentProvider.objects.get(id=provider_id)
+        provider_name = provider.name
+        
+        # Check if provider is being used in any payments
+        from financial.models import Payment
+        if Payment.objects.filter(payment_provider=provider).exists():
+            return JsonResponse({
+                'status': 'error', 
+                'message': 'لا يمكن حذف مقدم الدفع لأنه مستخدم في مدفوعات موجودة'
+            })
+        
+        provider.delete()
+        
+        # Log staff activity
+        StaffActivity.objects.create(
+            staff_member=request.user,
+            activity_type='payment_provider_deleted',
+            description=f'Deleted payment provider: {provider_name}'
+        )
+        
+        return JsonResponse({
+            'status': 'success', 
+            'message': f'تم حذف مقدم الدفع "{provider_name}" بنجاح'
+        })
+        
+    except PaymentProvider.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'مقدم الدفع غير موجود'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': f'خطأ في حذف مقدم الدفع: {str(e)}'})
 
 
 class EditFeeView(LoginRequiredMixin, TemplateView):

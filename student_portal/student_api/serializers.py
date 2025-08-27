@@ -264,12 +264,12 @@ class SupportTicketCreateSerializer(serializers.ModelSerializer):
     
     def validate_subject(self, value):
         if len(value.strip()) < 5:
-            raise serializers.ValidationError("Subject must be at least 5 characters long.")
+            raise serializers.ValidationError("يجب أن يكون الموضوع مكوناً من 5 أحرف على الأقل.")
         return value.strip()
     
     def validate_description(self, value):
         if len(value.strip()) < 10:
-            raise serializers.ValidationError("Description must be at least 10 characters long.")
+            raise serializers.ValidationError("يجب أن يكون الوصف مكوناً من 10 أحرف على الأقل.")
         return value.strip()
     
     def create(self, validated_data):
@@ -286,7 +286,7 @@ class TicketResponseCreateSerializer(serializers.ModelSerializer):
     
     def validate_message(self, value):
         if len(value.strip()) < 5:
-            raise serializers.ValidationError("Message must be at least 5 characters long.")
+            raise serializers.ValidationError("يجب أن تكون الرسالة مكونة من 5 أحرف على الأقل.")
         return value.strip()
     
     def create(self, validated_data):

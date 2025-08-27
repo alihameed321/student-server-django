@@ -21,6 +21,12 @@ urlpatterns = [
     path('financial/fees/create/', views.CreateFeeView.as_view(), name='create_fee'),
     path('fees/<int:fee_id>/edit/', views.EditFeeView.as_view(), name='edit_fee'),
     
+    # Payment Provider Management
+    path('financial/payment-providers/', views.PaymentProviderManagementView.as_view(), name='payment_provider_management'),
+    path('financial/payment-providers/create/', views.CreatePaymentProviderView.as_view(), name='create_payment_provider'),
+    path('financial/payment-providers/<int:provider_id>/edit/', views.EditPaymentProviderView.as_view(), name='edit_payment_provider'),
+    path('api/payment-providers/<int:provider_id>/delete/', views.delete_payment_provider, name='delete_payment_provider'),
+    
     # Student Management
     path('students/', views.StudentManagementView.as_view(), name='student_management'),
     path('students/<int:student_id>/', views.StudentDetailView.as_view(), name='student_detail'),

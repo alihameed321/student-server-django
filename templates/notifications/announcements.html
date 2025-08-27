@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Announcements - My University Services{% endblock %}
+{% block title %}الإعلانات - خدمات الجامعة{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-8">
@@ -11,15 +11,15 @@
             <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-900">
-                            <i class="fas fa-bullhorn mr-3" style="color: #102A71;"></i>
-                            Announcements
+                        <h1 class="text-3xl font-bold text-gray-900 font-tajawal">
+                            <i class="fas fa-bullhorn ml-3" style="color: #102A71;"></i>
+                            الإعلانات
                         </h1>
-                        <p class="text-gray-600 mt-2">Stay updated with the latest university news and announcements</p>
+                        <p class="text-gray-600 mt-2 font-tajawal">التحديثات والإعلانات المهمة من الجامعة</p>
                     </div>
-                    <a href="{% url 'student_portal:dashboard' %}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        Back to Dashboard
+                    <a href="{% url 'student_portal:dashboard' %}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-tajawal">
+                        <i class="fas fa-arrow-right ml-2"></i>
+                        العودة للوحة التحكم
                     </a>
                 </div>
             </div>
@@ -134,12 +134,12 @@
                          style="background: linear-gradient(135deg, #102A71 0%, #1a3a8a 100%);">
                         <i class="fas fa-bullhorn text-white text-xl"></i>
                     </div>
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">No Announcements Yet</h3>
-                    <p class="text-gray-600 mb-6">There are currently no announcements to display. Check back later for updates.</p>
-                    <a href="{% url 'student_portal:dashboard' %}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        Back to Dashboard
-                    </a>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2 font-tajawal">لا توجد إعلانات متاحة</h3>
+                    <p class="text-gray-600 mb-6 font-tajawal">تحقق لاحقاً للحصول على التحديثات والأخبار المهمة من الجامعة.</p>
+                    <a href="{% url 'student_portal:dashboard' %}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-tajawal">
+                         <i class="fas fa-arrow-right ml-2"></i>
+                         العودة للوحة التحكم
+                     </a>
                 </div>
             {% endif %}
         </div>

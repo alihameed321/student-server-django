@@ -91,7 +91,7 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
             <div class="p-6">
                 <h2 class="text-xl font-semibold text-gray-900 mb-4">الإجراءات السريعة</h2>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                     <a href="{% url 'staff_panel:payment_verification' %}" 
                        class="flex items-center p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
                         <i class="fas fa-credit-card text-blue-600 text-xl mr-3"></i>
@@ -114,6 +114,12 @@
                        class="flex items-center p-4 bg-orange-50 hover:bg-orange-100 rounded-lg transition-colors">
                         <i class="fas fa-hourglass-half text-orange-600 text-xl mr-3"></i>
                         <span class="font-medium text-orange-900">المدفوعات المعلقة</span>
+                    </a>
+                    
+                    <a href="{% url 'staff_panel:payment_provider_management' %}" 
+                       class="flex items-center p-4 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors">
+                        <i class="fas fa-university text-indigo-600 text-xl mr-3"></i>
+                        <span class="font-medium text-indigo-900">مقدمي الدفع</span>
                     </a>
                 </div>
             </div>

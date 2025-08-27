@@ -1,21 +1,21 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Edit Fee - Staff Panel{% endblock %}
+{% block title %}تعديل الرسوم - لوحة الموظفين{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-50 py-8">
+<div class="min-h-screen bg-gray-50 py-8 font-tajawal" dir="rtl">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
         <div class="mb-8">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">Edit Fee</h1>
-                    <p class="mt-2 text-gray-600">Update fee information and settings</p>
+                    <h1 class="text-3xl font-bold text-gray-900">تعديل الرسوم</h1>
+                    <p class="mt-2 text-gray-600">تحديث معلومات وإعدادات الرسوم</p>
                 </div>
                 <a href="{% url 'staff_panel:fee_management' %}" 
                    class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
-                    <i class="fas fa-arrow-left mr-2"></i>Back to Fee Management
+                    <i class="fas fa-arrow-right ml-2"></i>العودة إلى إدارة الرسوم
                 </a>
             </div>
         </div>
@@ -30,18 +30,18 @@
                     <!-- Fee Type (Read-only) -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Fee Type
+                            نوع الرسوم
                         </label>
                         <div class="bg-gray-50 px-3 py-2 rounded-lg text-gray-900">
                             {{ fee.fee_type.name }}
                         </div>
-                        <p class="text-sm text-gray-500 mt-1">Fee type cannot be changed</p>
+                        <p class="text-sm text-gray-500 mt-1">لا يمكن تغيير نوع الرسوم</p>
                     </div>
                     
                     <!-- Student (Read-only) -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Student
+                            الطالب
                         </label>
                         <div class="bg-gray-50 px-3 py-2 rounded-lg text-gray-900">
                             {{ fee.student.get_full_name }} ({{ fee.student.university_id }})
@@ -51,7 +51,7 @@
                     <!-- Amount -->
                     <div>
                         <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">
-                            Amount ($) <span class="text-red-500">*</span>
+                            المبلغ ($) <span class="text-red-500">*</span>
                         </label>
                         <input type="number" 
                                id="amount" 
@@ -66,7 +66,7 @@
                     <!-- Due Date -->
                     <div>
                         <label for="due_date" class="block text-sm font-medium text-gray-700 mb-2">
-                            Due Date <span class="text-red-500">*</span>
+                            تاريخ الاستحقاق <span class="text-red-500">*</span>
                         </label>
                         <input type="date" 
                                id="due_date" 
@@ -79,46 +79,46 @@
                     <!-- Description -->
                     <div>
                         <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
-                            Description
+                            الوصف
                         </label>
                         <textarea id="description" 
                                   name="description" 
                                   rows="3" 
                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-                                  placeholder="Optional description for this fee">{{ fee.description }}</textarea>
+                                  placeholder="وصف اختياري لهذه الرسوم">{{ fee.description }}</textarea>
                     </div>
                     
                     <!-- Current Status -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Current Status
+                            الحالة الحالية
                         </label>
                         <div class="bg-gray-50 px-3 py-2 rounded-lg">
                             {% if fee.status == 'paid' %}
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    <i class="fas fa-check-circle mr-1"></i>Paid
+                                    <i class="fas fa-check-circle ml-1"></i>مدفوع
                                 </span>
                             {% elif fee.status == 'pending' %}
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                    <i class="fas fa-clock mr-1"></i>Pending
+                                    <i class="fas fa-clock ml-1"></i>في الانتظار
                                 </span>
                             {% else %}
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                    <i class="fas fa-exclamation-circle mr-1"></i>Overdue
+                                    <i class="fas fa-exclamation-circle ml-1"></i>متأخر
                                 </span>
                             {% endif %}
                         </div>
                     </div>
                     
                     <!-- Submit Button -->
-                    <div class="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+                    <div class="flex justify-end space-x-3 pt-6 border-t border-gray-200" dir="ltr">
                         <a href="{% url 'staff_panel:fee_management' %}" 
                            class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                            Cancel
+                            إلغاء
                         </a>
                         <button type="submit" 
                                 class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                            <i class="fas fa-save mr-2"></i>Update Fee
+                            <i class="fas fa-save ml-2"></i>تحديث الرسوم
                         </button>
                     </div>
                 </form>
@@ -128,11 +128,11 @@
         <!-- Fee Not Found -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
             <i class="fas fa-exclamation-triangle text-yellow-500 text-4xl mb-4"></i>
-            <h2 class="text-xl font-semibold text-gray-900 mb-2">Fee Not Found</h2>
-            <p class="text-gray-600 mb-4">The requested fee could not be found or may have been deleted.</p>
+            <h2 class="text-xl font-semibold text-gray-900 mb-2">الرسوم غير موجودة</h2>
+            <p class="text-gray-600 mb-4">لا يمكن العثور على الرسوم المطلوبة أو ربما تم حذفها.</p>
             <a href="{% url 'staff_panel:fee_management' %}" 
                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                <i class="fas fa-arrow-left mr-2"></i>Back to Fee Management
+                <i class="fas fa-arrow-right ml-2"></i>العودة إلى إدارة الرسوم
             </a>
         </div>
         {% endif %}
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (!isValid) {
                 e.preventDefault();
-                alert('Please fill in all required fields correctly.');
+                alert('يرجى ملء جميع الحقول المطلوبة بشكل صحيح.');
             }
         });
     }

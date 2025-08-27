@@ -6,25 +6,25 @@
                 <a href="{% url 'student_portal:dashboard' %}" class="flex items-center">
                     {% load static %}
                     <img src="{% static 'images/logo.png' %}" alt="University Logo" class="w-10 h-10 object-contain mr-3">
-                    <span class="text-white text-xl font-bold hidden sm:block">جامعتي</span>
+                    <span class="text-white text-xl font-bold hidden sm:block font-tajawal">جامعتي</span>
                 </a>
             </div>
             
             <!-- Desktop Navigation -->
             <div class="hidden md:flex items-center space-x-8">
-                <a href="{% url 'student_portal:dashboard' %}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-colors" style="hover:color: #F5C400;">
+                <a href="{% url 'student_portal:dashboard' %}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-colors font-tajawal" style="hover:color: #F5C400;">
                     <i class="fas fa-home ml-1"></i> الرئيسية
                 </a>
-                <a href="{% url 'student_portal:services' %}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-colors" style="hover:color: #F5C400;">
+                <a href="{% url 'student_portal:services' %}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-colors font-tajawal" style="hover:color: #F5C400;">
                     <i class="fas fa-clipboard-list ml-1"></i> الخدمات الإلكترونية
                 </a>
-                <a href="{% url 'financial:dashboard' %}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-colors" style="hover:color: #F5C400;">
+                <a href="{% url 'financial:dashboard' %}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-colors font-tajawal" style="hover:color: #F5C400;">
                     <i class="fas fa-credit-card ml-1"></i> الشؤون المالية
                 </a>
-                <a href="{% url 'student_portal:documents' %}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-colors" style="hover:color: #F5C400;">
+                <a href="{% url 'student_portal:documents' %}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-colors font-tajawal" style="hover:color: #F5C400;">
                     <i class="fas fa-folder ml-1"></i> الوثائق
                 </a>
-                <a href="{% url 'student_portal:support' %}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-colors" style="hover:color: #F5C400;">
+                <a href="{% url 'student_portal:support' %}" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-colors font-tajawal" style="hover:color: #F5C400;">
                     <i class="fas fa-headset ml-1"></i> الدعم الفني
                 </a>
             </div>
@@ -70,7 +70,7 @@
                          x-transition:leave-end="opacity-0 scale-95"
                          class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 z-50">
                         <div class="px-4 py-2 border-b border-gray-200">
-                            <h3 class="text-sm font-medium text-gray-900">الإشعارات</h3>
+                            <h3 class="text-sm font-medium text-gray-900 font-tajawal">الإشعارات</h3>
                         </div>
                         <div class="max-h-64 overflow-y-auto">
                             <!-- Notifications will be loaded via AJAX -->
@@ -142,7 +142,7 @@
                                 <i class="fas fa-user text-sm"></i>
                             </div>
                         {% endif %}
-                        <span class="hidden sm:block text-sm font-medium">{{ user.first_name|default:user.username }}</span>
+                        <span class="hidden sm:block text-sm font-medium font-tajawal">{{ user.first_name|default:user.username }}</span>
                         <i class="fas fa-chevron-down text-xs"></i>
                     </button>
                     
@@ -156,22 +156,22 @@
                          x-transition:leave-start="opacity-100 scale-100"
                          x-transition:leave-end="opacity-0 scale-95"
                          class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                        <a href="{% url 'accounts:profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <a href="{% url 'accounts:profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-tajawal">
                             <i class="fas fa-user ml-2"></i> ملفي الشخصي
                         </a>
-                        <a href="{% url 'accounts:digital_id' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <a href="{% url 'accounts:digital_id' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-tajawal">
                             <i class="fas fa-id-card ml-2"></i> الهوية الرقمية
                         </a>
-                        <a href="{% url 'accounts:change_password' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <a href="{% url 'accounts:change_password' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-tajawal">
                             <i class="fas fa-key ml-2"></i> تغيير كلمة المرور
                         </a>
-                        <a href="{% url 'notifications:notification_preferences' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <a href="{% url 'notifications:notification_preferences' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-tajawal">
                             <i class="fas fa-cog ml-2"></i> التفضيلات
                         </a>
                         <div class="border-t border-gray-200"></div>
                         <form method="post" action="{% url 'accounts:logout' %}" class="block">
                             {% csrf_token %}
-                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 font-tajawal">
                                 <i class="fas fa-sign-out-alt ml-2"></i> تسجيل الخروج
                             </button>
                         </form>
@@ -197,19 +197,19 @@
          x-transition:leave-end="opacity-0 -translate-y-1"
          class="md:hidden" style="background-color: #0d2159;">
         <div class="px-2 pt-2 pb-3 space-y-1">
-            <a href="{% url 'student_portal:dashboard' %}" class="text-white block px-3 py-2 rounded-md text-base font-medium" style="hover:color: #F5C400;">
+            <a href="{% url 'student_portal:dashboard' %}" class="text-white block px-3 py-2 rounded-md text-base font-medium font-tajawal" style="hover:color: #F5C400;">
                 <i class="fas fa-home ml-2"></i> الرئيسية
             </a>
-            <a href="{% url 'student_portal:services' %}" class="text-white block px-3 py-2 rounded-md text-base font-medium" style="hover:color: #F5C400;">
+            <a href="{% url 'student_portal:services' %}" class="text-white block px-3 py-2 rounded-md text-base font-medium font-tajawal" style="hover:color: #F5C400;">
                 <i class="fas fa-clipboard-list ml-2"></i> الخدمات الإلكترونية
             </a>
-            <a href="{% url 'financial:dashboard' %}" class="text-white block px-3 py-2 rounded-md text-base font-medium" style="hover:color: #F5C400;">
+            <a href="{% url 'financial:dashboard' %}" class="text-white block px-3 py-2 rounded-md text-base font-medium font-tajawal" style="hover:color: #F5C400;">
                 <i class="fas fa-credit-card ml-2"></i> الشؤون المالية
             </a>
-            <a href="{% url 'student_portal:documents' %}" class="text-white block px-3 py-2 rounded-md text-base font-medium" style="hover:color: #F5C400;">
+            <a href="{% url 'student_portal:documents' %}" class="text-white block px-3 py-2 rounded-md text-base font-medium font-tajawal" style="hover:color: #F5C400;">
                 <i class="fas fa-folder ml-2"></i> الوثائق
             </a>
-            <a href="{% url 'student_portal:support' %}" class="text-white block px-3 py-2 rounded-md text-base font-medium" style="hover:color: #F5C400;">
+            <a href="{% url 'student_portal:support' %}" class="text-white block px-3 py-2 rounded-md text-base font-medium font-tajawal" style="hover:color: #F5C400;">
                 <i class="fas fa-headset ml-2"></i> الدعم الفني
             </a>
         </div>

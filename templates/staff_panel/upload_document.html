@@ -1,22 +1,22 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Upload Document - Staff Panel{% endblock %}
+{% block title %}رفع مستند - لوحة الموظفين{% endblock %}
 
 {% block extra_css %}
 <!-- Tailwind CSS styling - no custom styles needed -->
 {% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-50 py-8">
+<div class="min-h-screen bg-gray-50 py-8 font-tajawal" dir="rtl">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Page Heading -->
         <div class="flex items-center justify-between mb-6">
             <h1 class="text-3xl font-bold text-gray-900">
-                <i class="fas fa-upload mr-3" style="color: #102A71;"></i>Upload Document
+                <i class="fas fa-upload ml-3" style="color: #102A71;"></i>رفع مستند
             </h1>
             <a href="{% url 'staff_panel:document_management' %}" class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition-colors">
-                <i class="fas fa-arrow-left mr-2"></i>Back to Documents
+                <i class="fas fa-arrow-right ml-2"></i>العودة إلى المستندات
             </a>
         </div>
 
@@ -24,7 +24,7 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200">
             <div class="px-6 py-4 border-b border-gray-200">
                 <h2 class="text-lg font-semibold text-gray-900">
-                    <i class="fas fa-file-upload mr-2 text-blue-600"></i>Document Upload Form
+                    <i class="fas fa-file-upload ml-2 text-blue-600"></i>نموذج رفع المستند
                 </h2>
             </div>
             <div class="p-6">
@@ -34,10 +34,10 @@
                         <!-- Student Selection -->
                         <div class="mb-6">
                             <label for="student" class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-user mr-2 text-gray-400"></i>Select Student *
+                                <i class="fas fa-user ml-2 text-gray-400"></i>اختر الطالب *
                             </label>
                             <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="student" name="student" required>
-                                <option value="">Choose a student...</option>
+                                <option value="">اختر طالباً...</option>
                                 {% for student in students %}
                                     <option value="{{ student.id }}" 
                                             data-name="{{ student.get_full_name }}" 
@@ -48,19 +48,19 @@
                                 {% endfor %}
                             </select>
                             <div id="studentInfo" class="hidden mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                                <h3 class="text-sm font-semibold text-gray-900 mb-3">Selected Student Information:</h3>
+                                <h3 class="text-sm font-semibold text-gray-900 mb-3">معلومات الطالب المحدد:</h3>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <span class="text-sm font-medium text-gray-500">Name:</span>
-                                        <span class="text-sm text-gray-900 ml-2" id="studentName"></span>
+                                        <span class="text-sm font-medium text-gray-500">الاسم:</span>
+                                        <span class="text-sm text-gray-900 mr-2" id="studentName"></span>
                                     </div>
                                     <div>
-                                        <span class="text-sm font-medium text-gray-500">Student ID:</span>
-                                        <span class="text-sm text-gray-900 ml-2" id="studentId"></span>
+                                        <span class="text-sm font-medium text-gray-500">رقم الطالب:</span>
+                                        <span class="text-sm text-gray-900 mr-2" id="studentId"></span>
                                     </div>
                                     <div class="md:col-span-2">
-                                        <span class="text-sm font-medium text-gray-500">Email:</span>
-                                        <span class="text-sm text-gray-900 ml-2" id="studentEmail"></span>
+                                        <span class="text-sm font-medium text-gray-500">البريد الإلكتروني:</span>
+                                        <span class="text-sm text-gray-900 mr-2" id="studentEmail"></span>
                                     </div>
                                 </div>
                             </div>
@@ -69,10 +69,10 @@
                         <!-- Document Type -->
                         <div class="mb-6">
                             <label for="document_type" class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-tags mr-2 text-gray-400"></i>Document Type *
+                                <i class="fas fa-tags ml-2 text-gray-400"></i>نوع المستند *
                             </label>
                             <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="document_type" name="document_type" required>
-                                <option value="">Choose document type...</option>
+                                <option value="">اختر نوع المستند...</option>
                                 {% for value, label in document_types %}
                                     <option value="{{ value }}">{{ label }}</option>
                                 {% endfor %}
@@ -82,26 +82,26 @@
                         <!-- Document Title -->
                         <div class="mb-6">
                             <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-heading mr-2 text-gray-400"></i>Document Title *
+                                <i class="fas fa-heading ml-2 text-gray-400"></i>عنوان المستند *
                             </label>
                             <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="title" name="title" 
-                                   placeholder="Enter a descriptive title for the document" required>
+                                   placeholder="أدخل عنواناً وصفياً للمستند" required>
                             <p class="text-sm text-gray-500 mt-1">
-                                Example: "Fall 2024 Transcript", "Enrollment Certificate - Spring 2024"
+                                مثال: "كشف درجات خريف 2024"، "شهادة قيد - ربيع 2024"
                             </p>
                         </div>
 
                         <!-- File Upload Area -->
                         <div class="mb-6">
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-file mr-2 text-gray-400"></i>Document File *
+                                <i class="fas fa-file ml-2 text-gray-400"></i>ملف المستند *
                             </label>
                             <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer" id="uploadArea">
                                 <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
-                                <h5 class="text-lg text-gray-600 mb-2">Drop files here or click to browse</h5>
+                                <h5 class="text-lg text-gray-600 mb-2">اسحب الملفات هنا أو انقر للتصفح</h5>
                                 <p class="text-gray-500 text-sm">
-                                    Supported formats: PDF, DOC, DOCX, JPG, JPEG, PNG<br>
-                                    Maximum file size: 10MB
+                                    الصيغ المدعومة: PDF, DOC, DOCX, JPG, JPEG, PNG<br>
+                                    الحد الأقصى لحجم الملف: 10 ميجابايت
                                 </p>
                                 <input type="file" id="document_file" name="document_file" 
                                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" 
@@ -128,7 +128,7 @@
                         <!-- Submit Button -->
                         <div class="mb-0">
                             <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors text-lg" id="submitBtn">
-                                <i class="fas fa-upload mr-2"></i>Upload Document
+                                <i class="fas fa-upload ml-2"></i>رفع المستند
                             </button>
                         </div>
                     </form>
@@ -233,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Disable submit button to prevent double submission
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Uploading...';
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin ml-2"></i>جاري الرفع...';
     });
     
     function validateForm() {
@@ -243,28 +243,28 @@ document.addEventListener('DOMContentLoaded', function() {
         const file = document.getElementById('document_file').files[0];
 
         if (!student) {
-            alert('Please select a student.');
+            alert('يرجى اختيار طالب.');
             return false;
         }
 
         if (!documentType) {
-            alert('Please select a document type.');
+            alert('يرجى اختيار نوع المستند.');
             return false;
         }
 
         if (!title.trim()) {
-            alert('Please enter a document title.');
+            alert('يرجى إدخال عنوان المستند.');
             return false;
         }
 
         if (!file) {
-            alert('Please select a file to upload.');
+            alert('يرجى اختيار ملف للرفع.');
             return false;
         }
 
         // Check file size (10MB limit)
         if (file.size > 10 * 1024 * 1024) {
-            alert('File size must be less than 10MB.');
+            alert('يجب أن يكون حجم الملف أقل من 10 ميجابايت.');
             return false;
         }
 

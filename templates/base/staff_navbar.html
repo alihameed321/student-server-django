@@ -6,31 +6,31 @@
                 <a href="{% url 'staff_panel:dashboard' %}" class="flex items-center">
                     {% load static %}
                     <img src="{% static 'images/logo.png' %}" alt="University Logo" class="w-10 h-10 object-contain mr-3">
-                    <span class="text-white text-xl font-bold hidden sm:block">لوحة الموظفين</span>
+                    <span class="text-white text-xl font-bold hidden sm:block font-tajawal">لوحة الموظفين</span>
                 </a>
             </div>
             
             <!-- Desktop Navigation -->
             <div class="hidden md:flex items-center space-x-6">
-                <a href="{% url 'staff_panel:dashboard' %}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                <a href="{% url 'staff_panel:dashboard' %}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors font-tajawal">
                     <i class="fas fa-tachometer-alt ml-1"></i> لوحة التحكم
                 </a>
-                <a href="{% url 'staff_panel:request_management' %}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                <a href="{% url 'staff_panel:request_management' %}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors font-tajawal">
                     <i class="fas fa-tasks ml-1"></i> الطلبات
                 </a>
-                <a href="{% url 'staff_panel:financial_management' %}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                <a href="{% url 'staff_panel:financial_management' %}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors font-tajawal">
                     <i class="fas fa-dollar-sign ml-1"></i> المالية
                 </a>
-                <a href="{% url 'staff_panel:student_management' %}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                <a href="{% url 'staff_panel:student_management' %}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors font-tajawal">
                     <i class="fas fa-users ml-1"></i> الطلاب
                 </a>
-                <a href="{% url 'staff_panel:document_management' %}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                <a href="{% url 'staff_panel:document_management' %}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors font-tajawal">
                     <i class="fas fa-file-alt ml-1"></i> الوثائق
                 </a>
-                <a href="{% url 'staff_panel:announcement_management' %}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                <a href="{% url 'staff_panel:announcement_management' %}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors font-tajawal">
                     <i class="fas fa-bullhorn ml-1"></i> الإعلانات
                 </a>
-                <a href="{% url 'staff_panel:reports' %}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                <a href="{% url 'staff_panel:reports' %}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors font-tajawal">
                     <i class="fas fa-chart-bar ml-1"></i> التقارير
                 </a>
             </div>
@@ -55,24 +55,24 @@
                          x-transition:leave-end="opacity-0 scale-95"
                          class="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 z-50">
                         <div class="px-4 py-2 border-b border-gray-200">
-                            <h3 class="text-sm font-medium text-gray-900">الإجراءات السريعة</h3>
+                            <h3 class="text-sm font-medium text-gray-900 font-tajawal">الإجراءات السريعة</h3>
                         </div>
-                        <a href="{% url 'staff_panel:create_announcement' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <a href="{% url 'staff_panel:create_announcement' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-tajawal">
                             <i class="fas fa-bullhorn ml-2 text-blue-500"></i> إنشاء إعلان
                         </a>
-                        <a href="{% url 'staff_panel:notification_create' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <a href="{% url 'staff_panel:notification_create' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-tajawal">
                             <i class="fas fa-bell ml-2 text-yellow-500"></i> إنشاء إشعار
                         </a>
-                        <a href="{% url 'staff_panel:create_fee' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <a href="{% url 'staff_panel:create_fee' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-tajawal">
                             <i class="fas fa-plus ml-2 text-green-500"></i> إنشاء رسوم
                         </a>
-                        <a href="{% url 'staff_panel:upload_document' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <a href="{% url 'staff_panel:upload_document' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-tajawal">
                             <i class="fas fa-upload ml-2 text-indigo-500"></i> رفع وثيقة
                         </a>
-                        <a href="{% url 'staff_panel:student_search' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <a href="{% url 'staff_panel:student_search' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-tajawal">
                             <i class="fas fa-search ml-2 text-purple-500"></i> البحث عن طالب
                         </a>
-                        <a href="{% url 'staff_panel:generate_report' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <a href="{% url 'staff_panel:generate_report' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-tajawal">
                             <i class="fas fa-file-alt ml-2 text-orange-500"></i> إنشاء تقرير
                         </a>
                     </div>
@@ -103,16 +103,16 @@
                          x-transition:leave-end="opacity-0 scale-95"
                          class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 z-50">
                         <div class="px-4 py-2 border-b border-gray-200">
-                            <h3 class="text-sm font-medium text-gray-900">العناصر المعلقة</h3>
+                            <h3 class="text-sm font-medium text-gray-900 font-tajawal">العناصر المعلقة</h3>
                         </div>
                         <div class="max-h-64 overflow-y-auto">
-                            <a href="{% url 'staff_panel:request_management' %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100">
+                            <a href="{% url 'staff_panel:request_management' %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 font-tajawal">
                                 <div class="flex items-center justify-between">
                                     <span><i class="fas fa-clipboard-list ml-2 text-blue-500"></i> الطلبات المعلقة</span>
                                     <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full" x-text="pendingRequestsCount"></span>
                                 </div>
                             </a>
-                            <a href="{% url 'staff_panel:pending_payments' %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100">
+                            <a href="{% url 'staff_panel:pending_payments' %}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 font-tajawal">
                                 <div class="flex items-center justify-between">
                                     <span><i class="fas fa-credit-card ml-2 text-green-500"></i> تحقق المدفوعات</span>
                                     <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full" x-text="pendingPaymentsCount"></span>
@@ -120,7 +120,7 @@
                             </a>
                         </div>
                         <div class="border-t border-gray-200 px-4 py-2">
-                            <a href="{% url 'staff_panel:dashboard' %}" class="text-sm text-gray-600 hover:text-gray-800">
+                            <a href="{% url 'staff_panel:dashboard' %}" class="text-sm text-gray-600 hover:text-gray-800 font-tajawal">
                                 عرض لوحة التحكم
                             </a>
                         </div>
@@ -152,19 +152,19 @@
                          x-transition:leave-start="opacity-100 scale-100"
                          x-transition:leave-end="opacity-0 scale-95"
                          class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                        <a href="{% url 'accounts:profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <a href="{% url 'accounts:profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-tajawal">
                             <i class="fas fa-user ml-2"></i> ملفي الشخصي
                         </a>
-                        <a href="{% url 'accounts:change_password' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <a href="{% url 'accounts:change_password' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-tajawal">
                             <i class="fas fa-key ml-2"></i> تغيير كلمة المرور
                         </a>
-                        <a href="{% url 'staff_panel:system_settings' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <a href="{% url 'staff_panel:system_settings' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-tajawal">
                             <i class="fas fa-cog ml-2"></i> إعدادات النظام
                         </a>
                         <div class="border-t border-gray-200"></div>
                         <form method="post" action="{% url 'accounts:logout' %}" class="block">
                             {% csrf_token %}
-                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 font-tajawal">
                                 <i class="fas fa-sign-out-alt ml-2"></i> تسجيل الخروج
                             </button>
                         </form>
@@ -190,25 +190,25 @@
          x-transition:leave-end="opacity-0 -translate-y-1"
          class="md:hidden bg-gray-900">
         <div class="px-2 pt-2 pb-3 space-y-1">
-            <a href="{% url 'staff_panel:dashboard' %}" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+            <a href="{% url 'staff_panel:dashboard' %}" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium font-tajawal">
                 <i class="fas fa-tachometer-alt ml-2"></i> لوحة التحكم
             </a>
-            <a href="{% url 'staff_panel:request_management' %}" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+            <a href="{% url 'staff_panel:request_management' %}" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium font-tajawal">
                 <i class="fas fa-tasks ml-2"></i> الطلبات
             </a>
-            <a href="{% url 'staff_panel:financial_management' %}" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+            <a href="{% url 'staff_panel:financial_management' %}" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium font-tajawal">
                 <i class="fas fa-dollar-sign ml-2"></i> المالية
             </a>
-            <a href="{% url 'staff_panel:student_management' %}" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+            <a href="{% url 'staff_panel:student_management' %}" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium font-tajawal">
                 <i class="fas fa-users ml-2"></i> الطلاب
             </a>
-            <a href="{% url 'staff_panel:document_management' %}" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+            <a href="{% url 'staff_panel:document_management' %}" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium font-tajawal">
                 <i class="fas fa-file-alt ml-2"></i> الوثائق
             </a>
-            <a href="{% url 'staff_panel:announcement_management' %}" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+            <a href="{% url 'staff_panel:announcement_management' %}" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium font-tajawal">
                 <i class="fas fa-bullhorn ml-2"></i> الإعلانات
             </a>
-            <a href="{% url 'staff_panel:reports' %}" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+            <a href="{% url 'staff_panel:reports' %}" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium font-tajawal">
                 <i class="fas fa-chart-bar ml-2"></i> التقارير
             </a>
         </div>

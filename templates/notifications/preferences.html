@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Notification Preferences - University Services{% endblock %}
+{% block title %}تفضيلات الإشعارات - خدمات الجامعة{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-8">
@@ -11,11 +11,11 @@
             <div class="px-6 py-4 border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900">
-                            <i class="fas fa-cog mr-3" style="color: #102A71;"></i>
-                            Notification Preferences
+                        <h1 class="text-2xl font-bold text-gray-900 font-tajawal">
+                            <i class="fas fa-cog ml-3" style="color: #102A71;"></i>
+                            تفضيلات الإشعارات
                         </h1>
-                        <p class="text-gray-600">Manage how you receive notifications from the university</p>
+                        <p class="text-gray-600 font-tajawal">إدارة كيفية تلقي الإشعارات من الجامعة</p>
                     </div>
                 </div>
             </div>
@@ -24,8 +24,8 @@
         <!-- Notification Settings -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-900">Email Notifications</h2>
-                <p class="text-sm text-gray-600">Choose which notifications you'd like to receive via email</p>
+                <h2 class="text-lg font-semibold text-gray-900 font-tajawal">إشعارات البريد الإلكتروني</h2>
+                <p class="text-sm text-gray-600 font-tajawal">اختر الإشعارات التي تريد تلقيها عبر البريد الإلكتروني</p>
             </div>
             
             <div class="p-6">
@@ -36,8 +36,8 @@
                         <!-- Service Requests -->
                         <div class="flex items-center justify-between py-4 border-b border-gray-100">
                             <div>
-                                <h3 class="text-sm font-medium text-gray-900">Service Request Updates</h3>
-                                <p class="text-sm text-gray-500">Get notified when your service requests are updated</p>
+                                <h3 class="text-sm font-medium text-gray-900 font-tajawal">تحديثات طلبات الخدمة</h3>
+                                <p class="text-sm text-gray-500 font-tajawal">احصل على إشعار عند تحديث طلبات الخدمة الخاصة بك</p>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" class="sr-only peer" name="service_requests" checked>
@@ -48,8 +48,8 @@
                         <!-- Financial Updates -->
                         <div class="flex items-center justify-between py-4 border-b border-gray-100">
                             <div>
-                                <h3 class="text-sm font-medium text-gray-900">Financial Updates</h3>
-                                <p class="text-sm text-gray-500">Receive notifications about fees, payments, and financial deadlines</p>
+                                <h3 class="text-sm font-medium text-gray-900 font-tajawal">التحديثات المالية</h3>
+                                <p class="text-sm text-gray-500 font-tajawal">تلقي إشعارات حول الرسوم والمدفوعات والمواعيد النهائية المالية</p>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" class="sr-only peer" name="financial_updates" checked>
@@ -60,8 +60,8 @@
                         <!-- Academic Announcements -->
                         <div class="flex items-center justify-between py-4 border-b border-gray-100">
                             <div>
-                                <h3 class="text-sm font-medium text-gray-900">Academic Announcements</h3>
-                                <p class="text-sm text-gray-500">Stay updated with important academic announcements</p>
+                                <h3 class="text-sm font-medium text-gray-900 font-tajawal">الإعلانات الأكاديمية</h3>
+                                <p class="text-sm text-gray-500 font-tajawal">ابق على اطلاع بالإعلانات الأكاديمية المهمة</p>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" class="sr-only peer" name="academic_announcements" checked>
@@ -72,8 +72,8 @@
                         <!-- Support Tickets -->
                         <div class="flex items-center justify-between py-4 border-b border-gray-100">
                             <div>
-                                <h3 class="text-sm font-medium text-gray-900">Support Ticket Updates</h3>
-                                <p class="text-sm text-gray-500">Get notified when support staff respond to your tickets</p>
+                                <h3 class="text-sm font-medium text-gray-900 font-tajawal">تحديثات تذاكر الدعم</h3>
+                                <p class="text-sm text-gray-500 font-tajawal">احصل على إشعار عندما يرد فريق الدعم على تذاكرك</p>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" class="sr-only peer" name="support_tickets" checked>
@@ -84,8 +84,8 @@
                         <!-- Document Ready -->
                         <div class="flex items-center justify-between py-4">
                             <div>
-                                <h3 class="text-sm font-medium text-gray-900">Document Ready</h3>
-                                <p class="text-sm text-gray-500">Be notified when your requested documents are ready for download</p>
+                                <h3 class="text-sm font-medium text-gray-900 font-tajawal">الوثائق جاهزة</h3>
+                                <p class="text-sm text-gray-500 font-tajawal">احصل على إشعار عندما تكون الوثائق المطلوبة جاهزة للتحميل</p>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" class="sr-only peer" name="document_ready" checked>
@@ -97,9 +97,9 @@
                     <!-- Save Button -->
                     <div class="mt-8 pt-6 border-t border-gray-200">
                         <div class="flex justify-end">
-                            <button type="submit" class="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-colors hover:opacity-90" style="background-color: #102A71;">
-                                <i class="fas fa-save mr-2"></i>
-                                Save Preferences
+                            <button type="submit" class="inline-flex items-center px-6 py-3 text-white font-medium rounded-lg transition-colors hover:opacity-90 font-tajawal" style="background-color: #102A71;">
+                                <i class="fas fa-save ml-2"></i>
+                                حفظ التفضيلات
                             </button>
                         </div>
                     </div>
@@ -110,8 +110,8 @@
         <!-- Notification Frequency -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 mt-6">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-900">Notification Frequency</h2>
-                <p class="text-sm text-gray-600">Control how often you receive notifications</p>
+                <h2 class="text-lg font-semibold text-gray-900 font-tajawal">تكرار الإشعارات</h2>
+                <p class="text-sm text-gray-600 font-tajawal">تحكم في عدد مرات تلقي الإشعارات</p>
             </div>
             
             <div class="p-6">
@@ -120,8 +120,8 @@
                         <label class="flex items-center">
                             <input type="radio" name="frequency" value="immediate" class="mr-3" checked>
                             <div>
-                                <span class="text-sm font-medium text-gray-900">Immediate</span>
-                                <p class="text-sm text-gray-500">Receive notifications as soon as they happen</p>
+                                <span class="text-sm font-medium text-gray-900 font-tajawal">فوري</span>
+                                <p class="text-sm text-gray-500 font-tajawal">تلقي الإشعارات بمجرد حدوثها</p>
                             </div>
                         </label>
                     </div>
@@ -129,8 +129,8 @@
                         <label class="flex items-center">
                             <input type="radio" name="frequency" value="daily" class="mr-3">
                             <div>
-                                <span class="text-sm font-medium text-gray-900">Daily Digest</span>
-                                <p class="text-sm text-gray-500">Receive a summary of notifications once per day</p>
+                                <span class="text-sm font-medium text-gray-900 font-tajawal">ملخص يومي</span>
+                                <p class="text-sm text-gray-500 font-tajawal">تلقي ملخص للإشعارات مرة واحدة في اليوم</p>
                             </div>
                         </label>
                     </div>
@@ -138,8 +138,8 @@
                         <label class="flex items-center">
                             <input type="radio" name="frequency" value="weekly" class="mr-3">
                             <div>
-                                <span class="text-sm font-medium text-gray-900">Weekly Summary</span>
-                                <p class="text-sm text-gray-500">Receive a weekly summary of all notifications</p>
+                                <span class="text-sm font-medium text-gray-900 font-tajawal">ملخص أسبوعي</span>
+                                <p class="text-sm text-gray-500 font-tajawal">تلقي ملخص أسبوعي لجميع الإشعارات</p>
                             </div>
                         </label>
                     </div>

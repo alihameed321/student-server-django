@@ -1,0 +1,209 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}إضافة مقدم دفع - لوحة الموظفين{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 font-tajawal">إضافة مقدم دفع جديد</h1>
+                    <p class="mt-2 text-gray-600 font-tajawal">إضافة مقدم خدمة دفع جديد للطلاب</p>
+                </div>
+                <a href="{% url 'staff_panel:payment_provider_management' %}" 
+                   class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors font-tajawal">
+                    <i class="fas fa-arrow-right mr-2"></i>العودة لإدارة مقدمي الدفع
+                </a>
+            </div>
+        </div>
+
+        <!-- Create Payment Provider Form -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <form method="post" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Provider Name -->
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-2 font-tajawal">
+                            اسم مقدم الدفع *
+                        </label>
+                        <input type="text" id="name" name="name" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-tajawal"
+                               placeholder="مثال: البنك الأهلي">
+                    </div>
+
+                    <!-- Logo -->
+                    <div>
+                        <label for="logo" class="block text-sm font-medium text-gray-700 mb-2 font-tajawal">
+                            شعار مقدم الدفع
+                        </label>
+                        <input type="file" id="logo" name="logo" accept="image/*"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <p class="text-xs text-gray-500 mt-1 font-tajawal">اختياري - يفضل صورة مربعة بحجم 200x200 بكسل</p>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2 font-tajawal">
+                        وصف مقدم الدفع *
+                    </label>
+                    <textarea id="description" name="description" rows="3" required
+                              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-tajawal"
+                              placeholder="وصف مختصر عن مقدم الدفع وخدماته"></textarea>
+                </div>
+
+                <!-- Payment Instructions -->
+                <div>
+                    <label for="instructions" class="block text-sm font-medium text-gray-700 mb-2 font-tajawal">
+                        تعليمات الدفع
+                    </label>
+                    <textarea id="instructions" name="instructions" rows="4"
+                              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-tajawal"
+                              placeholder="تعليمات مفصلة للطلاب حول كيفية الدفع عبر هذا المقدم"></textarea>
+                    <p class="text-xs text-gray-500 mt-1 font-tajawal">اختياري - تعليمات إضافية للطلاب</p>
+                </div>
+
+                <div class="border-t border-gray-200 pt-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4 font-tajawal">معلومات الحساب المصرفي</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Account Name -->
+                        <div>
+                            <label for="account_name" class="block text-sm font-medium text-gray-700 mb-2 font-tajawal">
+                                اسم صاحب الحساب *
+                            </label>
+                            <input type="text" id="account_name" name="account_name" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-tajawal"
+                                   placeholder="اسم الجامعة أو المؤسسة">
+                        </div>
+
+                        <!-- Account Number -->
+                        <div>
+                            <label for="account_number" class="block text-sm font-medium text-gray-700 mb-2 font-tajawal">
+                                رقم الحساب *
+                            </label>
+                            <input type="text" id="account_number" name="account_number" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="1234567890">
+                        </div>
+
+                        <!-- Bank Name -->
+                        <div>
+                            <label for="bank_name" class="block text-sm font-medium text-gray-700 mb-2 font-tajawal">
+                                اسم البنك
+                            </label>
+                            <input type="text" id="bank_name" name="bank_name"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-tajawal"
+                                   placeholder="البنك الأهلي السعودي">
+                        </div>
+
+                        <!-- IBAN -->
+                        <div>
+                            <label for="iban" class="block text-sm font-medium text-gray-700 mb-2 font-tajawal">
+                                رقم الآيبان (IBAN)
+                            </label>
+                            <input type="text" id="iban" name="iban"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="SA1234567890123456789012">
+                        </div>
+
+                        <!-- SWIFT Code -->
+                        <div>
+                            <label for="swift_code" class="block text-sm font-medium text-gray-700 mb-2 font-tajawal">
+                                رمز السويفت (SWIFT)
+                            </label>
+                            <input type="text" id="swift_code" name="swift_code"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="NCBKSARI">
+                        </div>
+
+                        <!-- Status -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2 font-tajawal">
+                                حالة مقدم الدفع
+                            </label>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="is_active" name="is_active" checked
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <label for="is_active" class="mr-2 text-sm text-gray-700 font-tajawal">
+                                    نشط (متاح للطلاب)
+                                </label>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1 font-tajawal">إذا لم يكن محدداً، لن يظهر للطلاب كخيار دفع</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
+                    <a href="{% url 'staff_panel:payment_provider_management' %}" 
+                       class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded-lg transition-colors font-tajawal">
+                        إلغاء
+                    </a>
+                    <button type="submit" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors font-tajawal">
+                        <i class="fas fa-save mr-2"></i>حفظ مقدم الدفع
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Preview logo when selected
+document.getElementById('logo').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // Create preview if doesn't exist
+            let preview = document.getElementById('logoPreview');
+            if (!preview) {
+                preview = document.createElement('img');
+                preview.id = 'logoPreview';
+                preview.className = 'mt-2 w-20 h-20 object-cover rounded-lg border border-gray-300';
+                document.getElementById('logo').parentNode.appendChild(preview);
+            }
+            preview.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Format IBAN input
+document.getElementById('iban').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\s/g, '').toUpperCase();
+    let formatted = value.match(/.{1,4}/g)?.join(' ') || value;
+    if (formatted !== e.target.value) {
+        e.target.value = formatted;
+    }
+});
+
+// Validate form before submission
+document.querySelector('form').addEventListener('submit', function(e) {
+    const requiredFields = ['name', 'description', 'account_name', 'account_number'];
+    let isValid = true;
+    
+    requiredFields.forEach(fieldName => {
+        const field = document.getElementById(fieldName);
+        if (!field.value.trim()) {
+            field.classList.add('border-red-500');
+            isValid = false;
+        } else {
+            field.classList.remove('border-red-500');
+        }
+    });
+    
+    if (!isValid) {
+        e.preventDefault();
+        alert('يرجى ملء جميع الحقول المطلوبة');
+    }
+});
+</script>
+{% endblock %}

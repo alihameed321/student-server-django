@@ -15,10 +15,22 @@ class ServiceRequestForm(forms.ModelForm):
     #     }),
     #     help_text='Upload supporting documents (PDF, DOC, DOCX, JPG, PNG) - Max 10MB'
     # )
-    
+
     class Meta:
         model = ServiceRequest
         fields = ['request_type', 'title', 'description', 'priority']
+        labels = {
+            'request_type': 'نوع الطلب',
+            'title': 'عنوان الطلب',
+            'description': 'وصف الطلب',
+            'priority': 'الأولوية',
+        }
+        help_texts = {
+            'request_type': 'اختر نوع الخدمة المطلوبة',
+            'title': 'أدخل عنوان مختصر للطلب',
+            'description': 'اوصف طلبك بالتفصيل',
+            'priority': 'حدد أولوية معالجة الطلب',
+        }
         widgets = {
             'request_type': forms.Select(attrs={
                 'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
@@ -74,6 +86,18 @@ class SupportTicketForm(forms.ModelForm):
     class Meta:
         model = SupportTicket
         fields = ['subject', 'category', 'description', 'priority']
+        labels = {
+            'subject': 'موضوع التذكرة',
+            'category': 'الفئة',
+            'description': 'وصف المشكلة',
+            'priority': 'الأولوية',
+        }
+        help_texts = {
+            'subject': 'أدخل موضوع واضح للتذكرة',
+            'category': 'اختر الفئة المناسبة للمشكلة',
+            'description': 'اوصف مشكلتك بالتفصيل',
+            'priority': 'حدد أولوية المشكلة',
+        }
         widgets = {
             'subject': forms.TextInput(attrs={
                 'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
@@ -113,6 +137,12 @@ class TicketResponseForm(forms.ModelForm):
     class Meta:
         model = TicketResponse
         fields = ['message']
+        labels = {
+            'message': 'الرد',
+        }
+        help_texts = {
+            'message': 'أدخل ردك على التذكرة',
+        }
         widgets = {
             'message': forms.Textarea(attrs={
                 'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',

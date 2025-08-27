@@ -1,0 +1,322 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}إدارة مقدمي الدفع - لوحة الموظفين{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 font-tajawal">إدارة مقدمي الدفع</h1>
+                    <p class="mt-2 text-gray-600 font-tajawal">إدارة وتكوين مقدمي خدمات الدفع</p>
+                </div>
+                <div class="flex space-x-3">
+                    <a href="{% url 'staff_panel:create_payment_provider' %}" 
+                       class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-tajawal">
+                        <i class="fas fa-plus mr-2"></i>إضافة مقدم دفع
+                    </a>
+                    <a href="{% url 'staff_panel:financial_management' %}" 
+                       class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors font-tajawal">
+                        <i class="fas fa-arrow-right mr-2"></i>العودة
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-credit-card text-blue-600"></i>
+                        </div>
+                    </div>
+                    <div class="mr-4">
+                        <p class="text-sm font-medium text-gray-600 font-tajawal">إجمالي مقدمي الدفع</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ total_providers }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-check-circle text-green-600"></i>
+                        </div>
+                    </div>
+                    <div class="mr-4">
+                        <p class="text-sm font-medium text-gray-600 font-tajawal">مقدمو الدفع النشطون</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ active_providers }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-times-circle text-red-600"></i>
+                        </div>
+                    </div>
+                    <div class="mr-4">
+                        <p class="text-sm font-medium text-gray-600 font-tajawal">مقدمو الدفع غير النشطين</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ inactive_providers }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+            <div class="p-6">
+                <form method="GET" class="flex flex-col sm:flex-row gap-4">
+                    <div class="flex-1">
+                        <div class="relative">
+                            <input type="text" 
+                                   name="search" 
+                                   value="{{ search_query }}" 
+                                   placeholder="البحث بالاسم أو الوصف..."
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-tajawal">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="submit" 
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-tajawal">
+                            <i class="fas fa-search mr-2"></i>بحث
+                        </button>
+                        {% if search_query %}
+                            <a href="{% url 'staff_panel:payment_provider_management' %}" 
+                               class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors font-tajawal">
+                                <i class="fas fa-times mr-2"></i>مسح
+                            </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Payment Providers List -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-semibold text-gray-900 font-tajawal">مقدمو الدفع</h2>
+                    <span class="text-sm text-gray-500 font-tajawal">{{ providers|length }} من {{ total_providers }}</span>
+                </div>
+                
+                {% if providers %}
+                    <div class="space-y-4">
+                        {% for provider in providers %}
+                            <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        {% if provider.logo %}
+                                            <img src="{{ provider.logo.url }}" alt="{{ provider.name }}" class="w-12 h-12 rounded-lg object-cover">
+                                        {% else %}
+                                            <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-credit-card text-gray-400"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div class="flex-1">
+                                            <div class="flex items-center space-x-3">
+                                                <h3 class="text-lg font-medium text-gray-900 font-tajawal">{{ provider.name }}</h3>
+                                                {% if provider.is_active %}
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 font-tajawal">
+                                                        نشط
+                                                    </span>
+                                                {% else %}
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 font-tajawal">
+                                                        غير نشط
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                            <p class="text-sm text-gray-600 mt-1 font-tajawal">{{ provider.description }}</p>
+                                            <div class="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                                                <span class="font-tajawal"><i class="fas fa-university mr-1"></i>{{ provider.bank_name|default:"غير محدد" }}</span>
+                                                <span class="font-tajawal"><i class="fas fa-user mr-1"></i>{{ provider.account_name }}</span>
+                                                <span class="font-tajawal"><i class="fas fa-hashtag mr-1"></i>{{ provider.account_number }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <a href="{% url 'staff_panel:edit_payment_provider' provider.id %}" 
+                                           class="text-blue-600 hover:text-blue-800 p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                                           title="تعديل">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button onclick="deleteProvider({{ provider.id }}, '{{ provider.name }}')"
+                                                class="text-red-600 hover:text-red-800 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                                                title="حذف">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Pagination -->
+                    {% if providers.has_other_pages %}
+                        <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-6">
+                            <div class="flex flex-1 justify-between sm:hidden">
+                                {% if providers.has_previous %}
+                                    <a href="?page={{ providers.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" 
+                                       class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 font-tajawal">
+                                        السابق
+                                    </a>
+                                {% endif %}
+                                {% if providers.has_next %}
+                                    <a href="?page={{ providers.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" 
+                                       class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 font-tajawal">
+                                        التالي
+                                    </a>
+                                {% endif %}
+                            </div>
+                            <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-700 font-tajawal">
+                                        عرض
+                                        <span class="font-medium">{{ providers.start_index }}</span>
+                                        إلى
+                                        <span class="font-medium">{{ providers.end_index }}</span>
+                                        من
+                                        <span class="font-medium">{{ providers.paginator.count }}</span>
+                                        نتيجة
+                                    </p>
+                                </div>
+                                <div>
+                                    <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                                        {% if providers.has_previous %}
+                                            <a href="?page={{ providers.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" 
+                                               class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                                                <i class="fas fa-chevron-right h-5 w-5"></i>
+                                            </a>
+                                        {% endif %}
+                                        
+                                        {% for num in providers.paginator.page_range %}
+                                            {% if providers.number == num %}
+                                                <span class="relative z-10 inline-flex items-center bg-blue-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">{{ num }}</span>
+                                            {% elif num > providers.number|add:'-3' and num < providers.number|add:'3' %}
+                                                <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}" 
+                                                   class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">{{ num }}</a>
+                                            {% endif %}
+                                        {% endfor %}
+                                        
+                                        {% if providers.has_next %}
+                                            <a href="?page={{ providers.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" 
+                                               class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                                                <i class="fas fa-chevron-left h-5 w-5"></i>
+                                            </a>
+                                        {% endif %}
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center py-12">
+                        <div class="w-24 h-24 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-credit-card text-gray-400 text-3xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2 font-tajawal">لا توجد مقدمو دفع</h3>
+                        <p class="text-gray-600 mb-6 font-tajawal">
+                            {% if search_query %}
+                                لم يتم العثور على مقدمي دفع يطابقون البحث "{{ search_query }}"
+                            {% else %}
+                                لم يتم إضافة أي مقدم دفع بعد
+                            {% endif %}
+                        </p>
+                        <a href="{% url 'staff_panel:create_payment_provider' %}" 
+                           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-tajawal">
+                            <i class="fas fa-plus mr-2"></i>إضافة مقدم دفع
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3 text-center">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                <i class="fas fa-exclamation-triangle text-red-600"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mt-2 font-tajawal">تأكيد الحذف</h3>
+            <div class="mt-2 px-7 py-3">
+                <p class="text-sm text-gray-500 font-tajawal">
+                    هل أنت متأكد من حذف مقدم الدفع "<span id="providerName"></span>"؟
+                    لا يمكن التراجع عن هذا الإجراء.
+                </p>
+            </div>
+            <div class="items-center px-4 py-3">
+                <button id="confirmDelete" 
+                        class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-24 mr-2 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300 font-tajawal">
+                    حذف
+                </button>
+                <button id="cancelDelete" 
+                        class="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md w-24 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 font-tajawal">
+                    إلغاء
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let providerToDelete = null;
+
+function deleteProvider(providerId, providerName) {
+    providerToDelete = providerId;
+    document.getElementById('providerName').textContent = providerName;
+    document.getElementById('deleteModal').classList.remove('hidden');
+}
+
+document.getElementById('confirmDelete').addEventListener('click', function() {
+    if (providerToDelete) {
+        fetch(`/staff/api/payment-providers/${providerToDelete}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload();
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('حدث خطأ أثناء حذف مقدم الدفع');
+        });
+    }
+    document.getElementById('deleteModal').classList.add('hidden');
+});
+
+document.getElementById('cancelDelete').addEventListener('click', function() {
+    document.getElementById('deleteModal').classList.add('hidden');
+    providerToDelete = null;
+});
+
+// Close modal when clicking outside
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        this.classList.add('hidden');
+        providerToDelete = null;
+    }
+});
+</script>
+{% endblock %}

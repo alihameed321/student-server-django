@@ -84,7 +84,7 @@ def eservices_center(request):
 def create_request(request):
     """Create new academic request"""
     if not request.user.is_student:
-        messages.error(request, 'Access denied. Students only.')
+        messages.error(request, 'الوصول مرفوض. للطلاب فقط.')
         return redirect('accounts:login')
     
     if request.method == 'POST':
@@ -150,7 +150,7 @@ def cancel_request(request, request_id):
 def document_inbox(request):
     """Document inbox view"""
     if not request.user.is_student:
-        messages.error(request, 'Access denied. Students only.')
+        messages.error(request, 'الوصول مرفوض. للطلاب فقط.')
         return redirect('accounts:login')
     
     documents_list = StudentDocument.objects.filter(
@@ -199,7 +199,7 @@ def download_document(request, document_id):
 def support_center(request):
     """Support center view"""
     if not request.user.is_student:
-        messages.error(request, 'Access denied. Students only.')
+        messages.error(request, 'الوصول مرفوض. للطلاب فقط.')
         return redirect('accounts:login')
     
     tickets_list = SupportTicket.objects.filter(
@@ -222,7 +222,7 @@ def support_center(request):
 def create_ticket(request):
     """Create new support ticket"""
     if not request.user.is_student:
-        messages.error(request, 'Access denied. Students only.')
+        messages.error(request, 'الوصول مرفوض. للطلاب فقط.')
         return redirect('accounts:login')
     
     if request.method == 'POST':
@@ -234,7 +234,7 @@ def create_ticket(request):
             messages.success(request, 'تم إنشاء تذكرة الدعم بنجاح!')
             return redirect('student_portal:support_center')
         else:
-            messages.error(request, 'Please correct the errors below.')
+            messages.error(request, 'يرجى تصحيح الأخطاء أدناه.')
     else:
         form = SupportTicketForm()
     
@@ -334,7 +334,7 @@ def get_dashboard_stats(request):
 def my_requests(request):
     """View all user requests"""
     if not request.user.is_student:
-        messages.error(request, 'Access denied. Students only.')
+        messages.error(request, 'الوصول مرفوض. للطلاب فقط.')
         return redirect('accounts:login')
     
     requests_list = ServiceRequest.objects.filter(
@@ -358,7 +358,7 @@ def my_requests(request):
 def get_recent_requests(request):
     """AJAX endpoint to get recent requests"""
     if not request.user.is_student:
-        return JsonResponse({'error': 'Access denied'}, status=403)
+        return JsonResponse({'error': 'الوصول مرفوض'}, status=403)
     
     recent_requests = ServiceRequest.objects.filter(
         student=request.user
@@ -382,7 +382,7 @@ def get_recent_requests(request):
 def documents(request):
     """View for student documents page"""
     if not request.user.is_student:
-        messages.error(request, 'Access denied. Students only.')
+        messages.error(request, 'الوصول مرفوض. للطلاب فقط.')
         return redirect('accounts:login')
     
     documents = StudentDocument.objects.filter(
@@ -399,7 +399,7 @@ def documents(request):
 def support(request):
     """View for support center page"""
     if not request.user.is_student:
-        messages.error(request, 'Access denied. Students only.')
+        messages.error(request, 'الوصول مرفوض. للطلاب فقط.')
         return redirect('accounts:login')
     
     tickets = SupportTicket.objects.filter(
