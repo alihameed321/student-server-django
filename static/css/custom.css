@@ -8,7 +8,9 @@
 
 /* Apply fonts to body and common elements */
 body {
-    font-family: var(--font-tajawal);
+    font-family: 'Amiri', 'Noto Sans Arabic', var(--font-tajawal), sans-serif;
+    direction: rtl;
+    text-align: right;
 }
 
 .font-tajawal {
@@ -24,6 +26,167 @@ body {
     font-family: var(--font-ibm-plex-arabic);
     direction: rtl;
     text-align: right;
+}
+
+/* RTL Support for Arabic */
+html[dir="rtl"], .rtl {
+    direction: rtl;
+    text-align: right;
+}
+
+/* Arabic font rendering improvements */
+.arabic-text, .rtl, [lang="ar"] {
+    font-family: 'Amiri', 'Noto Sans Arabic', 'IBM Plex Sans Arabic', 'Arial Unicode MS', Arial, sans-serif;
+    direction: rtl;
+    text-align: right;
+    unicode-bidi: embed;
+    font-feature-settings: "liga" 1, "kern" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-variant-ligatures: contextual;
+    -webkit-font-feature-settings: "liga", "kern", "calt";
+    -moz-font-feature-settings: "liga", "kern", "calt";
+    font-feature-settings: "liga", "kern", "calt";
+    writing-mode: horizontal-tb;
+    text-orientation: mixed;
+}
+
+/* Fix for Arabic text in forms and inputs */
+input[type="text"], input[type="email"], textarea, select {
+    direction: rtl;
+    text-align: right;
+    unicode-bidi: embed;
+}
+
+/* Student ID Card specific RTL fixes */
+.id-card {
+    direction: rtl;
+    text-align: right;
+}
+
+.student-info {
+    direction: rtl;
+    text-align: right;
+}
+
+.university-name, .card-title {
+    direction: rtl;
+    text-align: center;
+    font-family: var(--font-ibm-plex-arabic);
+    unicode-bidi: embed;
+}
+
+/* QR Code positioning fix */
+.qr-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+/* Digital ID specific RTL */
+.digital-id-card * {
+    direction: rtl;
+    text-align: right;
+    font-family: 'Amiri', 'Noto Sans Arabic', var(--font-ibm-plex-arabic), sans-serif;
+}
+
+/* Fix Arabic text connection issues */
+* {
+    -webkit-font-feature-settings: "liga" on, "calt" on, "kern" on;
+    -moz-font-feature-settings: "liga" on, "calt" on, "kern" on;
+    font-feature-settings: "liga" on, "calt" on, "kern" on;
+}
+
+/* Specific fixes for Arabic text rendering */
+.arabic-text, [lang="ar"], .rtl {
+    font-synthesis: none;
+    -webkit-font-smoothing: subpixel-antialiased;
+    -moz-osx-font-smoothing: auto;
+    text-rendering: geometricPrecision;
+    font-variant-ligatures: contextual;
+    font-kerning: auto;
+}
+
+/* Force proper Arabic rendering */
+body, html {
+    -webkit-locale: "ar";
+    font-language-override: "ARA";
+}
+
+/* Student ID Card text fixes */
+.id-card *, .digital-id-card * {
+    font-family: 'Amiri', 'Noto Sans Arabic', 'IBM Plex Sans Arabic', Arial, sans-serif !important;
+    unicode-bidi: bidi-override;
+    direction: rtl;
+    text-align: right;
+}
+
+/* University Logo Styling */
+.university-logo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logo-img {
+    max-width: 80px;
+    max-height: 80px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    margin: 0 auto;
+    display: block;
+}
+
+/* Card Header Layout */
+.card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px 10px 0 0;
+    margin-bottom: 20px;
+}
+
+.card-header .university-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.card-header .card-title {
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+/* Additional logo sizing for different contexts */
+.digital-id-card .logo-img {
+    max-width: 60px;
+    max-height: 60px;
+}
+
+.student-id-card .logo-img {
+    max-width: 70px;
+    max-height: 70px;
+}
+
+/* Responsive logo sizing */
+@media (max-width: 768px) {
+    .logo-img {
+        max-width: 50px;
+        max-height: 50px;
+    }
+    
+    .digital-id-card .logo-img {
+        max-width: 40px;
+        max-height: 40px;
+    }
+    
+    .student-id-card .logo-img {
+        max-width: 45px;
+        max-height: 45px;
+    }
 }
 
 /* Headings with Tajawal */
