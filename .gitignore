@@ -141,3 +141,6 @@ Thumbs.db
 *.swo
 *~
 /nbproject/private/
+migrations/
+!*/migrations/
+!*/migrations/__init__.py
