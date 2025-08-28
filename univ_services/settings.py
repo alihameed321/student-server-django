@@ -205,6 +205,8 @@ SIMPLE_JWT = {
 
 # CORS Configuration for Mobile App
 CORS_ALLOWED_ORIGINS = [
+    'emmanalhedad.pythonanywhere.com',
+    'http://emmanalhedad.pythonanywhere.com',
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://0.0.0.0:3000",
