@@ -193,6 +193,23 @@ python -c "import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'univ_serv
 
 ## Common Error Messages and Solutions
 
+### Error: `ModuleNotFoundError: No module named 'rest_framework_simplejwt'`
+**Solution**: Install missing dependencies
+```bash
+# Navigate to project directory
+cd /home/emmanalhedad/student-server-django
+
+# Activate virtual environment (if using one)
+source venv/bin/activate
+
+# Install all requirements
+pip install -r requirements.txt
+
+# Or install specific package
+pip install djangorestframework-simplejwt==5.3.0
+```
+**See**: `PYTHONANYWHERE_DEPENDENCIES.md` for complete installation guide
+
 ### Error: `ImportError: No module named 'django'`
 **Solution**: Install Django in your virtualenv or system Python
 
