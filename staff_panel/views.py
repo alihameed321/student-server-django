@@ -824,16 +824,13 @@ class CreatePaymentProviderView(LoginRequiredMixin, TemplateView):
             name = request.POST.get('name', '').strip()
             description = request.POST.get('description', '').strip()
             instructions = request.POST.get('instructions', '').strip()
-            account_name = request.POST.get('account_name', '').strip()
-            account_number = request.POST.get('account_number', '').strip()
-            bank_name = request.POST.get('bank_name', '').strip()
-            iban = request.POST.get('iban', '').strip()
-            swift_code = request.POST.get('swift_code', '').strip()
+            university_account_name = request.POST.get('university_account_name', '').strip()
+            university_account_number = request.POST.get('university_account_number', '').strip()
             is_active = request.POST.get('is_active') == 'on'
             logo = request.FILES.get('logo')
             
             # Validate required fields
-            if not all([name, description, account_name, account_number]):
+            if not all([name, description, university_account_name, university_account_number]):
                 messages.error(request, 'يرجى ملء جميع الحقول المطلوبة.')
                 return self.get(request, *args, **kwargs)
             
@@ -842,11 +839,8 @@ class CreatePaymentProviderView(LoginRequiredMixin, TemplateView):
                 name=name,
                 description=description,
                 instructions=instructions,
-                account_name=account_name,
-                account_number=account_number,
-                bank_name=bank_name,
-                iban=iban,
-                swift_code=swift_code,
+                university_account_name= university_account_name,
+                university_account_number=university_account_number,
                 is_active=is_active,
                 logo=logo
             )
@@ -896,16 +890,13 @@ class EditPaymentProviderView(LoginRequiredMixin, TemplateView):
             name = request.POST.get('name', '').strip()
             description = request.POST.get('description', '').strip()
             instructions = request.POST.get('instructions', '').strip()
-            account_name = request.POST.get('account_name', '').strip()
-            account_number = request.POST.get('account_number', '').strip()
-            bank_name = request.POST.get('bank_name', '').strip()
-            iban = request.POST.get('iban', '').strip()
-            swift_code = request.POST.get('swift_code', '').strip()
+            university_account_name = request.POST.get('university_account_name', '').strip()
+            university_account_number = request.POST.get('university_account_number', '').strip()
             is_active = request.POST.get('is_active') == 'on'
             logo = request.FILES.get('logo')
             
             # Validate required fields
-            if not all([name, description, account_name, account_number]):
+            if not all([name, description, university_account_name, university_account_number]):
                 messages.error(request, 'يرجى ملء جميع الحقول المطلوبة.')
                 return self.get(request, *args, **kwargs)
             
@@ -913,11 +904,8 @@ class EditPaymentProviderView(LoginRequiredMixin, TemplateView):
             provider.name = name
             provider.description = description
             provider.instructions = instructions
-            provider.account_name = account_name
-            provider.account_number = account_number
-            provider.bank_name = bank_name
-            provider.iban = iban
-            provider.swift_code = swift_code
+            provider.university_account_name = university_account_name
+            provider.university_account_number = university_account_number
             provider.is_active = is_active
             
             if logo:

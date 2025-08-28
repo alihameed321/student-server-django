@@ -270,10 +270,6 @@ class FinancialReportAdmin(admin.ModelAdmin):
             'fields': ('report_data', 'total_payments_received'),
             'classes': ('wide',)
         }),
-        ('الملف', {
-            'fields': ('file_path',),
-            'classes': ('collapse',)
-        }),
         ('البيانات الوصفية', {
             'fields': ('generated_at',),
             'classes': ('collapse',)

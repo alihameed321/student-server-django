@@ -213,7 +213,7 @@ class Payment(models.Model):
     
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='payments')
     fee = models.ForeignKey(StudentFee, on_delete=models.CASCADE, related_name='payments')
-    payment_provider = models.ForeignKey(PaymentProvider, on_delete=models.CASCADE)
+    payment_provider = models.ForeignKey(PaymentProvider, on_delete=models.CASCADE, related_name='payments')
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     transaction_reference = models.CharField(max_length=200)
     payment_date = models.DateTimeField()

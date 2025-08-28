@@ -40,15 +40,15 @@ class ServiceRequestAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('معلومات الطلب', {
-            'fields': ('student', 'request_type', 'title', 'description'),
+            'fields': ('student', 'request_type', 'title', 'description', 'priority'),
             'classes': ('wide',)
         }),
         ('الحالة والمعالجة', {
-            'fields': ('status', 'priority', 'processed_by', 'rejection_reason', 'additional_info_request'),
+            'fields': ('status', 'processed_by', 'rejection_reason', 'additional_info_request'),
             'classes': ('wide',)
         }),
-        ('الطوابع الزمنية', {
-            'fields': ('created_at', 'updated_at'),
+        ('البيانات الوصفية', {
+            'fields': ('created_at',),
             'classes': ('collapse',)
         }),
     )
@@ -143,11 +143,11 @@ class SupportTicketAdmin(admin.ModelAdmin):
             'classes': ('wide',)
         }),
         ('الحالة والأولوية', {
-            'fields': ('status', 'priority', 'assigned_to', 'resolution'),
+            'fields': ('status', 'priority', 'assigned_to'),
             'classes': ('wide',)
         }),
         ('الطوابع الزمنية', {
-            'fields': ('created_at', 'updated_at', 'resolved_at'),
+            'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
     )

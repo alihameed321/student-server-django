@@ -139,15 +139,15 @@ class WorkflowTemplateAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('معلومات القالب', {
-            'fields': ('name', 'description', 'category'),
+            'fields': ('name', 'description', 'workflow_type'),
             'classes': ('wide',)
         }),
         ('تكوين سير العمل', {
-            'fields': ('steps', 'conditions', 'notifications'),
+            'fields': ('steps',),
             'classes': ('wide',)
         }),
         ('الحالة والصلاحيات', {
-            'fields': ('is_active', 'required_permissions'),
+            'fields': ('is_active',),
             'classes': ('wide',)
         }),
         ('البيانات الوصفية', {
@@ -244,16 +244,12 @@ class SystemConfigurationAdmin(admin.ModelAdmin):
             'fields': ('key', 'description', 'category'),
             'classes': ('wide',)
         }),
-        ('Value & Type', {
-            'fields': ('value', 'value_type', 'default_value'),
-            'classes': ('wide',)
-        }),
-        ('Security & Status', {
-            'fields': ('is_sensitive', 'is_active', 'validation_rules'),
+        ('Value & Status', {
+            'fields': ('value', 'is_active'),
             'classes': ('wide',)
         }),
         ('Metadata', {
-            'fields': ('updated_by', 'created_at', 'updated_at'),
+            'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
     )
