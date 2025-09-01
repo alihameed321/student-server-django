@@ -283,10 +283,18 @@ def api_download_id_card(request):
         # Try to load university logo (positioned to the right of the text)
         try:
             # Use the specific logo path provided by user
-            logo_path = 'd:/student/student-server-django/static/images/logo.png'
+            logo_path = 'C:/Users/Haidan/Desktop/service/student-server-django/static/images/logo.png'
+            print(f"Attempting to load logo from: {logo_path}")  # Debug print
+            print(f"Logo file exists: {os.path.exists(logo_path)}")  # Debug print
+            
             if os.path.exists(logo_path):
-                c.drawImage(logo_path, card_width - 0.45 * inch, card_height - 0.55 * inch, width=0.3 * inch, height=0.3 * inch, preserveAspectRatio=True)
+                print("Drawing logo on ID card...")  # Debug print
+                # Draw the logo with proper positioning for credit card format
+                c.drawImage(logo_path, card_width - 0.45 * inch, card_height - 0.55 * inch, 
+                           width=0.3 * inch, height=0.3 * inch, preserveAspectRatio=True, mask='auto')
+                print("Logo drawn successfully")  # Debug print
             else:
+                print("Logo file not found, using fallback")  # Debug print
                 # Fallback circle if logo not found
                 c.setFillColor(colors.white)
                 c.setStrokeColor(colors.white)
@@ -294,8 +302,10 @@ def api_download_id_card(request):
                 c.setFillColor(color_primary)
                 c.setFont(font_bold, 10)
                 c.drawCentredString(card_width - 0.3 * inch, card_height - 0.425 * inch, process_arabic_text("ج"))
-        except Exception:
-            # Fallback circle if any error
+        except Exception as e:
+            # Enhanced fallback with better error handling
+            print(f"Logo loading error: {e}")  # Debug print
+            print(f"Error type: {type(e).__name__}")  # Debug print
             c.setFillColor(colors.white)
             c.setStrokeColor(colors.white)
             c.circle(card_width - 0.3 * inch, card_height - 0.4 * inch, 0.15 * inch, fill=1)
@@ -471,7 +481,10 @@ def api_download_id_card(request):
         
         # Create HTTP response with PDF content
         response = HttpResponse(pdf_content, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="student_id_card_{request.user.username}.pdf"'
+        # Create Arabic filename: الاسم + بطاقة الطالب
+        student_name = request.user.get_full_name() or request.user.username
+        arabic_filename = f"{student_name} بطاقة الطالب.pdf"
+        response['Content-Disposition'] = f'attachment; filename="{arabic_filename}"'
         response['Content-Length'] = len(pdf_content)
         
         logger.info(f"Student ID card downloaded successfully for user: {request.user.username}")

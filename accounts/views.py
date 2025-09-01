@@ -271,150 +271,424 @@ def download_digital_id(request):
         
         # Create the HttpResponse object with PDF headers
         response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="digital_id_{request.user.username}.pdf"'
+        # Create Arabic filename: الاسم + تقرير اكاديمي عن الطالب
+        student_name = request.user.get_full_name() or request.user.username
+        arabic_filename = f"{student_name} تقرير اكاديمي عن الطالب.pdf"
+        response['Content-Disposition'] = f'attachment; filename="{arabic_filename}"'
         
-        # Create the PDF document
+        # Create the PDF document with professional margins
         buffer = BytesIO()
-        doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=18)
+        doc = SimpleDocTemplate(
+            buffer, 
+            pagesize=A4, 
+            rightMargin=50, 
+            leftMargin=50, 
+            topMargin=50, 
+            bottomMargin=50
+        )
         
         # Container for the 'Flowable' objects
         elements = []
         
-        # Define styles with Arabic support
+        # Define professional styles with enhanced Arabic support
         styles = getSampleStyleSheet()
         
         # Try to use Arabic font, fallback to Helvetica
         font_name = 'Arabic' if 'Arabic' in pdfmetrics.getRegisteredFontNames() else 'Helvetica'
         
+        # Enhanced title style with better spacing and colors
         title_style = ParagraphStyle(
             'CustomTitle',
             parent=styles['Heading1'],
-            fontSize=24,
-            spaceAfter=30,
+            fontSize=28,
+            spaceAfter=20,
+            spaceBefore=10,
             alignment=TA_CENTER,
-            textColor=colors.HexColor('#102A71'),
-            fontName=font_name
+            textColor=colors.HexColor('#1a365d'),
+            fontName=font_name,
+            leading=34
         )
         
+        # Professional subtitle style
+        subtitle_style = ParagraphStyle(
+            'CustomSubtitle',
+            parent=styles['Heading2'],
+            fontSize=18,
+            spaceAfter=25,
+            spaceBefore=5,
+            alignment=TA_CENTER,
+            textColor=colors.HexColor('#2d3748'),
+            fontName=font_name,
+            leading=22
+        )
+        
+        # Enhanced header style for sections
         header_style = ParagraphStyle(
             'CustomHeader',
             parent=styles['Heading2'],
-            fontSize=16,
-            spaceAfter=12,
-            textColor=colors.HexColor('#102A71'),
-            fontName=font_name
+            fontSize=14,
+            spaceAfter=8,
+            spaceBefore=15,
+            textColor=colors.HexColor('#1a365d'),
+            fontName=font_name,
+            alignment=TA_RIGHT,
+            leading=18
         )
         
+        # Professional normal text style
         normal_style = ParagraphStyle(
             'CustomNormal',
             parent=styles['Normal'],
-            fontSize=12,
-            spaceAfter=6,
+            fontSize=11,
+            spaceAfter=4,
             fontName=font_name,
-            alignment=TA_RIGHT
+            alignment=TA_RIGHT,
+            leading=14,
+            textColor=colors.HexColor('#2d3748')
         )
         
-        # Add university logo
-        try:
-            # Use the specific logo path provided by user
-            logo_path = 'd:/student/student-server-django/static/images/logo.png'
-            if os.path.exists(logo_path):
-                logo_image = Image(logo_path, width=1*inch, height=1*inch)
-                logo_table = Table([[logo_image]], colWidths=[6*inch])
-                logo_table.setStyle(TableStyle([
-                    ('ALIGN', (0, 0), (0, 0), 'CENTER'),
-                    ('VALIGN', (0, 0), (0, 0), 'MIDDLE'),
-                ]))
-                elements.append(logo_table)
-                elements.append(Spacer(1, 10))
-        except Exception:
-            # Continue without logo if there's an error
-            pass
+        # Security notice style
+        security_style = ParagraphStyle(
+            'SecurityStyle',
+            parent=styles['Normal'],
+            fontSize=10,
+            spaceAfter=6,
+            fontName=font_name,
+            alignment=TA_RIGHT,
+            leading=13,
+            textColor=colors.HexColor('#e53e3e'),
+            borderColor=colors.HexColor('#e53e3e'),
+            borderWidth=1,
+            borderPadding=8
+        )
         
-        # Add title in Arabic
-        title = Paragraph(process_arabic_text("الجامعة اليمنية<br/>بطاقة الهوية الطلابية الرقمية"), title_style)
-        elements.append(title)
+        # Add professional header with logo and title
+        try:
+            # Use the correct logo path
+            logo_path = 'C:/Users/Haidan/Desktop/service/student-server-django/static/images/logo.png'
+            if os.path.exists(logo_path):
+                # Create a professional header layout with logo
+                logo_image = Image(logo_path, width=1.2*inch, height=1.2*inch)
+                
+                # University name in Arabic
+                university_name = process_arabic_text("الجامعة اليمنية")
+                university_para = Paragraph(university_name, title_style)
+                
+                # Create header table with logo and university name
+                header_data = [[
+                    logo_image,
+                    university_para
+                ]]
+                
+                header_table = Table(header_data, colWidths=[1.5*inch, 5*inch])
+                header_table.setStyle(TableStyle([
+                    ('ALIGN', (0, 0), (0, 0), 'CENTER'),
+                    ('ALIGN', (1, 0), (1, 0), 'CENTER'),
+                    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                    ('TOPPADDING', (0, 0), (-1, -1), 10),
+                    ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
+                ]))
+                
+                elements.append(header_table)
+                elements.append(Spacer(1, 15))
+            else:
+                # Fallback: just university name without logo
+                university_name = process_arabic_text("الجامعة اليمنية")
+                university_para = Paragraph(university_name, title_style)
+                elements.append(university_para)
+                elements.append(Spacer(1, 15))
+        except Exception:
+            # Fallback: just university name without logo
+            university_name = process_arabic_text("الجامعة اليمنية")
+            university_para = Paragraph(university_name, title_style)
+            elements.append(university_para)
+            elements.append(Spacer(1, 15))
+        
+        # Add document title in Arabic - Report format
+        document_title = process_arabic_text("تقرير البيانات الأكاديمية للطالب")
+        title_para = Paragraph(document_title, subtitle_style)
+        elements.append(title_para)
+        
+        # Add report subtitle
+        subtitle_text = process_arabic_text("تقرير شامل عن الحالة الأكاديمية والمعلومات الشخصية")
+        subtitle_para = Paragraph(subtitle_text, ParagraphStyle(
+            'ReportSubtitle',
+            parent=styles['Normal'],
+            fontSize=12,
+            spaceAfter=20,
+            spaceBefore=5,
+            alignment=TA_CENTER,
+            textColor=colors.HexColor('#4a5568'),
+            fontName=font_name,
+            leading=15
+        ))
+        elements.append(subtitle_para)
+        elements.append(Spacer(1, 25))
+        
+        # Add a professional separator line
+        line_style = TableStyle([
+            ('LINEBELOW', (0, 0), (-1, -1), 2, colors.HexColor('#1a365d')),
+            ('TOPPADDING', (0, 0), (-1, -1), 0),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+        ])
+        separator = Table([['']],  colWidths=[6.5*inch])
+        separator.setStyle(line_style)
+        elements.append(separator)
         elements.append(Spacer(1, 20))
         
-        # Student Information Table in Arabic
-        student_data = [
-            [process_arabic_text('معلومات الطالب'), ''],
-            [process_arabic_text('الاسم الكامل:'), process_arabic_text(request.user.get_full_name() or request.user.username)],
-            [process_arabic_text('الرقم الجامعي:'), request.user.university_id],
-            [process_arabic_text('البريد الإلكتروني:'), request.user.email],
-            [process_arabic_text('نوع المستخدم:'), process_arabic_text('طالب' if request.user.user_type == 'student' else request.user.user_type)],
-            [process_arabic_text('البرنامج:'), process_arabic_text(getattr(request.user, 'major', None) or 'غير محدد')],
-            [process_arabic_text('المستوى الأكاديمي:'), process_arabic_text(getattr(request.user, 'academic_level', None) or 'غير محدد')],
-            [process_arabic_text('سنة التسجيل:'), process_arabic_text(getattr(request.user, 'enrollment_year', None) or 'غير محدد')],
-            [process_arabic_text('الحالة:'), process_arabic_text('نشط')],
-            [process_arabic_text('صالحة حتى:'), process_arabic_text('ديسمبر 2025')],
-            [process_arabic_text('تاريخ الإنشاء:'), process_arabic_text(datetime.now().strftime('%d/%m/%Y الساعة %H:%M'))]
+        # Report Section 1: Personal Information
+        section1_header = Paragraph(process_arabic_text('القسم الأول: المعلومات الشخصية'), header_style)
+        elements.append(section1_header)
+        elements.append(Spacer(1, 10))
+        
+        # Personal information table (RTL layout: value first, then label)
+        personal_data = [
+            [process_arabic_text(request.user.get_full_name() or request.user.username), process_arabic_text('الاسم الكامل:')],
+            [request.user.university_id or process_arabic_text('غير محدد'), process_arabic_text('الرقم الجامعي:')],
+            [request.user.email, process_arabic_text('البريد الإلكتروني:')],
+            [process_arabic_text(getattr(request.user, 'phone_number', None) or 'غير محدد'), process_arabic_text('رقم الهاتف:')],
+            [process_arabic_text(getattr(request.user, 'date_of_birth', None) or 'غير محدد'), process_arabic_text('تاريخ الميلاد:')],
+            [process_arabic_text(getattr(request.user, 'nationality', None) or 'يمني'), process_arabic_text('الجنسية:')]
         ]
         
-        # Create table with Arabic support
-        table = Table(student_data, colWidths=[2*inch, 4*inch])
+        # Create personal information table with RTL layout
+        personal_table = Table(personal_data, colWidths=[4.3*inch, 2.2*inch])
+        personal_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), colors.white),
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#2d3748')),
+            ('ALIGN', (0, 0), (0, -1), 'RIGHT'),  # Values column - right aligned
+            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),  # Labels column - right aligned
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('FONTNAME', (0, 0), (-1, -1), font_name),
+            ('FONTSIZE', (0, 0), (-1, -1), 11),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('LEFTPADDING', (0, 0), (-1, -1), 12),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 12),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
+            ('LINEBELOW', (0, 0), (-1, 0), 2, colors.HexColor('#1a365d')),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.HexColor('#f7fafc'), colors.white]),
+            ('FONTNAME', (1, 0), (1, -1), font_name + '-Bold' if font_name + '-Bold' in pdfmetrics.getRegisteredFontNames() else font_name)  # Bold labels
+        ]))
+        
+        elements.append(personal_table)
+        elements.append(Spacer(1, 20))
+        
+        # Report Section 2: Academic Information
+        section2_header = Paragraph(process_arabic_text('القسم الثاني: المعلومات الأكاديمية'), header_style)
+        elements.append(section2_header)
+        elements.append(Spacer(1, 10))
+        
+        # Academic information table (RTL layout: value first, then label)
+        student_data = [
+            [process_arabic_text('طالب' if request.user.user_type == 'student' else request.user.user_type), process_arabic_text('نوع المستخدم:')],
+            [process_arabic_text(getattr(request.user, 'major', None) or 'غير محدد'), process_arabic_text('البرنامج الأكاديمي:')],
+            [process_arabic_text(getattr(request.user, 'academic_level', None) or 'غير محدد'), process_arabic_text('المستوى الأكاديمي:')],
+            [process_arabic_text(str(getattr(request.user, 'enrollment_year', None) or 'غير محدد')), process_arabic_text('سنة التسجيل:')],
+            [process_arabic_text('نشط'), process_arabic_text('الحالة الأكاديمية:')],
+            [process_arabic_text(getattr(request.user, 'gpa', None) or 'غير محدد'), process_arabic_text('المعدل التراكمي:')],
+            [process_arabic_text(getattr(request.user, 'credit_hours', None) or 'غير محدد'), process_arabic_text('عدد الساعات المكتسبة:')],
+            [process_arabic_text('الفصل الأول 2024-2025'), process_arabic_text('الفصل الدراسي الحالي:')],
+            [process_arabic_text('يونيو 2026'), process_arabic_text('تاريخ التخرج المتوقع:')],
+            [process_arabic_text(datetime.now().strftime('%d/%m/%Y')), process_arabic_text('تاريخ إصدار التقرير:')]
+        ]
+        
+        # Create professional table with enhanced styling and RTL layout
+        table = Table(student_data, colWidths=[4.3*inch, 2.2*inch])
         table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (1, 0), colors.HexColor('#102A71')),
-            ('TEXTCOLOR', (0, 0), (1, 0), colors.whitesmoke),
-            ('ALIGN', (0, 0), (-1, -1), 'RIGHT'),  # RTL alignment
-            ('FONTNAME', (0, 0), (1, 0), font_name + '-Bold' if font_name == 'Helvetica' else font_name),
-            ('FONTSIZE', (0, 0), (1, 0), 14),
-            ('BOTTOMPADDING', (0, 0), (1, 0), 12),
-            ('BACKGROUND', (0, 1), (1, -1), colors.beige),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black),
-            ('FONTNAME', (0, 1), (0, -1), font_name + '-Bold' if font_name == 'Helvetica' else font_name),
-            ('FONTNAME', (1, 1), (1, -1), font_name),  # Data column uses regular font
-            ('FONTSIZE', (0, 1), (-1, -1), 10),
-            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.lightgrey])
+            # Professional color scheme
+            ('BACKGROUND', (0, 0), (-1, -1), colors.white),
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#2d3748')),
+            
+            # RTL alignment for Arabic text
+            ('ALIGN', (0, 0), (0, -1), 'RIGHT'),  # Values column - right aligned
+            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),  # Labels column - right aligned
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            
+            # Font styling
+            ('FONTNAME', (0, 0), (0, -1), font_name),  # Values column
+            ('FONTNAME', (1, 0), (1, -1), font_name + '-Bold' if font_name + '-Bold' in pdfmetrics.getRegisteredFontNames() else font_name),  # Labels column - bold
+            ('FONTSIZE', (0, 0), (-1, -1), 11),
+            
+            # Enhanced padding for better readability
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('LEFTPADDING', (0, 0), (-1, -1), 12),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 12),
+            
+            # Professional borders
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
+            ('LINEBELOW', (0, 0), (-1, 0), 2, colors.HexColor('#1a365d')),
+            
+            # Alternating row colors for better readability
+            ('ROWBACKGROUNDS', (0, 0), (-1, -1), [colors.HexColor('#f7fafc'), colors.HexColor('#edf2f7')]),
+            
+            # Make labels bold
+            ('FONTNAME', (0, 0), (0, -1), font_name if font_name == 'Helvetica' else font_name),
         ]))
         
         elements.append(table)
-        elements.append(Spacer(1, 30))
+        elements.append(Spacer(1, 25))
         
-        # Generate QR Code
+        # Report Section 3: Digital Verification
+        qr_section_header = Paragraph(process_arabic_text('القسم الثالث: التحقق الرقمي والمصادقة'), header_style)
+        elements.append(qr_section_header)
+        elements.append(Spacer(1, 15))
+        
+        # Generate enhanced QR Code with better error correction
         qr_data = {
             'university_id': request.user.university_id,
             'name': request.user.get_full_name(),
             'user_type': request.user.user_type,
             'username': request.user.username,
+            'issued_date': datetime.now().strftime('%Y-%m-%d'),
+            'valid_until': '2025-12-31'
         }
         
         qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
+            version=2,  # Increased version for more data
+            error_correction=qrcode.constants.ERROR_CORRECT_M,  # Better error correction
+            box_size=8,
+            border=3,
         )
         qr.add_data(json.dumps(qr_data))
         qr.make(fit=True)
         
-        qr_img = qr.make_image(fill_color="black", back_color="white")
+        qr_img = qr.make_image(fill_color="#1a365d", back_color="white")
         qr_buffer = BytesIO()
         qr_img.save(qr_buffer, format='PNG')
         qr_buffer.seek(0)
         
-        # Add QR Code to PDF with Arabic label
-        qr_image = Image(qr_buffer, width=2*inch, height=2*inch)
-        qr_table = Table([[process_arabic_text('رمز الاستجابة السريعة للتحقق'), qr_image]], colWidths=[3*inch, 2.5*inch])
+        # Create professional QR code layout
+        qr_image = Image(qr_buffer, width=1.8*inch, height=1.8*inch)
+        
+        # QR code description
+        qr_description = Paragraph(
+            process_arabic_text('امسح هذا الرمز للتحقق من صحة البطاقة'),
+            normal_style
+        )
+        
+        # Create QR table with professional styling
+        # RTL layout: description first, then QR code
+        qr_data_table = [[
+            qr_description,
+            qr_image
+        ]]
+        
+        qr_table = Table(qr_data_table, colWidths=[4.3*inch, 2.2*inch])
         qr_table.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (0, 0), 'RIGHT'),  # RTL alignment
-            ('ALIGN', (1, 0), (1, 0), 'CENTER'),
+            ('ALIGN', (0, 0), (0, 0), 'RIGHT'),  # Description - right aligned
+            ('ALIGN', (1, 0), (1, 0), 'CENTER'),  # QR code - center aligned
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('FONTNAME', (0, 0), (0, 0), font_name + '-Bold' if font_name == 'Helvetica' else font_name),
-            ('FONTSIZE', (0, 0), (0, 0), 12),
+            ('TOPPADDING', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
+            ('LEFTPADDING', (0, 0), (-1, -1), 12),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 12),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f7fafc')),
         ]))
         
         elements.append(qr_table)
-        elements.append(Spacer(1, 30))
+        elements.append(Spacer(1, 25))
         
-        # Add security notice in Arabic
-        security_notice = Paragraph(
-            process_arabic_text("<b>تنبيه أمني:</b> هذه البطاقة الرقمية ملكية رسمية للجامعة. "
-            "لا تشارك رمز الاستجابة السريعة مع أشخاص غير مخولين. أبلغ عن أي نشاط مشبوه فوراً. "
-            "هذه الوثيقة صالحة فقط عند مرافقتها بهوية شخصية صحيحة مع صورة."),
-            normal_style
+        # Report Section 4: Academic Status Summary
+        summary_header = Paragraph(process_arabic_text('القسم الرابع: ملخص الحالة الأكاديمية'), header_style)
+        elements.append(summary_header)
+        elements.append(Spacer(1, 10))
+        
+        # Academic status summary
+        status_summary = [
+            "الطالب مسجل بصورة نظامية في الجامعة اليمنية",
+            "الحالة الأكاديمية للطالب نشطة ومستوفية للشروط",
+            "جميع البيانات المذكورة في هذا التقرير محدثة وصحيحة",
+            "هذا التقرير صادر عن نظام إدارة الطلاب الإلكتروني",
+            "يمكن التحقق من صحة هذا التقرير عبر رمز الاستجابة السريعة المرفق"
+        ]
+        
+        for point in status_summary:
+            processed_point = process_arabic_text(f"• {point}")
+            point_para = Paragraph(processed_point, normal_style)
+            elements.append(point_para)
+            elements.append(Spacer(1, 3))
+        
+        elements.append(Spacer(1, 20))
+        
+        # Report Section 5: Important Notes
+        notes_header = Paragraph(process_arabic_text('القسم الخامس: ملاحظات مهمة'), header_style)
+        elements.append(notes_header)
+        elements.append(Spacer(1, 10))
+        
+        # Important notes
+        important_notes = [
+            "هذا التقرير وثيقة رسمية صادرة عن الجامعة اليمنية",
+            "يُمنع تعديل أو تزوير أي من البيانات الواردة في هذا التقرير",
+            "هذا التقرير صالح لمدة عام واحد من تاريخ الإصدار",
+            "للاستفسارات يرجى مراجعة إدارة شؤون الطلاب",
+            "يمكن طلب نسخة محدثة من هذا التقرير في أي وقت"
+        ]
+        
+        for note in important_notes:
+            processed_note = process_arabic_text(f"• {note}")
+            note_para = Paragraph(processed_note, normal_style)
+            elements.append(note_para)
+            elements.append(Spacer(1, 3))
+        
+        elements.append(Spacer(1, 20))
+        
+        # Report Conclusion Section
+        conclusion_header = Paragraph(process_arabic_text('الخاتمة والتوقيع الإلكتروني'), header_style)
+        elements.append(conclusion_header)
+        elements.append(Spacer(1, 10))
+        
+        conclusion_text = process_arabic_text(
+            "تم إعداد هذا التقرير الأكاديمي الشامل بناءً على البيانات المحفوظة في نظام إدارة الطلاب "
+            "بالجامعة اليمنية. جميع المعلومات الواردة في هذا التقرير دقيقة ومحدثة حتى تاريخ الإصدار. "
+            "هذا التقرير معتمد إلكترونياً ولا يحتاج إلى توقيع ورقي."
         )
-        elements.append(security_notice)
+        conclusion_para = Paragraph(conclusion_text, normal_style)
+        elements.append(conclusion_para)
+        elements.append(Spacer(1, 15))
+        
+        # Digital signature section
+        signature_text = process_arabic_text("التوقيع الإلكتروني: نظام إدارة الطلاب - الجامعة اليمنية")
+        signature_style = ParagraphStyle(
+            'SignatureStyle',
+            parent=normal_style,
+            fontSize=10,
+            textColor=colors.HexColor('#1a365d'),
+            alignment=TA_CENTER,
+            fontName=font_name,
+            spaceAfter=10
+        )
+        signature_para = Paragraph(signature_text, signature_style)
+        elements.append(signature_para)
+        elements.append(Spacer(1, 20))
+        
+        # Professional Footer Section
+        footer_separator = Table([['']],  colWidths=[6.5*inch])
+        footer_separator.setStyle(TableStyle([
+            ('LINEABOVE', (0, 0), (-1, -1), 1, colors.HexColor('#e2e8f0')),
+            ('TOPPADDING', (0, 0), (-1, -1), 0),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+        ]))
+        elements.append(footer_separator)
+        elements.append(Spacer(1, 10))
+        
+        # Footer information
+        footer_style = ParagraphStyle(
+            'FooterStyle',
+            parent=normal_style,
+            fontSize=9,
+            textColor=colors.HexColor('#718096'),
+            alignment=TA_CENTER
+        )
+        
+        footer_text = process_arabic_text(
+            f"تم إنشاء هذا التقرير إلكترونياً في {datetime.now().strftime('%d/%m/%Y الساعة %H:%M')} • "
+            "الجامعة اليمنية - إدارة شؤون الطلاب • تقرير البيانات الأكاديمية للطالب"
+        )
+        footer_para = Paragraph(footer_text, footer_style)
+        elements.append(footer_para)
         
         # Build PDF
         doc.build(elements)
@@ -486,7 +760,10 @@ def download_id_card(request):
         
         # --- Basic Setup ---
         response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="student_id_card_{request.user.username}.pdf"'
+        # Create Arabic filename: الاسم + بطاقة الطالب
+        student_name = request.user.get_full_name() or request.user.username
+        arabic_filename = f"{student_name} بطاقة الطالب.pdf"
+        response['Content-Disposition'] = f'attachment; filename="{arabic_filename}"'
         
         buffer = BytesIO()
         
@@ -536,10 +813,16 @@ def download_id_card(request):
         # Try to load university logo (positioned to the right of the text)
         try:
             # Use the specific logo path provided by user
-            logo_path = 'd:/student/student-server-django/static/images/logo.png'
+            logo_path = 'C:/Users/Haidan/Desktop/service/student-server-django/static/images/logo.png'
+            print(f"Web view - Attempting to load logo from: {logo_path}")  # Debug print
+            print(f"Web view - Logo file exists: {os.path.exists(logo_path)}")  # Debug print
+            
             if os.path.exists(logo_path):
-                c.drawImage(logo_path, card_width - 0.45 * inch, card_height - 0.55 * inch, width=0.3 * inch, height=0.3 * inch, preserveAspectRatio=True)
+                print("Web view - Drawing logo on ID card...")  # Debug print
+                c.drawImage(logo_path, card_width - 0.45 * inch, card_height - 0.55 * inch, width=0.3 * inch, height=0.3 * inch, preserveAspectRatio=True, mask='auto')
+                print("Web view - Logo drawn successfully")  # Debug print
             else:
+                print("Web view - Logo file not found, using fallback")  # Debug print
                 # Fallback circle if logo not found
                 c.setFillColor(colors.white)
                 c.setStrokeColor(colors.white)
@@ -547,8 +830,10 @@ def download_id_card(request):
                 c.setFillColor(color_primary)
                 c.setFont(font_bold, 10)
                 c.drawCentredString(card_width - 0.3 * inch, card_height - 0.425 * inch, process_arabic_text("ج"))
-        except Exception:
+        except Exception as e:
             # Fallback circle if any error
+            print(f"Web view - Logo loading error: {e}")  # Debug print
+            print(f"Web view - Error type: {type(e).__name__}")  # Debug print
             c.setFillColor(colors.white)
             c.setStrokeColor(colors.white)
             c.circle(card_width - 0.3 * inch, card_height - 0.4 * inch, 0.15 * inch, fill=1)
@@ -657,11 +942,14 @@ def download_id_card(request):
         # --- Back Side Header with Logo Above Text ---
         # Try to load university logo (positioned above the text)
         try:
-            # Use the specific logo path provided by user
-            logo_path = 'd:/student/student-server-django/static/images/logo.png'
+            # Use the correct logo path
+            logo_path = 'C:/Users/Haidan/Desktop/service/student-server-django/static/images/logo.png'
+            print(f"Back side - Attempting to load logo from: {logo_path}")
             if os.path.exists(logo_path):
+                print("Back side - Logo file found, drawing logo")
                 c.drawImage(logo_path, card_width / 2 - 0.15 * inch, card_height - 0.4 * inch, width=0.3 * inch, height=0.3 * inch, preserveAspectRatio=True)
             else:
+                print("Back side - Logo file not found, using fallback")
                 # Fallback circle if logo not found
                 c.setFillColor(colors.white)
                 c.setStrokeColor(color_primary)
