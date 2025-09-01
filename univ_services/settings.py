@@ -211,7 +211,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://0.0.0.0:3000",
     "http://10.0.2.2:8000",
-    "http://192.168.8.120:8000",
+    "http://10.100.26.166:8000",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True  # Only for development
